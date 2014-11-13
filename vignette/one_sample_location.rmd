@@ -1,0 +1,142 @@
+---
+title: "One sample location estimation; DSCR example"
+output: html_document
+---
+
+Thought I'd start simple: with estimation of a mean.
+
+We'll do a simulation study. Three scenarios: a normal distribution, a uniform distribution
+and a Cauchy (t distribution on 1df). Three methods: mean, median and winsorized mean. 
+
+In general, we might want to simulate the simulation parameters from some distribution,
+but in this simple case it is enough I think to fix them in advance. Just for
+the purposes of illustration we'll use this facility to set the number of samples (nsamp)
+here to be 1000. Also we have to specify dataseed, which is used by the datamaker
+function. (Here I set dataseed to be the user-supplied seed+1, which I suggest as default behaviour).
+
+```{r}
+parammaker = function(indexlist){
+  set.seed(indexlist$seed)
+
+  #here is the meat of the function that needs to be defined for each dsc to be done
+  param = list(nsamp=1000, dataseed=indexlist$seed+1)
+  # end meat of function
+  
+
+  save(param,file=paramfile(indexlist))
+  return(param)
+}
+```
+
+Now define the function to create data: input, and meta-data. 
+The input is what the methods will be given. The meta data will be used
+when scoring the methods. So here, the input is a random sample, and the meta-data is the true mean (0).
+
+
+```{r}
+datamaker = function(indexlist){
+  load(file=paramfile(indexlist))
+  set.seed(param$dataseed)
+  
+ #here is the meat of the function that needs to be defined for each dsc to be done
+  if(indexlist$scenario=="normal"){
+    input = list(x=rnorm(param$nsamp,0,1))
+    meta =  list(truemean=0)
+  }
+  
+ if(indexlist$scenario=="uniform"){
+    input = list(x=runif(param$nsamp,-1,1))
+    meta = list(truemean=0)
+ }
+  
+  if(indexlist$scenario=="Cauchy"){
+    input = list(x=rt(param$nsamp,df=1))
+    meta = list(truemean=0)
+ }
+ #end of meat of function
+ 
+  data = list(meta=meta,input=input)
+  save(data,file=datafile(indexlist))
+  return(data)
+}
+```
+
+
+Now define the methods. They have to have the form where they take "input" and produce "output"
+in a specified format. In this case the input format is a list with one component (x).
+The output format is a list with one component (meanest), the estimated mean. 
+Effectively we have to write a "wrapper" function for each of our three methods
+that makes sure that they conform to this input-output requirement. (Note that the
+winsor.wrapper function makes use of the function winsor.mean from the psych package.)
+
+```{r}
+mean.wrapper = function(input){
+  return(list(meanest = mean(input$x)))  
+}
+
+median.wrapper = function(input){
+  return(list(meanest = median(input$x)))    
+}
+
+winsor.wrapper = function(input){
+  return(list(meanest = winsor.mean(input$x,trim=0.2)))
+}
+
+```
+
+Now define a list of the methods we'll use. 
+Each method is defined by its name and the function used to implement it:
+```{r}
+  methods=list()
+  methods$mean = list(name="mean",fn = "mean.wrapper")
+  methods$median = list(name="median",fn="median.wrapper")
+  methods$winsor = list(name="winsor",fn="winsor.wrapper")
+```
+
+
+And define a score function that says how well a method has done. Here we'll use squared error
+and absolute error:
+```{r}
+score = function(param, data, output){
+  return(list(squared_error = (data$meta$truemean-output$meanest)^2, abs_error = abs(data$meta$truemean-output$meanest)))
+}
+```
+
+Finally, for each scenario we need to define what seeds we will use for the pseudo-random number generator.
+They don't have to be the same, but here we simply use seeds in 1 to 100 for each scenario.
+```{r}
+scenario_seedlist= list("normal"=1:100,"uniform"=1:100,"Cauchy"=1:100)
+```
+
+
+Now we'll run all the methods on all the scenarios:
+```{r}
+  library(dscr)
+  res=run_dsc(parammaker,datamaker,methods,score,scenario_seedlist)
+```
+
+This returns a dataframe with the results of running all the methods on all the scenarios:
+```{r}
+  head(res)
+```
+
+And we can summarize the results (eg mean squared error) using the aggregate function
+```{r}
+  aggregate(abs_error~method+scenario,res,mean)
+  aggregate(squared_error~method+scenario,res,mean)
+```
+
+Now suppose we are coming in and want to add a method, say the trimmed mean, to the comparison.
+Here is what we do:
+```{r}
+  trimmedmean.wrapper = function(input){
+    return(list(meanest=mean(input$x,trim=0.2)))
+  }
+
+  methods$trimmedmean = list(name="trimmedmean",fn = "trimmedmean.wrapper")
+
+  res=run_dsc(parammaker,datamaker,methods,score,scenario_seedlist)
+  aggregate(abs_error~method+scenario,res,mean)
+  aggregate(squared_error~method+scenario,res,mean)
+```
+

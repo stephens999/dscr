@@ -1,3 +1,10 @@
 .Rproj.user
 .Rhistory
 .RData
+vignette/data
+vignette/param
+vignette/output
+vignette/results
+vignette/one_sample_location.html
+man/*.Rd
+
