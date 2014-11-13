@@ -6,5 +6,5 @@ vignette/param
 vignette/output
 vignette/results
 vignette/one_sample_location.html
-man/*.Rd
+man/
 

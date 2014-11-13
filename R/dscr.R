@@ -296,5 +296,29 @@ make_data = function(datamaker,scenario_seedlist){
   d_ply(combo,.(seed,scenario),datamaker)
 }
 
+#' @title Run all methods on all scenarios for a DSC
+#'
+#' @description Run all methods on all scenarios for a DSC
+#' #' 
+#' @param parammaker a function for making parameters from seeds and scenario combinations
+#' @param datamaker a function for making data=list(meta,input) for a dsc
+#' @param methods a list of methods to be used in the dsc
+#' @param scorefn a function that takes output and scores it against the input, metadata and params
+#' @param scenario_seedlist named list of seeds to be used in each scenario. 
+#' 
+#' @return data frame of results from all methods run on all scenarios
+#' @export 
+run_dsc=function(parammaker,datamaker,methods,scorefn,scenario_seedlist){
+  make_directories(methods,names(scenario_seedlist))
+  make_params(parammaker,scenario_seedlist)
+  make_data(datamaker,scenario_seedlist)
+  
+  l_ply(methods,apply_method,scenario_seedlist=scenario_seedlist)
+  l_ply(methods,score_method,scenario_seedlist = scenario_seedlist,scorefn=scorefn)
+    
+  res=aggregate_results(methods,scenario_seedlist)
+  
+  return(res)
+}
 
 
