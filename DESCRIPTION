@@ -1,0 +1,9 @@
+Package: dscr
+Type: Package
+Title: Dynamic Statistiscal Comparisons in R
+Version: 0.1
+Date: 2014-11-13
+Author: Matthew Stephens
+Maintainer: Matthew Stephens <mstephens@uchicago.edu>
+Description: Package containing functions to help build dynamic statistical comparisons in R
+License: Creative Commons License
