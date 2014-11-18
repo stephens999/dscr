@@ -15,6 +15,12 @@ here to be 1000. Also we have to specify dataseed, which is used by the datamake
 function. (Here I set dataseed to be the user-supplied seed+1, which I suggest as default behaviour).
 
 ```{r}
+#  library(devtools)
+#  install_github(repo="stephens999/dscr")
+```
+
+```{r}
+
 parammaker = function(indexlist){
   set.seed(indexlist$seed)
 
