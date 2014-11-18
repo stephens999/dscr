@@ -3,10 +3,13 @@ title: "One sample location estimation; DSCR example"
 output: html_document
 ---
 
-Thought I'd start simple: with estimation of a mean.
+This vignette is designed to illustrate the (in development) dscr package for Dynamic Statistical Comparisons in R.
 
-We'll do a simulation study. Three scenarios: a normal distribution, a uniform distribution
-and a Cauchy (t distribution on 1df). Three methods: mean, median and winsorized mean. 
+We'll do a simulation study to assess methods for estimating the mean of a distribution. 
+The simulations will be performed under 
+three scenarios: a normal distribution, a uniform distribution
+and a Cauchy (t distribution on 1df). And we'll compare three methods: 
+sample mean, sample median and the Winsorized mean (from the psych package). 
 
 In general, we might want to simulate the simulation parameters from some distribution,
 but in this simple case it is enough I think to fix them in advance. Just for
