@@ -7,9 +7,11 @@ aggregate_results(methodslist, scenario_seedlist)
 }
 \arguments{
 \item{methodslist}{a list of methods. Each method is itself a list with elements
+\itemize{
 \item{methodname}{string by which method should be identified}
 \item{methodfn}{name of function that is used to call the method}
-\item{flavorlist}{list of flavors of the method (each flavor is a list containing additional parameters to be passed to methodfn)}}
+\item{flavorlist}{list of flavors of the method (each flavor is a list containing additional parameters to be passed to methodfn)}
+}}
 
 \item{seed}{(list of integers) the seeds for the pseudo-rng which identifies/indexes trials}
 }

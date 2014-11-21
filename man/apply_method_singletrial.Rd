@@ -7,12 +7,16 @@ apply_method_singletrial(indexlist, method, flavor = NULL)
 }
 \arguments{
 \item{indexlist}{list that ``indexes" the comparison being used, with components
+\itemize{
 \item{seed}{the seed for the pseudo-rng which identifies/indexes the file}
-\item{scenario}{string indicating scenario name}}
+\item{scenario}{string indicating scenario name}
+}}
 
 \item{method}{a list with elements
+\itemize{
 \item{methodname}{string by which method should be identified}
-\item{methodfn}{name of function that is used to call the method}}
+\item{methodfn}{name of function that is used to call the method}
+}}
 
 \item{flavor}{a string indicating which element of methods$flavorlist to use as additional arguments}
 }

@@ -8,7 +8,7 @@ Maintainer: Matthew Stephens <mstephens@uchicago.edu>
 Description: Package containing functions to help build dynamic statistical
     comparisons in R
 License: GPL (>=2)
-Depends:
+Imports:
     psych,
     plyr,
     reshape2
