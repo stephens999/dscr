@@ -7,7 +7,7 @@ Author: Matthew Stephens
 Maintainer: Matthew Stephens <mstephens@uchicago.edu>
 Description: Package containing functions to help build dynamic statistical
     comparisons in R
-License: Creative Commons License
+License: GPL (>=2)
 Depends:
     psych,
     plyr,
