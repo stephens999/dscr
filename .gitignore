@@ -1,10 +1,11 @@
 .Rproj.user
 .Rhistory
 .RData
-vignette/data
-vignette/param
-vignette/output
-vignette/results
-vignette/one_sample_location.html
+.DS_Store
+vignettes/data
+vignettes/param
+vignettes/output
+vignettes/results
+vignettes/one_sample_location.html
 man/
-
+inst/doc/

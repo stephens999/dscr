@@ -1,7 +1,9 @@
----
-title: "One sample location estimation; DSCR example"
-output: html_document
----
+<!--
+%\VignetteEngine{knitr::knitr}
+%\VignetteIndexEntry{A Vignette to illustrate dscr}
+-->
+
+# One sample location estimation; DSCR example
 
 This vignette is designed to illustrate the (in development) dscr package for Dynamic Statistical Comparisons in R.
 
@@ -18,7 +20,7 @@ here to be 1000. Also we have to specify dataseed, which is used by the datamake
 function. (Here I set dataseed to be the user-supplied seed+1, which I suggest as default behaviour).
 
 ```{r}
-#  library(devtools)
+library(dscr)
 #  install_github(repo="stephens999/dscr")
 ```
 

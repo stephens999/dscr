@@ -2,7 +2,7 @@
 #'
 #' dscr provides some functions for performing Dynamic Statistical Comparisons in R
 #'
-#' Refer to vignette for an example
+#' Run browseVignettes("dscr") for an example
 #' 
 #' @docType package
 #' @name dscr
