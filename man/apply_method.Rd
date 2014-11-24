@@ -9,8 +9,10 @@ apply_method(scenario_seedlist, method, flavor = NULL)
 \item{scenario_seedlist}{(list), one element for each scenario, each element contains the vector of seeds for the pseudo-rng which identifies/indexes trials}
 
 \item{method}{a list with elements
+\itemize{
 \item{methodname}{string by which method should be identified}
-\item{methodfn}{name of function that is used to call the method}}
+\item{methodfn}{name of function that is used to call the method}
+}}
 }
 \value{
 none - the results are saved in a file determined by outputfile(seed, method$methodname)

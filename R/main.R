@@ -1,3 +1,18 @@
+#' @title Dynamic Statistiscal Comparisons in R
+#'
+#' @description Package containing functions to help build dynamic statistical comparisons in R
+#'
+#' \tabular{ll}{ Package: \tab dscr\cr Type: \tab Package\cr
+#' Version: \tab 0.1\cr License: \tab GPL (>=2)\cr }
+#'
+#' @name dscr-package
+#' @aliases dscr
+#' @docType package
+#' @author Matthew Stephens <\email{mstephens@@uchicago.edu}>
+#' @keywords dscr
+#' @import psych plyr reshape2
+NULL
+
 #' @title return the path to a data file, parameter file, output file or results file
 #'
 #' @description return the path to a data file, parameter file, output file or results file
@@ -58,12 +73,17 @@ long_methodname=function(methodname,flavor=NULL){
 #' @description Apply a single method to a single input trial and produce (and save) corresponding output
 #' 
 #' @param indexlist list that ``indexes" the comparison being used, with components
+#' \itemize{
 #' \item{seed}{the seed for the pseudo-rng which identifies/indexes the file}
 #' \item{scenario}{string indicating scenario name}
+#' }
 #' 
 #' @param method a list with elements
+#' \itemize{
 #' \item{methodname}{string by which method should be identified}
-#' \item{methodfn}{name of function that is used to call the method} 
+#' \item{methodfn}{name of function that is used to call the method}
+#' }
+#' 
 #' @param flavor a string indicating which element of methods$flavorlist to use as additional arguments 
 #' 
 #' @return output a list of appropriate format to be determined by the comparison being run
@@ -88,8 +108,10 @@ apply_method_singletrial=function(indexlist,method,flavor=NULL){
 #'  
 #' @param scenario_seedlist (list), one element for each scenario, each element contains the vector of seeds for the pseudo-rng which identifies/indexes trials
 #' @param method a list with elements
+#' \itemize{
 #' \item{methodname}{string by which method should be identified}
 #' \item{methodfn}{name of function that is used to call the method}  
+#' }
 #' 
 #' @return none - the results are saved in a file determined by outputfile(seed, method$methodname)
 #' 
@@ -106,12 +128,17 @@ apply_method = function(scenario_seedlist,method,flavor=NULL){
 #' @description Score results of a single method for a single trial and produce (and save) corresponding results
 #' 
 #' @param indexlist list that ``indexes" the comparison being used, with components
+#' \itemize{
 #' \item{seed}{the seed for the pseudo-rng which identifies/indexes the file}
 #' \item{scenario}{string indicating scenario name}
+#' }
 #' 
 #' @param method a list with elements
+#' \itemize{
 #' \item{methodname}{string by which method should be identified}
-#' \item{methodfn}{name of function that is used to call the method}  
+#' \item{methodfn}{name of function that is used to call the method}
+#' }
+#' 
 #' @param scorefn a function that scores output based on comparisons with input, parameters and metadata
 #'
 #' @return results, a list of appropriate format to be determined by the comparison being run (maybe required to be a dataframe?)
@@ -133,8 +160,11 @@ score_method_singletrial = function(indexlist,method,scorefn,flavor=NULL){
 #' 
 #' @param scenario_seedlist (list) the seeds for the pseudo-rng for each scenario which identifies/indexes trials
 #' @param method a list with elements
+#' \itemize{
 #' \item{methodname}{string by which method should be identified}
-#' \item{methodfn}{name of function that is used to call the method}  
+#' \item{methodfn}{name of function that is used to call the method}
+#' }
+#' 
 #' @param scorefn a function that scores output based on comparisons with input, parameters and metadata
 #'
 #' @return results, a list of appropriate format to be determined by the comparison being run (maybe required to be a dataframe?)
@@ -155,13 +185,16 @@ score_method=function(scenario_seedlist,method,scorefn,flavor=NULL){
 #' @description Get the results of a single method for a single trial
 #' 
 #' @param indexlist list that ``indexes" the comparison being used, with components
+#' \itemize{
 #' \item{seed}{the seed for the pseudo-rng which identifies/indexes the file}
 #' \item{scenario}{string indicating scenario name}
+#' }
 #' 
 #' @param method a list with elements
+#' \itemize{
 #' \item{methodname}{string by which method should be identified}
 #' \item{methodfn}{name of function that is used to call the method}  
-#'
+#' }
 #' @return results, a data frame of results, the details will depend on the comparison being run
 #' 
 #' @export
@@ -176,8 +209,10 @@ get_one_result = function(indexlist,method,flavor=NULL){
 #' @description Get the results of a single method for multiple trials (one flavor)
 #' 
 #' @param method a list with elements
+#' \itemize{
 #' \item{methodname}{string by which method should be identified}
-#' \item{methodfn}{name of function that is used to call the method}  
+#' \item{methodfn}{name of function that is used to call the method}
+#' }
 #' @param seed (list of integers) the seeds for the pseudo-rng which identifies/indexes trials
 #' @return a data frame of results, with one row for each trial. The details of the columns will depend on the comparison being run
 #' 
@@ -210,9 +245,11 @@ get_results_all_flavors = function(method,scenario_seedlist){
 #' @description Aggregate the results of multiple methods for multiple trials
 #' 
 #' @param methodslist a list of methods. Each method is itself a list with elements
+#' \itemize{
 #' \item{methodname}{string by which method should be identified}
 #' \item{methodfn}{name of function that is used to call the method}  
 #' \item{flavorlist}{list of flavors of the method (each flavor is a list containing additional parameters to be passed to methodfn)}
+#' }
 #' @param seed (list of integers) the seeds for the pseudo-rng which identifies/indexes trials
 #' @return a data frame of results, with one row for each trial/method combination. The details of the columns will depend on the comparison being run
 #' 
@@ -299,7 +336,7 @@ make_data = function(datamaker,scenario_seedlist){
 #' @title Run all methods on all scenarios for a DSC
 #'
 #' @description Run all methods on all scenarios for a DSC
-#' #' 
+#'
 #' @param parammaker a function for making parameters from seeds and scenario combinations
 #' @param datamaker a function for making data=list(meta,input) for a dsc
 #' @param methods a list of methods to be used in the dsc
@@ -320,5 +357,3 @@ run_dsc=function(parammaker,datamaker,methods,scorefn,scenario_seedlist){
   
   return(res)
 }
-
-

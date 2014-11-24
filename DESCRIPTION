@@ -9,7 +9,7 @@ Description: Package containing functions to help build dynamic statistical
     comparisons in R
 VignetteBuilder: knitr
 License: GPL (>=2)
-Depends:
+Imports:
     psych,
     plyr,
     reshape2

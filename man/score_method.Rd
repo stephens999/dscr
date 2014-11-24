@@ -9,8 +9,10 @@ score_method(scenario_seedlist, method, scorefn, flavor = NULL)
 \item{scenario_seedlist}{(list) the seeds for the pseudo-rng for each scenario which identifies/indexes trials}
 
 \item{method}{a list with elements
+\itemize{
 \item{methodname}{string by which method should be identified}
-\item{methodfn}{name of function that is used to call the method}}
+\item{methodfn}{name of function that is used to call the method}
+}}
 
 \item{scorefn}{a function that scores output based on comparisons with input, parameters and metadata}
 }

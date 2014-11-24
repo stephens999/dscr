@@ -7,8 +7,10 @@ get_results(method, scenario_seedlist, flavor = NULL)
 }
 \arguments{
 \item{method}{a list with elements
+\itemize{
 \item{methodname}{string by which method should be identified}
-\item{methodfn}{name of function that is used to call the method}}
+\item{methodfn}{name of function that is used to call the method}
+}}
 
 \item{seed}{(list of integers) the seeds for the pseudo-rng which identifies/indexes trials}
 }
