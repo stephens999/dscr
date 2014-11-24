@@ -1,4 +1,4 @@
-#' @title Dynamic Statistiscal Comparisons in R
+#' @title Dynamic Statistical Comparisons in R
 #'
 #' @description Package containing functions to help build dynamic statistical comparisons in R
 #'
