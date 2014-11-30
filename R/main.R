@@ -352,8 +352,8 @@ run_dsc=function(parammaker,datamaker,methods,scorefn,scenario_seedlist){
   
   l_ply(methods,apply_method,scenario_seedlist=scenario_seedlist)
   l_ply(methods,score_method,scenario_seedlist = scenario_seedlist,scorefn=scorefn)
-  
+    
   res=aggregate_results(methods,scenario_seedlist)
-
+  
   return(res)
 }
