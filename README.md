@@ -5,6 +5,6 @@ This repo contains work on an R package for performing dynamic statistical compa
 
 To install use `devtools::install_github("stephens999/dscr")` in R.
 
-Look at example `.md` files in `vignette` subdirectory.
-
+For a vignette, in R execute:
+browseVignettes("dscr")
 

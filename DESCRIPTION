@@ -7,6 +7,7 @@ Author: Matthew Stephens
 Maintainer: Matthew Stephens <mstephens@uchicago.edu>
 Description: Package containing functions to help build dynamic statistical
     comparisons in R
+VignetteBuilder: knitr
 License: GPL (>=2)
 Imports:
     psych,

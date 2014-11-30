@@ -1,4 +1,4 @@
-#' @title Dynamic Statistiscal Comparisons in R
+#' @title Dynamic Statistical Comparisons in R
 #'
 #' @description Package containing functions to help build dynamic statistical comparisons in R
 #'
@@ -352,7 +352,7 @@ run_dsc=function(parammaker,datamaker,methods,scorefn,scenario_seedlist){
   
   l_ply(methods,apply_method,scenario_seedlist=scenario_seedlist)
   l_ply(methods,score_method,scenario_seedlist = scenario_seedlist,scorefn=scorefn)
-    
+  
   res=aggregate_results(methods,scenario_seedlist)
   
   return(res)
