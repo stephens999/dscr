@@ -10,7 +10,7 @@
 #' @docType package
 #' @author Matthew Stephens <\email{mstephens@@uchicago.edu}>
 #' @keywords dscr
-#' @import psych plyr reshape2
+#' @import psych plyr reshape2 knitr
 NULL
 
 #' @title return the path to a data file, parameter file, output file or results file
@@ -356,4 +356,103 @@ run_dsc=function(parammaker,datamaker,methods,scorefn,scenario_seedlist){
   res=aggregate_results(methods,scenario_seedlist)
   
   return(res)
+}
+
+#' @title Create or update a Makefile for the package
+#'
+#' @description Create or update a Makefile for the package.
+#'
+#' @param deps depends of the package to check in Makefile
+#' @param run_methods method names to run in Makefile
+#' @param vignettes vignette names to built in Makefile
+#'
+#' @return Makefile for the package
+#'
+#' @export update_makefile
+#'
+#' @examples
+#' \donttest{
+#' deps = c('devtools', 'roxygen2', 'knitr', 'plyr', 'psych', 'reshape2')
+#' run_methods = c('one_sample_location')
+#' vignettes = c('one_sample_location.rmd')
+#' update_makefile(deps, run_methods, vignettes, output = '~/dscr/Makefile')}
+update_makefile = function(deps = NULL,
+                           run_methods = NULL,
+                           vignettes = NULL,
+                           output = NULL) {
+  
+  # deps
+  deps_str = if (is.null(deps)) 'echo "No depends needed"' else 
+    paste(paste0("\tRscript -e \'if (!require(\"", deps, 
+                 "\")) install.packages(\"", deps, 
+                 "\", repos=\"http://cran.rstudio.com\")\';\\"), 
+          collapse = "\n")
+  
+  # run-methods
+  if (is.null(run_methods)) {
+    run_methods_str = 'echo "No methods found"'
+  } else if (length(run_methods) == 1L) {
+    run_methods_str = paste(paste0('\tcd inst/examples/', run_methods, 
+                                   ' || { echo "Running method: ', run_methods, 
+                                   ' failed\"; exit 1; } ;\\'),
+                            paste0('\tR -q -e \'library(\"dscr\"); source(\"parammaker.R\"); source(\"datamaker.R\"); source(\"method.R\"); source(\"score.R\"); source(\"scenario.R\"); source(\"rundsc.R\")\';\\'), 
+                            sep = "\n")
+  } else {
+    run_methods_str = rep(NA, length(run_methods))
+    run_methods_str[1L] = paste(paste0('\tcd inst/examples/', run_methods[1L], 
+                                       ' || { echo "Running method: ', run_methods[1L], 
+                                       ' failed\"; exit 1; } ;\\'),
+                                paste0('\tR -q -e \'library(\"dscr\"); source(\"parammaker.R\"); source(\"datamaker.R\"); source(\"method.R\"); source(\"score.R\"); source(\"scenario.R\"); source(\"rundsc.R\")\';\\'), 
+                                sep = "\n")
+    
+    run_methods_str[-1L] = paste(paste0('\tcd ../', run_methods[-1L], 
+                                        ' || { echo "Running method: ', run_methods[-1L], 
+                                        ' failed\"; exit 1; } ;\\'),
+                                 paste0('\tR -q -e \'library(\"dscr\"); source(\"parammaker.R\"); source(\"datamaker.R\"); source(\"method.R\"); source(\"score.R\"); source(\"scenario.R\"); source(\"rundsc.R\")\';\\'), 
+                                 sep = '\n')
+    run_methods_str = paste(run_methods_str, collapse = '\n')
+  }
+  
+  # run-methods-clean
+  if (is.null(run_methods)) {
+    run_methods_clean_str = 'echo "No methods found"'
+  } else if (length(run_methods) == 1L) {
+    run_methods_clean_str = paste(paste0('\tcd inst/examples/', run_methods, 
+                                         ' || { echo "Cleaning method: ', run_methods, 
+                                         ' failed\"; exit 1; } ;\\'),
+                                  paste0('\tR -q -e \'unlink(setdiff(list.files(), c(\"parammaker.R\", \"datamaker.R\", \"method.R\", \"score.R\", \"scenario.R\", \"rundsc.R\")), recursive=TRUE)\';\\'), 
+                                  sep = "\n")
+  } else {
+    run_methods_clean_str = rep(NA, length(run_methods))
+    run_methods_clean_str[1L] = paste(paste0('\tcd inst/examples/', run_methods[1L], 
+                                             ' || { echo "Cleaning method: ', run_methods[1L], 
+                                             ' failed\"; exit 1; } ;\\'),
+                                      paste0('\tR -q -e \'unlink(setdiff(list.files(), c(\"parammaker.R\", \"datamaker.R\", \"method.R\", \"score.R\", \"scenario.R\", \"rundsc.R\")), recursive=TRUE)\';\\'), 
+                                      sep = "\n")
+    
+    run_methods_clean_str[-1L] = paste(paste0('\tcd ../', run_methods[-1L], 
+                                              ' || { echo "Cleaning method: ', run_methods[-1L], 
+                                              ' failed\"; exit 1; } ;\\'),
+                                       paste0('\tR -q -e \'unlink(setdiff(list.files(), c(\"parammaker.R\", \"datamaker.R\", \"method.R\", \"score.R\", \"scenario.R\", \"rundsc.R\")), recursive=TRUE)\';\\'), 
+                                       sep = '\n')
+    run_methods_clean_str = paste(run_methods_clean_str, collapse = '\n')
+  }
+  
+  # vignettes
+  vignettes_str = if (is.null(vignettes)) 'echo "No vignettes"' else
+    paste(paste0("\tR -q -e \'library(\"knitr\"); knit2html(\"", vignettes,
+                 "\"); browseURL(\"", 
+                 paste0(sub("([^.]+)\\.[[:alnum:]]+$", "\\1", vignettes), '.html'),
+                 "\")\';\\"), 
+          collapse = '\n')
+  
+  # vignettes-clean
+  vignettes_clean_str = if (is.null(vignettes)) 'echo "No vignettes"' else
+    paste0("\tR -q -e \'unlink(setdiff(list.files(), c(\"",
+           paste(vignettes, collapse = ','),
+           "\")), recursive=TRUE)\';\\")  
+  
+  knit(system.file('examples/Makefile.Rmd', package = 'dscr'),
+       output = output, quiet = TRUE)
+  
 }
