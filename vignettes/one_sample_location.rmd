@@ -81,6 +81,8 @@ that makes sure that they conform to this input-output requirement. (Note that t
 winsor.wrapper function makes use of the function winsor.mean from the psych package.)
 
 ```{r}
+library(psych)
+
 mean.wrapper = function(input){
   return(list(meanest = mean(input$x)))  
 }
