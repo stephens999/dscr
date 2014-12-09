@@ -1,7 +1,7 @@
 #!/usr/bin/env Rscript
-# make_params2.R
-# usage is Rscript make_params2.R parammaker.R seed scenario 
- 
+# make_data.R
+# usage is Rscript make_data.R datamaker.R seed scenario 
+
 arguments <- commandArgs(trailingOnly=TRUE)
 filename = arguments[1]
 seed = as.integer(arguments[2])
@@ -11,5 +11,5 @@ indexlist = list(seed=seed,scenario=scenario)
 library("dscr")
 
 source(filename) #filename should define a function parammaker
-dir.create(paramsubdir(indexlist),recursive=TRUE)
-do.call(parammaker,list(indexlist))
+dir.create(data_subdir(indexlist),recursive=TRUE)
+do.call(datamaker,list(indexlist))
