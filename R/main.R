@@ -33,8 +33,18 @@ datafile = function(indexlist,datadir="data"){
 }
 
 #' @export
+data_subdir = function(indexlist,datadir="data"){
+  return(file.path(datadir,indexlist$scenario))
+}
+
+#' @export
 paramfile = function(indexlist,paramdir="param"){
   return(file.path(paramdir,indexlist$scenario,paste0("param.",indexlist$seed,".RData")))
+}
+
+#' @export
+param_subdir = function(indexlist,paramdir="param"){
+  return(file.path(paramdir,indexlist$scenario))
 }
 
 #' @export
@@ -44,9 +54,21 @@ outputfile = function(methodname,indexlist,flavor=NULL, outputdir="output"){
 }
 
 #' @export
+output_subdir = function(methodname,indexlist,flavor=NULL, outputdir="output"){
+  methodname=long_methodname(methodname,flavor)
+  return(file.path(outputdir,indexlist$scenario,methodname))
+}
+
+#' @export
 resultsfile = function(methodname,indexlist,flavor=NULL, resultsdir="results"){
   methodname=long_methodname(methodname,flavor)    
   return(file.path(resultsdir,indexlist$scenario,methodname,paste0("results.",indexlist$seed,".RData")))
+}
+
+#' @export
+results_subdir = function(methodname,indexlist,flavor=NULL, resultsdir="results"){
+  methodname=long_methodname(methodname,flavor)    
+  return(file.path(resultsdir,indexlist$scenario,methodname))
 }
 
 #' @title combine a method name and flavor to produce a new method name 
