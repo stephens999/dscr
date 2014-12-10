@@ -146,3 +146,10 @@ Here is what we do (note that the different settings of the argument are treated
   aggregate(squared_error~method+scenario,res,mean)
 ```
 
+And we can also run the dsc on only a subset of the methods and scenarios
+```{r}
+  res = run_dsc(scenarios, methods, score, c("Cauchy","normal"),c("trimmedmean1"))
+  aggregate(abs_error~method+scenario,res,mean)
+  aggregate(squared_error~method+scenario,res,mean)
+```
+

@@ -110,6 +110,20 @@ score_method = function(scenarios,method,scorefn){
   lapply(scenarios,score_method_scenario,method=method,scorefn=scorefn)  
 }
 
+#' @title Score specified methods on specified scenarios
+#'
+#' @description Score specified methods on specified scenarios
+#' 
+#' @param scenarios the scenarios to score
+#' @param methods the methods to score
+#' @param scorefn a function that scores output based on comparisons with input, parameters and metadata
+#'
+#' @return results, a list of appropriate format to be determined by the comparison being run (maybe required to be a dataframe?)
+#' 
+#' @export
+score_methods = function(scenarios,methods,scorefn){
+  lapply(methods, score_method, scenarios=scenarios, scorefn=scorefn)
+}
 
 
 #' @title Get the results of a single method for a single trial
@@ -132,12 +146,8 @@ get_results_singletrial = function(seed,scenario,method){
 #'
 #' @description  Get the results of a single method for a single scenario
 #' 
-#' @param method a list with elements
-#' \itemize{
-#' \item{methodname}{string by which method should be identified}
-#' \item{methodfn}{name of function that is used to call the method}
-#' }
-#' @param seed (list of integers) the seeds for the pseudo-rng which identifies/indexes trials
+#' @param scenario a scenario
+#' @param method a method
 #' @return a data frame of results, with one row for each trial. The details of the columns will depend on the comparison being run
 #' 
 #'
@@ -152,9 +162,9 @@ get_results = function(scenarios,method){
   ldply(scenarios, get_results_scenario, method=method)
 }
 
-#' @title Aggregate the results of multiple methods for multiple trials
+#' @title Aggregate the results of multiple methods for multiple scenarios
 #'
-#' @description Aggregate the results of multiple methods for multiple trials
+#' @description Aggregate the results of multiple methods for multiple scenarios
 #' 
 #' @param scenarios a list of scenarios. 
 #' @param methods a list of methods
@@ -199,7 +209,7 @@ make_directories = function(scenarios,methods){
 #' 
 #' @return data are saved in files in the data subdirectory
 #' @export 
-make_data_singletrial = function(seed,scenario){
+make_data_rs = function(seed,scenario){
   data = do.call(scenario$fn,list(seed=seed,args=scenario$args))
   save(data,file=datafilename(seed,scenario))
 }
@@ -208,12 +218,11 @@ make_data_singletrial = function(seed,scenario){
 #' @description Make the data (inputs and meta) for a DSC for a particular scenario
 #' 
 #' @param scenario a list including elements fn and args, the function name for the datamaker to be used and additional arguments
-#' @param seed (list of integers) the seeds for the pseudo-rng which identifies/indexes trials
 #' 
 #' @return data are saved in files in the data subdirectory
 #' @export 
 make_data_scenario = function(scenario){
-  lapply(scenario$seed,make_data_singletrial,scenario=scenario)
+  lapply(scenario$seed,make_data_rs,scenario=scenario)
 }
   
   
@@ -236,10 +245,11 @@ make_data = function(scenarios){
 #' 
 #' @param seed (vector or list of integers) the seeds for the pseudo-rng which identifies/indexes trials
 #' @param scenario a list including elements fn and args, the function name for the datamaker to be used and additional arguments
+#' @param method a list including elements fn, name and args
 #' 
 #' @return none; output are saved in the output subdirectory
 #' @export 
-apply_method_singletrial = function(seed, scenario, method){
+apply_method_rsm = function(seed, scenario, method){
   load(datafilename(seed,scenario))
   output = do.call(method$fn,list(input=data$input,args=method$args))
   save(output,file=outputfilename(seed,scenario,method))
@@ -254,8 +264,8 @@ apply_method_singletrial = function(seed, scenario, method){
 #' 
 #' @return none; output are saved in the output subdirectory
 #' @export 
-apply_method_scenario = function(scenario,method){
-  lapply(scenario$seed,apply_method_singletrial,scenario=scenario,method=method)
+apply_method_.sm = function(scenario,method){
+  lapply(scenario$seed,apply_method_rsm,scenario=scenario,method=method)
 }
 
 
@@ -268,37 +278,71 @@ apply_method_scenario = function(scenario,method){
 #' 
 #' @return none; data are saved in files in the output subdirectory
 #' @export 
-apply_method = function(scenarios,method){
-  lapply(scenarios,apply_method_scenario,method=method)
+apply_method_..m = function(scenarios,method){
+  lapply(scenarios,apply_method_.sm,method=method)
 }
+
+#' @title Apply all methods to a scenario
+#'
+#' @description Apply all methods to a scenario
+#' 
+#' @param scenario a scenario
+#' @param methods a list of methods
+#' 
+#' @return none; data are saved in files in the output subdirectory
+#' @export 
+apply_method_.s. = function(scenario,methods){
+  lapply(methods,apply_method_.sm,scenario=scenario)
+}
+
+#' @title Apply all methods to all scenarios
+#'
+#' @description Apply all methods to all scenarios
+#' 
+#' @param scenarios a list of scenarios
+#' @param methods a list of methods
+#' 
+#' @return none; data are saved in files in the output subdirectory
+#' @export 
+apply_methods = function(scenarios,methods){
+  lapply(scenarios,apply_method_.s.,methods=methods)
+}
+
+
 
 
 #' @title Run all methods on all scenarios for a DSC
 #'
 #' @description Run all methods on all scenarios for a DSC
 #'
-#' @param parammaker a function for making parameters from seeds and scenario combinations
-#' @param datamaker a function for making data=list(meta,input) for a dsc
-#' @param methods a list of methods to be used in the dsc
-#' @param scorefn a function that takes output and scores it against the input, metadata and params
-#' @param scenario_seedlist named list of seeds to be used in each scenario. 
+#' @param scenarios a list of scenarios used to produce data=list(input,meta)
+#' @param methods a list of methods to turn data$input into output
+#' @param scorefn a function that takes output and scores it against data
+#' @param scenariosubset a vector of the names of the scenarios to actually make and run
+#' @param methodsubset a vector of the names of the methods to run (default is to run all of them)
 #' 
 #' @return data frame of results from all methods run on all scenarios
 #' @export 
-run_dsc=function(scenarios,methods,scorefn){
-  scen.names=unlist(lapply(scenarios,function(x){return(x$name)}))
-  make_directories(scenarios,methods)
-  make_data(scenarios)
+run_dsc=function(scenarios,methods,scorefn,scenariosubset=NULL, methodsubset=NULL){
+  if(!is.null(scenariosubset)){
+    scenarionames=lapply(scenarios,function(x){return(x$name)})
+    ssub = scenarionames %in% scenariosubset
+  } else {ssub = rep(TRUE, length(methods))}
+    
+  if(!is.null(methodsubset)){
+    methodnames=lapply(methods,function(x){return(x$name)})
+    msub = methodnames %in% methodsubset
+  } else { msub= rep(TRUE, length(methods))}
   
-  for(i in 1: length(methods)){
-    apply_method(scenarios,methods[[i]])
-  }
+  make_directories(scenarios[ssub],methods[msub])
   
-  for(i in 1: length(methods)){
-    score_method(scenarios,methods[[i]],score)
-  }
+  make_data(scenarios[ssub])
+  apply_methods(scenarios[ssub],methods[msub])
+  
+  score_methods(scenarios[ssub],methods[msub],scorefn)
+  
       
-  res=aggregate_results(scenarios,methods)
+  res=aggregate_results(scenarios[ssub],methods[msub])
   
   return(res)
 }
