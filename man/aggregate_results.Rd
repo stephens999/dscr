@@ -3,17 +3,12 @@
 \alias{aggregate_results}
 \title{Aggregate the results of multiple methods for multiple trials}
 \usage{
-aggregate_results(methodslist, scenario_seedlist)
+aggregate_results(scenarios, methods)
 }
 \arguments{
-\item{methodslist}{a list of methods. Each method is itself a list with elements
-\itemize{
-\item{methodname}{string by which method should be identified}
-\item{methodfn}{name of function that is used to call the method}
-\item{flavorlist}{list of flavors of the method (each flavor is a list containing additional parameters to be passed to methodfn)}
-}}
+\item{scenarios}{a list of scenarios.}
 
-\item{seed}{(list of integers) the seeds for the pseudo-rng which identifies/indexes trials}
+\item{methods}{a list of methods}
 }
 \value{
 a data frame of results, with one row for each trial/method combination. The details of the columns will depend on the comparison being run

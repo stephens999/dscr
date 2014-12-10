@@ -17,188 +17,98 @@ NULL
 #'
 #' @description return the path to a data file, parameter file, output file or results file
 #' 
-#' @param indexlist list that ``indexes" the comparison being used, with components
-#' \itemize{
-#' \item{"seed"}{ the seed for the pseudo-rng which identifies/indexes the file}
-#' \item{"scenario"}{ string indicating scenario name}
-#' }
+#' @param seed
+#' @param scenario
 #' 
 #' @param datadir/paramdir/outputdir/resultsdir the (relative) path to the directory containing the relevant files
 #' 
 #' @return string containing path to file
 #' 
 #' @export
-datafile = function(indexlist,datadir="data"){
-  return(file.path(datadir,indexlist$scenario,paste0("data.",indexlist$seed,".RData")))
+datafilename = function(seed,scenario,datadir="data"){
+  return(file.path(datadir,scenario$name,paste0("data.",seed,".RData")))
 }
 
 #' @export
 data_subdir = function(indexlist,datadir="data"){
-  return(file.path(datadir,indexlist$scenario))
+  return(file.path(datadir,indexlist$scenarioname))
 }
 
-#' @export
-paramfile = function(indexlist,paramdir="param"){
-  return(file.path(paramdir,indexlist$scenario,paste0("param.",indexlist$seed,".RData")))
-}
+
 
 #' @export
-param_subdir = function(indexlist,paramdir="param"){
-  return(file.path(paramdir,indexlist$scenario))
+outputfilename = function(seed, scenario, method, outputdir="output"){
+  return(file.path(outputdir,scenario$name,method$name,paste0("output.",seed,".RData")))
 }
 
-#' @export
-outputfile = function(methodname,indexlist,flavor=NULL, outputdir="output"){
-  methodname=long_methodname(methodname,flavor)
-  return(file.path(outputdir,indexlist$scenario,methodname,paste0("output.",indexlist$seed,".RData")))
-}
+
 
 #' @export
 output_subdir = function(methodname,indexlist,flavor=NULL, outputdir="output"){
   methodname=long_methodname(methodname,flavor)
-  return(file.path(outputdir,indexlist$scenario,methodname))
+  return(file.path(outputdir,indexlist$scenarioname,methodname))
 }
 
 #' @export
-resultsfile = function(methodname,indexlist,flavor=NULL, resultsdir="results"){
-  methodname=long_methodname(methodname,flavor)    
-  return(file.path(resultsdir,indexlist$scenario,methodname,paste0("results.",indexlist$seed,".RData")))
+resultsfilename = function(seed, scenario, method, resultsdir="results"){
+  return(file.path(resultsdir,scenario$name,method$name,paste0("results.",seed,".RData")))
 }
 
 #' @export
 results_subdir = function(methodname,indexlist,flavor=NULL, resultsdir="results"){
   methodname=long_methodname(methodname,flavor)    
-  return(file.path(resultsdir,indexlist$scenario,methodname))
-}
-
-#' @title combine a method name and flavor to produce a new method name 
-#'
-#' @description combine a method name and flavor to produce a new method name 
-#' 
-#' @param methodname (string) name of a method
-#' @param flavor (sting) name of a flavor
-#' 
-#' @return string method.flavor, or if flavor is null then just method
-#' 
-#' @export
-long_methodname=function(methodname,flavor=NULL){
-  if(is.null(flavor)){ 
-    return(methodname)
-  }
-  else{
-    return(paste(methodname,flavor,sep="."))
-  }
-}
-
-#' @title Apply a method to an input and produce output
-#'
-#' @description Apply a single method to a single input trial and produce (and save) corresponding output
-#' 
-#' @param indexlist list that ``indexes" the comparison being used, with components
-#' \itemize{
-#' \item{seed}{the seed for the pseudo-rng which identifies/indexes the file}
-#' \item{scenario}{string indicating scenario name}
-#' }
-#' 
-#' @param method a list with elements
-#' \itemize{
-#' \item{methodname}{string by which method should be identified}
-#' \item{methodfn}{name of function that is used to call the method}
-#' }
-#' 
-#' @param flavor a string indicating which element of methods$flavorlist to use as additional arguments 
-#' 
-#' @return output a list of appropriate format to be determined by the comparison being run
-#' 
-#' 
-#' @export
-apply_method_singletrial=function(indexlist,method,flavor=NULL){
-  load(file=datafile(indexlist))
-  if(!is.null(flavor)){
-    output=do.call(method$fn,list(input=data$input,add.args=method$flavorlist$flavor))
-  } else {
-    output=do.call(method$fn,list(input=data$input))
-  }
-  save(output,file=outputfile(method$name,indexlist,flavor=flavor))
-  return(output)
-}
-
-#' @title Apply a method to all inputs and produce corresponding outputs
-#'
-#' @description Apply a method to all inputs and produce corresponding outputs (by repeated application of apply_method_once).
-#' Results are saved in a file
-#'  
-#' @param scenario_seedlist (list), one element for each scenario, each element contains the vector of seeds for the pseudo-rng which identifies/indexes trials
-#' @param method a list with elements
-#' \itemize{
-#' \item{methodname}{string by which method should be identified}
-#' \item{methodfn}{name of function that is used to call the method}  
-#' }
-#' 
-#' @return none - the results are saved in a file determined by outputfile(seed, method$methodname)
-#' 
-#' 
-#' @export
-apply_method = function(scenario_seedlist,method,flavor=NULL){
-  combo = melt(scenario_seedlist,value.name="seed")
-  names(combo)[2]="scenario"  
-  d_ply(combo,.(seed,scenario),apply_method_singletrial,method=method,flavor=flavor)
+  return(file.path(resultsdir,indexlist$scenarioname,methodname))
 }
 
 #' @title Score a method on a single trial and save results
 #'
 #' @description Score results of a single method for a single trial and produce (and save) corresponding results
 #' 
-#' @param indexlist list that ``indexes" the comparison being used, with components
-#' \itemize{
-#' \item{seed}{the seed for the pseudo-rng which identifies/indexes the file}
-#' \item{scenario}{string indicating scenario name}
-#' }
-#' 
-#' @param method a list with elements
-#' \itemize{
-#' \item{methodname}{string by which method should be identified}
-#' \item{methodfn}{name of function that is used to call the method}
-#' }
-#' 
+#' @param seed the seed to score
+#' @param scenario the scenario to score
+#' @param method the method to score
 #' @param scorefn a function that scores output based on comparisons with input, parameters and metadata
 #'
 #' @return results, a list of appropriate format to be determined by the comparison being run (maybe required to be a dataframe?)
 #' 
 #' @export
-score_method_singletrial = function(indexlist,method,scorefn,flavor=NULL){
-  load(file=paramfile(indexlist))
-  load(file=datafile(indexlist))
-  load(file=outputfile(method$name,indexlist,flavor))
-  
-  results=scorefn(param,data,output)
-  save(results,file=resultsfile(method$name,indexlist,flavor))
+score_method_singletrial = function(seed,scenario,method,scorefn){
+  load(file=datafilename(seed,scenario))
+  load(file=outputfilename(seed,scenario,method))
+  results=scorefn(data,output)
+  save(results,file=resultsfilename(seed,scenario,method))
   return(results)
 }
 
-#' @title Score a method on all trials and save results
+#' @title Score a method on all trials for a single scenario
 #'
-#' @description Score a method on all trials and save results (by repeated application of score_method_singletrial)
+#' @description Score a method on all trials for a single scenario
 #' 
-#' @param scenario_seedlist (list) the seeds for the pseudo-rng for each scenario which identifies/indexes trials
-#' @param method a list with elements
-#' \itemize{
-#' \item{methodname}{string by which method should be identified}
-#' \item{methodfn}{name of function that is used to call the method}
-#' }
-#' 
+#' @param scenario the scenario to score
+#' @param method the method to score
 #' @param scorefn a function that scores output based on comparisons with input, parameters and metadata
 #'
 #' @return results, a list of appropriate format to be determined by the comparison being run (maybe required to be a dataframe?)
 #' 
 #' @export
-score_method=function(scenario_seedlist,method,scorefn,flavor=NULL){
-  combo = melt(scenario_seedlist,value.name="seed")
-  names(combo)[2]="scenario"
-  d_ply(combo,.(seed,scenario),score_method_singletrial,method=method,scorefn=scorefn,flavor=flavor)
+score_method_scenario = function(scenario,method,scorefn){
+  lapply(scenario$seed,score_method_singletrial,scenario=scenario,method=method,scorefn=scorefn)  
 }
 
-
+#' @title Score a method on all scenarios
+#'
+#' @description Score a method on all scenarios
+#' 
+#' @param scenarios the scenarios to score
+#' @param method the method to score
+#' @param scorefn a function that scores output based on comparisons with input, parameters and metadata
+#'
+#' @return results, a list of appropriate format to be determined by the comparison being run (maybe required to be a dataframe?)
+#' 
+#' @export
+score_method = function(scenarios,method,scorefn){
+  lapply(scenarios,score_method_scenario,method=method,scorefn=scorefn)  
+}
 
 
 
@@ -206,29 +116,21 @@ score_method=function(scenario_seedlist,method,scorefn,flavor=NULL){
 #'
 #' @description Get the results of a single method for a single trial
 #' 
-#' @param indexlist list that ``indexes" the comparison being used, with components
-#' \itemize{
-#' \item{seed}{the seed for the pseudo-rng which identifies/indexes the file}
-#' \item{scenario}{string indicating scenario name}
-#' }
+#' @param seed
+#' @param scenario
+#' @param method
 #' 
-#' @param method a list with elements
-#' \itemize{
-#' \item{methodname}{string by which method should be identified}
-#' \item{methodfn}{name of function that is used to call the method}  
-#' }
 #' @return results, a data frame of results, the details will depend on the comparison being run
 #' 
 #' @export
-
-get_one_result = function(indexlist,method,flavor=NULL){
-  load(file=resultsfile(method$name,indexlist,flavor))
-  return(data.frame(results))
+get_results_singletrial = function(seed,scenario,method){
+  load(file=resultsfilename(seed,scenario,method))
+  return(data.frame(seed=seed, scenario=scenario$name, method=method$name, results))
 }
 
-#' @title Get the results of a single method for multiple trials (one flavor)
+#' @title Get the results of a single method for a single scenario
 #'
-#' @description Get the results of a single method for multiple trials (one flavor)
+#' @description  Get the results of a single method for a single scenario
 #' 
 #' @param method a list with elements
 #' \itemize{
@@ -240,104 +142,67 @@ get_one_result = function(indexlist,method,flavor=NULL){
 #' 
 #'
 #' @export 
-get_results = function(method,scenario_seedlist,flavor=NULL){
-  if(is.null(flavor)){
-    flavorname="NA"
-  } else {
-    flavorname=flavor
-  }
-  combo = melt(scenario_seedlist,value.name="seed")
-  names(combo)[2]="scenario"
-  
-  data.frame(method=method$name,flavor=flavorname,ddply(combo,.(seed,scenario),get_one_result,method=method,flavor=flavor))  
+get_results_scenario = function(scenario, method){  
+  ldply(scenario$seed, get_results_singletrial, scenario=scenario, method=method)
 }
 
 
 #' @export 
-get_results_all_flavors = function(method,scenario_seedlist){
-  if(is.null(method$flavorlist)){
-    return(get_results(method,scenario_seedlist))
-  } else {
-    return(ldply(names(method$flavorlist),get_results,method=method,scenario_seedlist=scenario_seedlist))
-  }  
+get_results = function(scenarios,method){
+  ldply(scenarios, get_results_scenario, method=method)
 }
 
 #' @title Aggregate the results of multiple methods for multiple trials
 #'
 #' @description Aggregate the results of multiple methods for multiple trials
 #' 
-#' @param methodslist a list of methods. Each method is itself a list with elements
-#' \itemize{
-#' \item{methodname}{string by which method should be identified}
-#' \item{methodfn}{name of function that is used to call the method}  
-#' \item{flavorlist}{list of flavors of the method (each flavor is a list containing additional parameters to be passed to methodfn)}
-#' }
-#' @param seed (list of integers) the seeds for the pseudo-rng which identifies/indexes trials
+#' @param scenarios a list of scenarios. 
+#' @param methods a list of methods
 #' @return a data frame of results, with one row for each trial/method combination. The details of the columns will depend on the comparison being run
 #' 
 #' 
-#' 
 #' @export 
-# aggregate all the results into a data frame
-# seed is a vector of seeds to use
-# methods is a list of methods to use
-aggregate_results = function(methodslist,scenario_seedlist){
-  ldply(methodslist,get_results_all_flavors,scenario_seedlist=scenario_seedlist)
+aggregate_results = function(scenarios,methods){
+  ldply(methods,get_results,scenarios=scenarios)
 }
 
 
 #' @export 
-make_directories_singlemethod_singleflavor = function(method,flavor=NULL,scenario=NULL){
-  if(is.null(scenario)) scenario = "default_scenario" 
-  system(paste0("mkdir ",file.path("output",scenario,long_methodname(method$name,flavor))))
-  system(paste0("mkdir ",file.path("results",scenario,long_methodname(method$name,flavor))))
+make_directories_method= function(method,scenario){ 
+  system(paste0("mkdir ",file.path("output",scenario$name,method$name)))
+  system(paste0("mkdir ",file.path("results",scenario$name,method$name)))
+}
+
+
+#' @export 
+make_directories_scenario=function(scenario,methods){ 
+  system(paste0("mkdir ",file.path("data",scenario$name)))
+  system(paste0("mkdir ",file.path("output",scenario$name)))
+  system(paste0("mkdir ",file.path("results",scenario$name)))
+  l_ply(methods,make_directories_method,scenario=scenario)
 }
 
 #' @export 
-make_directories_singlemethod = function(method,scenario=NULL){
-  if(is.null(method$flavorlist)){
-    make_directories_singlemethod_singleflavor(method=method,scenario=scenario)  
-  } else {
-    lapply(names(method$flavorlist),make_directories_singlemethod_singleflavor,method=method,scenario=scenario)
-  }
-}
-
-#' @export 
-make_scenario_subdirectories_singlescenario=function(methodslist,scenario=NULL){
-  if(is.null(scenario)) scenario = "default_scenario" 
-  system(paste0("mkdir ",file.path("param",scenario)))
-  system(paste0("mkdir ",file.path("data",scenario)))
-  system(paste0("mkdir ",file.path("output",scenario)))
-  system(paste0("mkdir ",file.path("results",scenario)))
-  l_ply(methodslist,make_directories_singlemethod,scenario)
-}
-
-#' @export 
-make_directories = function(methodslist,scenario=NULL){
-  system("mkdir param")
+make_directories = function(scenarios,methods){
   system("mkdir data")
   system("mkdir output")
   system("mkdir results")
-  if(is.null(scenario)) scenario="default_scenario"
-  l_ply(scenario,make_scenario_subdirectories_singlescenario,methodslist=methodslist)
+  l_ply(scenarios,make_directories_scenario,methods=methods)
 }
 
-
-#' @title Make all the parameters for a DSC
+#' @title Make the data (inputs and meta) for a DSC for a particular seed and scenario
 #'
-#' @description Make all the parameters for DSC using all combinations of seed and scenario
+#' @description Make the data (inputs and meta) for a DSC for a particular seed and scenario
 #' 
-#' @param parammaker a function for making parameters from seeds and scenario combinations
-#' @param scenario_seedlist a list of integer vectors, one for each scenario. Each list gives the seeds to be used for that scenario.
+#' @param seed (vector or list of integers) the seeds for the pseudo-rng which identifies/indexes trials
+#' @param scenario a list including elements fn and args, the function name for the datamaker to be used and additional arguments
 #' 
-#' @return parameters are saved in files in the params subdirectory
+#' @return data are saved in files in the data subdirectory
 #' @export 
-make_params = function(parammaker,scenario_seedlist){
-  combo = melt(scenario_seedlist,value.name="seed")
-  names(combo)[2]="scenario"
-  d_ply(combo,.(seed,scenario),parammaker)
+make_data_singletrial = function(seed,scenario){
+  data = do.call(scenario$fn,list(seed=seed,args=scenario$args))
+  save(data,file=datafilename(seed,scenario))
 }
-
 #' @title Make the data (inputs and meta) for a DSC for a particular scenario
 #'
 #' @description Make the data (inputs and meta) for a DSC for a particular scenario
@@ -347,28 +212,66 @@ make_params = function(parammaker,scenario_seedlist){
 #' 
 #' @return data are saved in files in the data subdirectory
 #' @export 
-make_data_scenario = function(scenario,seed){
-  apply(seed,scenario$fn,args=scenario$args)
+make_data_scenario = function(scenario){
+  lapply(scenario$seed,make_data_singletrial,scenario=scenario)
 }
   
   
-#' @title Make all the inputs for a DSC
+#' @title Make all the data for a DSC
 #'
 #' @description Make all the data for DSC using all combinations of seed and scenario
 #' 
-#' @param datamaker a function for making data from seeds and scenario combinations
-#' @param scenario_seedlist a list of integer vectors, one for each scenario. Each list gives the seeds to be used for that scenario.
+#' @param scenarios a list of scenarios
 #' 
-#' @return parameters are saved in files in the data subdirectory
+#' @return none; data are saved in files in the data subdirectory
 #' @export 
-make_data = function(datamaker,scenario_seedlist){
-  combo = melt(scenario_seedlist,value.name="seed")
-  names(combo)[2]="scenario"
-  combo = ddply(combo,.(seed,scenario),datafile)
-  names(combo)[3]="outputfile"
-  combo$nsamp = 1000
-  d_ply(combo,.(seed,outputfile,scenario,nsamp),datamaker)
+make_data = function(scenarios){
+  lapply(scenarios,make_data_scenario)
 }
+
+
+#' @title Apply a method for a particular seed and scenario
+#'
+#' @description Apply a method for a particular seed and scenario
+#' 
+#' @param seed (vector or list of integers) the seeds for the pseudo-rng which identifies/indexes trials
+#' @param scenario a list including elements fn and args, the function name for the datamaker to be used and additional arguments
+#' 
+#' @return none; output are saved in the output subdirectory
+#' @export 
+apply_method_singletrial = function(seed, scenario, method){
+  load(datafilename(seed,scenario))
+  output = do.call(method$fn,list(input=data$input,args=method$args))
+  save(output,file=outputfilename(seed,scenario,method))
+}
+
+#' @title Apply a method to all trials for a particular scenario
+#'
+#' @description Apply a method to all trials for a particular scenario
+#' 
+#' @param scenario a list including elements seed and name
+#' @param method a list including fn and name
+#' 
+#' @return none; output are saved in the output subdirectory
+#' @export 
+apply_method_scenario = function(scenario,method){
+  lapply(scenario$seed,apply_method_singletrial,scenario=scenario,method=method)
+}
+
+
+#' @title Apply method to all scenarios
+#'
+#' @description Apply method to all scenarios
+#' 
+#' @param scenarios a list of scenarios
+#' @param method a list containing the method name, fn, etc
+#' 
+#' @return none; data are saved in files in the output subdirectory
+#' @export 
+apply_method = function(scenarios,method){
+  lapply(scenarios,apply_method_scenario,method=method)
+}
+
 
 #' @title Run all methods on all scenarios for a DSC
 #'
@@ -382,15 +285,20 @@ make_data = function(datamaker,scenario_seedlist){
 #' 
 #' @return data frame of results from all methods run on all scenarios
 #' @export 
-run_dsc=function(parammaker,datamaker,methods,scorefn,scenario_seedlist){
-  make_directories(methods,names(scenario_seedlist))
-  make_params(parammaker,scenario_seedlist)
-  make_data(datamaker,scenario_seedlist)
+run_dsc=function(scenarios,methods,scorefn){
+  scen.names=unlist(lapply(scenarios,function(x){return(x$name)}))
+  make_directories(scenarios,methods)
+  make_data(scenarios)
   
-  l_ply(methods,apply_method,scenario_seedlist=scenario_seedlist)
-  l_ply(methods,score_method,scenario_seedlist = scenario_seedlist,scorefn=scorefn)
-    
-  res=aggregate_results(methods,scenario_seedlist)
+  for(i in 1: length(methods)){
+    apply_method(scenarios,methods[[i]])
+  }
+  
+  for(i in 1: length(methods)){
+    score_method(scenarios,methods[[i]],score)
+  }
+      
+  res=aggregate_results(scenarios,methods)
   
   return(res)
 }
