@@ -40,12 +40,12 @@ clean:
 
 run-methods: install
 	cd inst/examples/one_sample_location || { echo "Running method: one_sample_location failed"; exit 1; } ;\
-	R -q -e 'library("dscr"); source("parammaker.R"); source("datamaker.R"); source("method.R"); source("score.R"); source("scenario.R"); source("rundsc.R")';\
+	R -q -e 'library("dscr"); source("datamaker.R"); source("method.R"); source("score.R"); source("scenario.R"); source("rundsc.R")';\
 
 # test before running since this involves recursive deletion
 run-methods-clean:
 	cd inst/examples/one_sample_location || { echo "Cleaning method: one_sample_location failed"; exit 1; } ;\
-	R -q -e 'unlink(setdiff(list.files(), c("parammaker.R", "datamaker.R", "method.R", "score.R", "scenario.R", "rundsc.R")), recursive=TRUE)';\
+	R -q -e 'unlink(setdiff(list.files(), c("datamaker.R", "method.R", "score.R", "scenario.R", "rundsc.R")), recursive=TRUE)';\
 
 .PHONY: vignettes
 vignettes: install

@@ -384,20 +384,20 @@ update_makefile = function(deps = NULL,
     run_methods_str = paste(paste0('\tcd inst/examples/', run_methods, 
                                    ' || { echo "Running method: ', run_methods, 
                                    ' failed\"; exit 1; } ;\\'),
-                            paste0('\tR -q -e \'library(\"dscr\"); source(\"parammaker.R\"); source(\"datamaker.R\"); source(\"method.R\"); source(\"score.R\"); source(\"scenario.R\"); source(\"rundsc.R\")\';\\'), 
+                            paste0('\tR -q -e \'library(\"dscr\"); source(\"datamaker.R\"); source(\"method.R\"); source(\"score.R\"); source(\"scenario.R\"); source(\"rundsc.R\")\';\\'), 
                             sep = "\n")
   } else {
     run_methods_str = rep(NA, length(run_methods))
     run_methods_str[1L] = paste(paste0('\tcd inst/examples/', run_methods[1L], 
                                        ' || { echo "Running method: ', run_methods[1L], 
                                        ' failed\"; exit 1; } ;\\'),
-                                paste0('\tR -q -e \'library(\"dscr\"); source(\"parammaker.R\"); source(\"datamaker.R\"); source(\"method.R\"); source(\"score.R\"); source(\"scenario.R\"); source(\"rundsc.R\")\';\\'), 
+                                paste0('\tR -q -e \'library(\"dscr\"); source(\"datamaker.R\"); source(\"method.R\"); source(\"score.R\"); source(\"scenario.R\"); source(\"rundsc.R\")\';\\'), 
                                 sep = "\n")
     
     run_methods_str[-1L] = paste(paste0('\tcd ../', run_methods[-1L], 
                                         ' || { echo "Running method: ', run_methods[-1L], 
                                         ' failed\"; exit 1; } ;\\'),
-                                 paste0('\tR -q -e \'library(\"dscr\"); source(\"parammaker.R\"); source(\"datamaker.R\"); source(\"method.R\"); source(\"score.R\"); source(\"scenario.R\"); source(\"rundsc.R\")\';\\'), 
+                                 paste0('\tR -q -e \'library(\"dscr\"); source(\"datamaker.R\"); source(\"method.R\"); source(\"score.R\"); source(\"scenario.R\"); source(\"rundsc.R\")\';\\'), 
                                  sep = '\n')
     run_methods_str = paste(run_methods_str, collapse = '\n')
   }
@@ -409,20 +409,20 @@ update_makefile = function(deps = NULL,
     run_methods_clean_str = paste(paste0('\tcd inst/examples/', run_methods, 
                                          ' || { echo "Cleaning method: ', run_methods, 
                                          ' failed\"; exit 1; } ;\\'),
-                                  paste0('\tR -q -e \'unlink(setdiff(list.files(), c(\"parammaker.R\", \"datamaker.R\", \"method.R\", \"score.R\", \"scenario.R\", \"rundsc.R\")), recursive=TRUE)\';\\'), 
+                                  paste0('\tR -q -e \'unlink(setdiff(list.files(), c(\"datamaker.R\", \"method.R\", \"score.R\", \"scenario.R\", \"rundsc.R\")), recursive=TRUE)\';\\'), 
                                   sep = "\n")
   } else {
     run_methods_clean_str = rep(NA, length(run_methods))
     run_methods_clean_str[1L] = paste(paste0('\tcd inst/examples/', run_methods[1L], 
                                              ' || { echo "Cleaning method: ', run_methods[1L], 
                                              ' failed\"; exit 1; } ;\\'),
-                                      paste0('\tR -q -e \'unlink(setdiff(list.files(), c(\"parammaker.R\", \"datamaker.R\", \"method.R\", \"score.R\", \"scenario.R\", \"rundsc.R\")), recursive=TRUE)\';\\'), 
+                                      paste0('\tR -q -e \'unlink(setdiff(list.files(), c(\"datamaker.R\", \"method.R\", \"score.R\", \"scenario.R\", \"rundsc.R\")), recursive=TRUE)\';\\'), 
                                       sep = "\n")
     
     run_methods_clean_str[-1L] = paste(paste0('\tcd ../', run_methods[-1L], 
                                               ' || { echo "Cleaning method: ', run_methods[-1L], 
                                               ' failed\"; exit 1; } ;\\'),
-                                       paste0('\tR -q -e \'unlink(setdiff(list.files(), c(\"parammaker.R\", \"datamaker.R\", \"method.R\", \"score.R\", \"scenario.R\", \"rundsc.R\")), recursive=TRUE)\';\\'), 
+                                       paste0('\tR -q -e \'unlink(setdiff(list.files(), c(\"datamaker.R\", \"method.R\", \"score.R\", \"scenario.R\", \"rundsc.R\")), recursive=TRUE)\';\\'), 
                                        sep = '\n')
     run_methods_clean_str = paste(run_methods_clean_str, collapse = '\n')
   }
