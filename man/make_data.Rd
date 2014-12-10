@@ -6,16 +6,14 @@
 make_data(datamaker, scenario_seedlist)
 }
 \arguments{
-\item{parammaker}{a function for making parameters from seeds and scenario combinations}
+\item{datamaker}{a function for making data from seeds and scenario combinations}
 
-\item{seed}{(list of integers) the seeds for the pseudo-rng which identifies/indexes trials}
-
-\item{scenario}{(list of strings) the names of the scenarios}
+\item{scenario_seedlist}{a list of integer vectors, one for each scenario. Each list gives the seeds to be used for that scenario.}
 }
 \value{
-parameters are saved in files in the params subdirectory
+parameters are saved in files in the data subdirectory
 }
 \description{
-Make all the parameters for DSC using all combinations of seed and scenario
+Make all the data for DSC using all combinations of seed and scenario
 }
 

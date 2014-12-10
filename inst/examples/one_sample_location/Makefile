@@ -8,6 +8,8 @@ clean:
 #very simple test to see if the results from running scripts match those from vignette
 test:
 	diff ../../../vignettes/results/normal/mean/results.1.RData results/normal/mean/results.1.RData 
+	diff ../../../vignettes/results/uniform/median/results.10.RData results/uniform/median/results.10.RData
+	diff ../../../vignettes/results/Cauchy/winsor/results.7.RData results/Cauchy/winsor/results.7.RData
 
 #this just calls the R scripts one at a time to give simple example
 eg:
@@ -15,6 +17,7 @@ eg:
 	Rscript ../../Rscripts/make_data.R datamaker.R 1 normal
 	Rscript ../../Rscripts/run_method.R method.mean.R 1 normal
 	Rscript ../../Rscripts/score_method.R score.R method.mean.R 1 normal
+
 
 # this target uses the MAKERULE below to provide rules for these target files 
 # it will only update those that need updating
@@ -28,6 +31,7 @@ param/$2/param.$1.RData:
 	Rscript ../../Rscripts/make_params.R parammaker.R $1 $2
 data/$2/data.$1.RData:
 	Rscript ../../Rscripts/make_data.R datamaker.R $1 $2
+all: param/$2/param.$1.RData data/$2/data.$1.RData
 endef
 
 define MAKERULE2
@@ -35,11 +39,12 @@ output/$2/$3/output.$1.RData:
 	Rscript ../../Rscripts/run_method.R method.$3.R $1 $2
 results/$2/$3/results.$1.RData:
 	Rscript ../../Rscripts/score_method.R score.R method.$3.R $1 $2
+all: output/$2/$3/output.$1.RData results/$2/$3/results.$1.RData
 endef
 
 SEEDS = 1 2 3 4 5 6 7 8 9 10
 SCENARIOS = normal uniform Cauchy 
-METHODS = mean median Winsor
+METHODS = mean median winsor
  
 $(foreach T,$(SEEDS),$(foreach S,$(SCENARIOS),$(eval $(call MAKERULE,$T,$S))))
 

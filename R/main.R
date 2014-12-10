@@ -338,21 +338,36 @@ make_params = function(parammaker,scenario_seedlist){
   d_ply(combo,.(seed,scenario),parammaker)
 }
 
-
+#' @title Make the data (inputs and meta) for a DSC for a particular scenario
+#'
+#' @description Make the data (inputs and meta) for a DSC for a particular scenario
+#' 
+#' @param scenario a list including elements fn and args, the function name for the datamaker to be used and additional arguments
+#' @param seed (list of integers) the seeds for the pseudo-rng which identifies/indexes trials
+#' 
+#' @return data are saved in files in the data subdirectory
+#' @export 
+make_data_scenario = function(scenario,seed){
+  apply(seed,scenario$fn,args=scenario$args)
+}
+  
+  
 #' @title Make all the inputs for a DSC
 #'
-#' @description Make all the parameters for DSC using all combinations of seed and scenario
+#' @description Make all the data for DSC using all combinations of seed and scenario
 #' 
-#' @param parammaker a function for making parameters from seeds and scenario combinations
-#' @param seed (list of integers) the seeds for the pseudo-rng which identifies/indexes trials
-#' @param scenario (list of strings) the names of the scenarios 
+#' @param datamaker a function for making data from seeds and scenario combinations
+#' @param scenario_seedlist a list of integer vectors, one for each scenario. Each list gives the seeds to be used for that scenario.
 #' 
-#' @return parameters are saved in files in the params subdirectory
+#' @return parameters are saved in files in the data subdirectory
 #' @export 
 make_data = function(datamaker,scenario_seedlist){
   combo = melt(scenario_seedlist,value.name="seed")
   names(combo)[2]="scenario"
-  d_ply(combo,.(seed,scenario),datamaker)
+  combo = ddply(combo,.(seed,scenario),datafile)
+  names(combo)[3]="outputfile"
+  combo$nsamp = 1000
+  d_ply(combo,.(seed,outputfile,scenario,nsamp),datamaker)
 }
 
 #' @title Run all methods on all scenarios for a DSC
