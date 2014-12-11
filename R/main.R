@@ -179,24 +179,24 @@ aggregate_results = function(scenarios,methods){
 
 #' @export 
 make_directories_method= function(method,scenario){ 
-  system(paste0("mkdir ",file.path("output",scenario$name,method$name)))
-  system(paste0("mkdir ",file.path("results",scenario$name,method$name)))
+  dir.create(file.path("output",scenario$name,method$name))
+  dir.create(file.path("results",scenario$name,method$name))
 }
 
 
 #' @export 
 make_directories_scenario=function(scenario,methods){ 
-  system(paste0("mkdir ",file.path("data",scenario$name)))
-  system(paste0("mkdir ",file.path("output",scenario$name)))
-  system(paste0("mkdir ",file.path("results",scenario$name)))
+  dir.create(file.path("data",scenario$name))
+  dir.create(file.path("output",scenario$name))
+  dir.create(file.path("results",scenario$name))
   l_ply(methods,make_directories_method,scenario=scenario)
 }
 
 #' @export 
 make_directories = function(scenarios,methods){
-  system("mkdir data")
-  system("mkdir output")
-  system("mkdir results")
+  dir.create("data")
+  dir.create("output")
+  dir.create("results")
   l_ply(scenarios,make_directories_scenario,methods=methods)
 }
 
@@ -210,8 +210,10 @@ make_directories = function(scenarios,methods){
 #' @return data are saved in files in the data subdirectory
 #' @export 
 make_data_rs = function(seed,scenario){
-  data = do.call(scenario$fn,list(seed=seed,args=scenario$args))
-  save(data,file=datafilename(seed,scenario))
+  if(!file.exists(datafilename(seed,scenario))){
+    data = do.call(scenario$fn,list(seed=seed,args=scenario$args))
+    save(data,file=datafilename(seed,scenario))
+  }
 }
 #' @title Make the data (inputs and meta) for a DSC for a particular scenario
 #'
@@ -250,9 +252,11 @@ make_data = function(scenarios){
 #' @return none; output are saved in the output subdirectory
 #' @export 
 apply_method_rsm = function(seed, scenario, method){
-  load(datafilename(seed,scenario))
-  output = do.call(method$fn,list(input=data$input,args=method$args))
-  save(output,file=outputfilename(seed,scenario,method))
+  if(!file.exists(outputfilename(seed,scenario,method))){
+    load(datafilename(seed,scenario))
+    output = do.call(method$fn,list(input=data$input,args=method$args))
+    save(output,file=outputfilename(seed,scenario,method))
+  }
 }
 
 #' @title Apply a method to all trials for a particular scenario
