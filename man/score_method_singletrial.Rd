@@ -3,20 +3,14 @@
 \alias{score_method_singletrial}
 \title{Score a method on a single trial and save results}
 \usage{
-score_method_singletrial(indexlist, method, scorefn, flavor = NULL)
+score_method_singletrial(seed, scenario, method, scorefn)
 }
 \arguments{
-\item{indexlist}{list that ``indexes" the comparison being used, with components
-\itemize{
-\item{seed}{the seed for the pseudo-rng which identifies/indexes the file}
-\item{scenario}{string indicating scenario name}
-}}
+\item{seed}{the seed to score}
 
-\item{method}{a list with elements
-\itemize{
-\item{methodname}{string by which method should be identified}
-\item{methodfn}{name of function that is used to call the method}
-}}
+\item{scenario}{the scenario to score}
+
+\item{method}{the method to score}
 
 \item{scorefn}{a function that scores output based on comparisons with input, parameters and metadata}
 }

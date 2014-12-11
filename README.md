@@ -21,3 +21,4 @@ The result of `make vignettes` will appear under `vignettes`, and the result of 
 Once the vignette is generated you should be able to see it in R by executing:
 
     browseVignettes("dscr")
+
