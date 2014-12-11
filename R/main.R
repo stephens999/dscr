@@ -179,30 +179,32 @@ aggregate_results = function(scenarios,methods){
 
 #' @export 
 make_directories_method= function(method,scenario){ 
-  dir.create(file.path("output",scenario$name,method$name))
-  dir.create(file.path("results",scenario$name,method$name))
+  dir.create(file.path("output",scenario$name,method$name),showWarnings=FALSE)
+  dir.create(file.path("results",scenario$name,method$name),showWarnings=FALSE)
 }
 
 
 #' @export 
 make_directories_scenario=function(scenario,methods){ 
-  dir.create(file.path("data",scenario$name))
-  dir.create(file.path("output",scenario$name))
-  dir.create(file.path("results",scenario$name))
+  dir.create(file.path("data",scenario$name),showWarnings=FALSE)
+  dir.create(file.path("output",scenario$name),showWarnings=FALSE)
+  dir.create(file.path("results",scenario$name),showWarnings=FALSE)
   l_ply(methods,make_directories_method,scenario=scenario)
 }
 
 #' @export 
 make_directories = function(scenarios,methods){
-  dir.create("data")
-  dir.create("output")
-  dir.create("results")
+  dir.create("data",showWarnings=FALSE)
+  dir.create("output",showWarnings=FALSE)
+  dir.create("results",showWarnings=FALSE)
   l_ply(scenarios,make_directories_scenario,methods=methods)
 }
 
 #' @title Make the data (inputs and meta) for a DSC for a particular seed and scenario
 #'
-#' @description Make the data (inputs and meta) for a DSC for a particular seed and scenario
+#' @description Make the data (inputs and meta) for a DSC for a particular seed and scenario. THe subscript rs refers to the "repetition" of a "scenario".
+#' I'm experiementing with naming conventions to try to make these easier to see, using . as a subscript to indicate
+#' that that subscript is applied over. By this logic make_data_scenario should be make_data_.s
 #' 
 #' @param seed (vector or list of integers) the seeds for the pseudo-rng which identifies/indexes trials
 #' @param scenario a list including elements fn and args, the function name for the datamaker to be used and additional arguments
@@ -213,7 +215,7 @@ make_data_rs = function(seed,scenario){
   if(!file.exists(datafilename(seed,scenario))){
     data = do.call(scenario$fn,list(seed=seed,args=scenario$args))
     save(data,file=datafilename(seed,scenario))
-  }
+  } 
 }
 #' @title Make the data (inputs and meta) for a DSC for a particular scenario
 #'
@@ -243,7 +245,8 @@ make_data = function(scenarios){
 
 #' @title Apply a method for a particular seed and scenario
 #'
-#' @description Apply a method for a particular seed and scenario
+#' @description Apply a method for a particular seed and scenario. THe subscript _rsm refers to a particular repetition
+#' of a particular scenario for particular method.
 #' 
 #' @param seed (vector or list of integers) the seeds for the pseudo-rng which identifies/indexes trials
 #' @param scenario a list including elements fn and args, the function name for the datamaker to be used and additional arguments
@@ -331,7 +334,7 @@ run_dsc=function(scenarios,methods,scorefn,scenariosubset=NULL, methodsubset=NUL
   if(!is.null(scenariosubset)){
     scenarionames=lapply(scenarios,function(x){return(x$name)})
     ssub = scenarionames %in% scenariosubset
-  } else {ssub = rep(TRUE, length(methods))}
+  } else {ssub = rep(TRUE, length(scenarios))}
     
   if(!is.null(methodsubset)){
     methodnames=lapply(methods,function(x){return(x$name)})

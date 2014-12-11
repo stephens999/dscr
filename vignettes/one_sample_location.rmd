@@ -146,7 +146,13 @@ Here is what we do (note that the different settings of the argument are treated
   aggregate(squared_error~method+scenario,res,mean)
 ```
 
-And we can also run the dsc on only a subset of the methods and scenarios
+Note that at present run_dsc does not recreate any files that are already there.
+Thus in this case it is only running the new methods (trimmedmean1 and trimmedmean2)- the results for
+other methods are already there. If you want to force it to recreate the files then you need
+to delete them manually before running run_dsc.
+
+I'm still wondering about how to deal with this best.
+I will note that it is possible within run_dsc to specify to run the dsc on only a subset of the methods and scenarios
 ```{r}
   res = run_dsc(scenarios, methods, score, c("Cauchy","normal"),c("trimmedmean1"))
   aggregate(abs_error~method+scenario,res,mean)
