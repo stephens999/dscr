@@ -1,7 +1,7 @@
 dscr
 ====
 
-[![Build Status](https://travis-ci.org/road2stat/dscr.png?branch=master)](https://travis-ci.org/road2stat/dscr)
+[![Build Status](https://travis-ci.org/stephens999/dscr.png?branch=master)](https://travis-ci.org/road2stat/dscr)
 
 This repo contains work on an R package for performing dynamic statistical comparisons in R
 
