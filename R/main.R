@@ -44,8 +44,7 @@ outputfilename = function(seed, scenario, method, outputdir="output"){
 
 
 #' @export
-output_subdir = function(methodname,indexlist,flavor=NULL, outputdir="output"){
-  methodname=long_methodname(methodname,flavor)
+output_subdir = function(methodname,indexlist, outputdir="output"){
   return(file.path(outputdir,indexlist$scenarioname,methodname))
 }
 
@@ -55,8 +54,7 @@ resultsfilename = function(seed, scenario, method, resultsdir="results"){
 }
 
 #' @export
-results_subdir = function(methodname,indexlist,flavor=NULL, resultsdir="results"){
-  methodname=long_methodname(methodname,flavor)    
+results_subdir = function(methodname,indexlist, resultsdir="results"){
   return(file.path(resultsdir,indexlist$scenarioname,methodname))
 }
 
