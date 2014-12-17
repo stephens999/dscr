@@ -1,6 +1,8 @@
 dscr
 ====
 
+[![Build Status](https://travis-ci.org/road2stat/dscr.png?branch=master)](https://travis-ci.org/road2stat/dscr)
+
 This repo contains work on an R package for performing dynamic statistical comparisons in R
 
 To install use `devtools::install_github("stephens999/dscr")` in R.
