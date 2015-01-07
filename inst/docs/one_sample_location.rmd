@@ -1,0 +1,161 @@
+<!--
+%\VignetteEngine{knitr::knitr}
+%\VignetteIndexEntry{A Vignette to illustrate dscr}
+-->
+
+# One sample location estimation; DSCR example
+
+This vignette is designed to illustrate the (in development) dscr package for Dynamic Statistical Comparisons in R.
+
+We'll do a simulation study to assess methods for estimating the mean of a distribution. 
+The simulations will be performed under 
+three scenarios: a normal distribution, a uniform distribution
+and a Cauchy (t distribution on 1df). And we'll compare three methods: 
+sample mean, sample median and the Winsorized mean (from the psych package). 
+
+First load the library.
+```{r}
+library(dscr)
+#  install_github(repo="stephens999/dscr")
+```
+
+Now define the function to create data, which consists of input, and meta-data. 
+The input is what the methods will be given. The meta data will be used
+when scoring the methods. So here, the input is a random sample, and the meta-data is the true mean (0). 
+
+This function must take a first parameter seed (which is the seed of the pseudo-random number generator, set before any data are generated). Additional arguments can be passed through a second parameter, args, which is a list. In this case we use args to pass number of samples and the type distribution to be simulated from.
+
+
+```{r}
+datamaker = function(seed,args){
+
+  set.seed(seed)
+    
+  nsamp=args$nsamp
+  disttype=args$disttype
+
+  #here is the meat of the function that needs to be defined for each dsc to be done
+  if(disttype=="normal"){
+    input = list(x=rnorm(nsamp,0,1))
+    meta =  list(truemean=0)
+  }
+  
+  if(disttype=="uniform"){
+    input = list(x=runif(nsamp,-1,1))
+    meta = list(truemean=0)
+  }
+  
+  if(disttype=="Cauchy"){
+    input = list(x=rt(nsamp,df=1))
+    meta = list(truemean=0)
+  }
+  #end of meat of function
+  
+  data = list(meta=meta,input=input)
+  
+  return(data)
+}
+```
+
+Now define the scenarios that use this datamaker. Each scenario is determined by the datamaker,
+its arguments, and the seeds it uses. (Maybe the list of seeds should not be part of the scenario definition - I'm not sure). Each scenario also has a name which is used for naming the scenario in results and also output directories - so use something that is a valid filename. 
+```{r}
+scenarios=list()
+scenarios[[1]]=list(name="normal",fn=datamaker,args=list(disttype="normal",nsamp=1000),seed=1:100)
+scenarios[[2]]=list(name="uniform",fn=datamaker,args=list(disttype="uniform",nsamp=1000),seed=1:100)
+scenarios[[3]]=list(name="Cauchy",fn=datamaker,args=list(disttype="Cauchy",nsamp=1000),seed=1:100)
+```
+
+
+Now define the methods.
+They have to have the form where they take "input" and produce "output"
+in a specified format. In this case the input format is a list with one component (x).
+The output format is a list with one component (meanest), the estimated mean. 
+
+Effectively we have to write a "wrapper" function for each of our three methods
+that makes sure that they conform to this input-output requirement. (Note that the
+winsor.wrapper function makes use of the function winsor.mean from the psych package.)
+Note that we allow for additional arguments ot each function, but don't use them here.
+
+```{r}
+library(psych)
+
+mean.wrapper = function(input,args){
+  return(list(meanest = mean(input$x)))  
+}
+
+median.wrapper = function(input,args){
+  return(list(meanest = median(input$x)))    
+}
+
+winsor.wrapper = function(input,args){
+  return(list(meanest = winsor.mean(input$x,trim=0.2)))
+}
+
+```
+
+Now define a list of the methods we'll use. 
+Each method is defined by its name, the function used to implement it, and any additional arguments (none here):
+```{r}
+  methods=list()
+  methods[[1]] = list(name="mean",fn =mean.wrapper,args=NULL)
+  methods[[2]] = list(name="median",fn=median.wrapper,args=NULL)
+  methods[[3]] = list(name="winsor",fn=winsor.wrapper,args=NULL)
+```
+
+
+And define a score function that says how well a method has done. Here we'll use squared error
+and absolute error:
+```{r}
+score = function(data, output){
+  return(list(squared_error = (data$meta$truemean-output$meanest)^2, abs_error = abs(data$meta$truemean-output$meanest)))
+}
+```
+
+
+Now we'll run all the methods on all the scenarios:
+```{r}
+  library(dscr)
+  res=run_dsc(scenarios,methods,score)
+```
+
+This returns a dataframe with the results of running all the methods on all the scenarios:
+```{r}
+  head(res)
+```
+
+And we can summarize the results (eg mean squared error) using the aggregate function
+```{r}
+  aggregate(abs_error~method+scenario,res,mean)
+  aggregate(squared_error~method+scenario,res,mean)
+```
+
+Now suppose we are coming in and want to add a method, say the trimmed mean, to the comparison.
+Suppose also we want to try out the trimmed mean with two different settings of the trim argument. 
+Here is what we do (note that the different settings of the argument are treated as different methods, but the two methods use the same fn)
+```{r}
+  trimmedmean.wrapper = function(input,args){
+    return(list(meanest=mean(input$x,trim=args$trim)))
+  }
+
+  methods[[4]] = list(name="trimmedmean1",fn = trimmedmean.wrapper,args=list(trim=0.2))
+  methods[[5]] = list(name="trimmedmean2",fn = trimmedmean.wrapper,args=list(trim=0.4))
+
+  res=run_dsc(scenarios, methods, score)
+  aggregate(abs_error~method+scenario,res,mean)
+  aggregate(squared_error~method+scenario,res,mean)
+```
+
+Note that at present run_dsc does not recreate any files that are already there.
+Thus in this case it is only running the new methods (trimmedmean1 and trimmedmean2)- the results for
+other methods are already there. If you want to force it to recreate the files then you need
+to delete them manually before running run_dsc.
+
+I'm still wondering about how to deal with this best.
+I will note that it is possible within run_dsc to specify to run the dsc on only a subset of the methods and scenarios
+```{r}
+  res = run_dsc(scenarios, methods, score, c("Cauchy","normal"),c("trimmedmean1"))
+  aggregate(abs_error~method+scenario,res,mean)
+  aggregate(squared_error~method+scenario,res,mean)
+```
+
