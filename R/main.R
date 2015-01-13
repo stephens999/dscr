@@ -282,7 +282,7 @@ apply_method_.sm = function(scenario,method){
 #' @param method a list containing the method name, fn, etc
 #' 
 #' @return none; data are saved in files in the output subdirectory
-#' @export 
+#' @export
 apply_method_..m = function(scenarios,method){
   lapply(scenarios,apply_method_.sm,method=method)
 }
@@ -295,7 +295,7 @@ apply_method_..m = function(scenarios,method){
 #' @param methods a list of methods
 #' 
 #' @return none; data are saved in files in the output subdirectory
-#' @export 
+#' @export
 apply_method_.s. = function(scenario,methods){
   lapply(methods,apply_method_.sm,scenario=scenario)
 }
