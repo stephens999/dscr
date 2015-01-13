@@ -342,7 +342,7 @@ sourceDir <- function(path, trace = TRUE, ...) {
 #' @param methodsubset a vector of the names of the methods to run (default is to run all of them)
 #' 
 #' @return data frame of results from all methods run on all scenarios
-
+#' @export
 run_dsc=function(scenarios,methods,scorefn,scenariosubset=NULL, methodsubset=NULL){
   if(!is.null(scenariosubset)){
     scenarionames=lapply(scenarios,function(x){return(x$name)})
