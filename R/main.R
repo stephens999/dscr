@@ -313,7 +313,22 @@ apply_methods = function(scenarios,methods){
   lapply(scenarios,apply_method_.s.,methods=methods)
 }
 
-
+#' @title Sources all R files in a directory
+#'
+#' @description Sources all R files in a directory (comes from examples in ??source)
+#' 
+#' @param path the directory you want to source
+#' @param trace whether to print the names of files being sourced
+#' 
+#' @return none;
+#' @export 
+sourceDir <- function(path, trace = TRUE, ...) {
+  for (nm in list.files(path, pattern = "[.][RrSsQq]$")) {
+    if(trace) cat(nm,":")
+    source(file.path(path, nm), ...)
+    if(trace) cat("\n")
+  }
+}
 
 
 #' @title Run all methods on all scenarios for a DSC
@@ -327,7 +342,7 @@ apply_methods = function(scenarios,methods){
 #' @param methodsubset a vector of the names of the methods to run (default is to run all of them)
 #' 
 #' @return data frame of results from all methods run on all scenarios
-#' @export 
+
 run_dsc=function(scenarios,methods,scorefn,scenariosubset=NULL, methodsubset=NULL){
   if(!is.null(scenariosubset)){
     scenarionames=lapply(scenarios,function(x){return(x$name)})
