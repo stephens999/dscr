@@ -3,12 +3,14 @@
 \alias{make_data_rs}
 \title{Make the data (inputs and meta) for a DSC for a particular seed and scenario}
 \usage{
-make_data_rs(seed, scenario)
+make_data_rs(seed, scenario, overwrite = FALSE)
 }
 \arguments{
 \item{seed}{(vector or list of integers) the seeds for the pseudo-rng which identifies/indexes trials}
 
 \item{scenario}{a list including elements fn and args, the function name for the datamaker to be used and additional arguments}
+
+\item{overwrite}{boolean indicating whether to overwrite existing files; default is not to}
 }
 \value{
 data are saved in files in the data subdirectory

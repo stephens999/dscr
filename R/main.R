@@ -206,11 +206,12 @@ make_directories = function(scenarios,methods){
 #' 
 #' @param seed (vector or list of integers) the seeds for the pseudo-rng which identifies/indexes trials
 #' @param scenario a list including elements fn and args, the function name for the datamaker to be used and additional arguments
+#' @param overwrite boolean indicating whether to overwrite existing files; default is not to
 #' 
 #' @return data are saved in files in the data subdirectory
 #' @export 
-make_data_rs = function(seed,scenario){
-  if(!file.exists(datafilename(seed,scenario))){
+make_data_rs = function(seed,scenario,overwrite=FALSE){
+  if(!file.exists(datafilename(seed,scenario)) | overwrite){
     data = do.call(scenario$fn,list(seed=seed,args=scenario$args))
     save(data,file=datafilename(seed,scenario))
   } 
@@ -330,6 +331,62 @@ sourceDir <- function(path, trace = TRUE, ...) {
   }
 }
 
+#' @title Removes all output and results for a method
+#'
+#' @description Removes all output and results for a method; primary intended purpose is to force re-running of that method.
+#' Works only for unix look-alikes?
+#'
+#' @param method string indicating name of methods to remove output
+#' @param force boolean, indicates whether to proceed without prompting user (prompt is to be implemented)
+#' 
+#' @return nothing; simply delets files
+#' @export
+reset_method = function(methodname,force=FALSE){
+  if(!is.character(methodname))
+    stop("Error in call to reset_method: must give methodname as string")
+  
+  if(!force){
+    if(interactive()){
+      force = (readline("Are you sure? [y to confirm]:")=="y")
+    } else {
+      stop("Error: Must specify force = TRUE in reset_method in non-interactive mode.")
+    } 
+  }
+  
+  if(force){
+    system(paste0("rm -r ", file.path("output","*",methodname,"*")))
+    system(paste0("rm -r ", file.path("results","*",methodname,"*")))    
+  }
+}
+
+#' @title Removes all output and results for a scenario
+#'
+#' @description Removes all output and results for a scenario; primary intended purpose is to force re-running of that scenario.
+#' Works only for unix look-alikes?
+#'
+#' @param scenarioname string indicating name of scenario to remove
+#' @param force boolean, indicates whether to proceed without prompting user (prompt is to be implemented)
+#' 
+#' @return nothing; simply delets files
+#' @export
+reset_scenario = function(scenarioname,force=FALSE){
+  if(!is.character(scenarioname))
+    stop("Error in call to reset_scenario: must give scenarioname as string")
+    
+  if(!force){
+    if(interactive()){
+    force = (readline("Are you sure? [y to confirm]:")=="y")
+    } else {
+      stop("Error: Must specify force = TRUE in reset_scenario in non-interactive mode.")
+    } 
+  }
+  
+  if(force){
+    system(paste0("rm -r ", file.path("data",scenarioname,"*")))
+    system(paste0("rm -r ", file.path("output",scenarioname,"*")))
+    system(paste0("rm -r ", file.path("results",scenarioname,"*")))    
+  }
+}
 
 #' @title Run all methods on all scenarios for a DSC
 #'
