@@ -3,7 +3,9 @@ dscr
 
 [![Build Status](https://travis-ci.org/stephens999/dscr.png?branch=master)](https://travis-ci.org/road2stat/dscr)
 
-This repo contains work on an R package for performing dynamic statistical comparisons in R
+This repo contains work on an R package for performing dynamic statistical comparisons (DSCs) in R.
+
+For a brief introduction to DSCs see [here](https://github.com/stephens999/dscr/blob/master/intro.md).
 
 To install use `devtools::install_github("stephens999/dscr",build_vignettes=TRUE)` in R.
 
