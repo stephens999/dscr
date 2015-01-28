@@ -354,8 +354,8 @@ reset_method = function(methodname,force=FALSE){
   }
   
   if(force){
-    system(paste0("rm -r ", file.path("output","*",methodname,"*")))
-    system(paste0("rm -r ", file.path("results","*",methodname,"*")))    
+    file.remove(Sys.glob(file.path("output","*",methodname,"*")))
+    file.remove(Sys.glob(file.path("results","*",methodname,"*")))    
   }
 }
 
@@ -382,9 +382,9 @@ reset_scenario = function(scenarioname,force=FALSE){
   }
   
   if(force){
-    system(paste0("rm -r ", file.path("data",scenarioname,"*")))
-    system(paste0("rm -r ", file.path("output",scenarioname,"*")))
-    system(paste0("rm -r ", file.path("results",scenarioname,"*")))    
+    file.remove(Sys.glob(file.path("data",scenarioname,"*")))
+    file.remove(Sys.glob(file.path("output",scenarioname,"*","*")))
+    file.remove(Sys.glob(file.path("results",scenarioname,"*","*")))    
   }
 }
 
