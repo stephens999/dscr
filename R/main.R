@@ -140,6 +140,54 @@ get_results_singletrial = function(seed,scenario,method){
   return(data.frame(seed=seed, scenario=scenario$name, method=method$name, results))
 }
 
+#' @title provide the results of a single method for a single trial
+#'
+#' @description provide the results of a single method for a single trial; intended primarily for troubleshooting and debugging
+#' 
+#' @param seed
+#' @param scenario
+#' @param method
+#' 
+#' @return results output by score function, the details will depend on the comparison being run
+#' 
+#' @export
+inspect_results_singletrial = function(seed, scenario,method){
+  load(file=resultsfilename(seed,scenario,method))  
+  return(results)
+}
+
+#' @title provide the output of a single method for a single trial
+#'
+#' @description provide the output of a single method for a single trial; intended primarily for troubleshooting and debugging
+#' 
+#' @param seed
+#' @param scenario
+#' @param method
+#' 
+#' @return output from method, the details will depend on the comparison being run
+#' 
+#' @export
+inspect_output_singletrial = function(seed, scenario,method){
+  load(file=outputfilename(seed,scenario,method))  
+  return(output)
+}
+
+
+#' @title provide the data of a single scenario for a single trial
+#'
+#' @description provide the data of a single scenario for a single trial; intended primarily for troubleshooting and debugging
+#' 
+#' @param seed
+#' @param scenario
+#' 
+#' @return output from method, the details will depend on the comparison being run
+#' 
+#' @export
+inspect_data_singletrial = function(seed, scenario){
+  load(file=datafilename(seed,scenario))  
+  return(data)
+}
+
 #' @title Get the results of a single method for a single scenario
 #'
 #' @description  Get the results of a single method for a single scenario
@@ -424,6 +472,20 @@ run_dsc=function(scenarios,methods,scorefn,scenariosubset=NULL, methodsubset=NUL
   return(res)
 }
 
+#' @title List all scenarios for a DSC
+#'
+#' @description List all scenarios for a DSC
+#'
+#' @param scenarios a list of scenarios used to produce data=list(input,meta)
+#' @return a list of names of the scenarios
+#' @export
+list_scenarios = function(){
+  get_name=function(x){return(x$name)}
+  print(apply(scenarios,get_name))
+}
+
+#' 
+#' 
 #' @title Create or update a Makefile for the package
 #'
 #' @description Create or update a Makefile for the package.
@@ -522,3 +584,5 @@ update_makefile = function(deps = NULL,
        output = output, quiet = TRUE)
   
 }
+
+

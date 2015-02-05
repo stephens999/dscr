@@ -19,6 +19,9 @@ Makefile for the package
 \description{
 Create or update a Makefile for the package.
 }
+\details{
+
+}
 \examples{
 \donttest{
 deps = c('devtools', 'roxygen2', 'knitr', 'plyr', 'psych', 'reshape2')
