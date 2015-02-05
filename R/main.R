@@ -137,6 +137,8 @@ score_methods = function(scenarios,methods,scorefn){
 #' @export
 get_results_singletrial = function(seed,scenario,method){
   load(file=resultsfilename(seed,scenario,method))
+  #convert NULL to NA to stop data.frame crashing
+  results <- lapply(results, function(x)ifelse(is.null(x), NA, x))
   return(data.frame(seed=seed, scenario=scenario$name, method=method$name, results))
 }
 
@@ -199,6 +201,7 @@ inspect_data_singletrial = function(seed, scenario){
 #'
 #' @export 
 get_results_scenario = function(scenario, method){  
+  print(paste0("Getting results for scenario ",scenario$name," , method ",method$name,"\n"))
   ldply(scenario$seed, get_results_singletrial, scenario=scenario, method=method)
 }
 
