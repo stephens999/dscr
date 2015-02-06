@@ -72,9 +72,9 @@ results_subdir = function(methodname,indexlist, resultsdir="results"){
 #' @export
 score_method_singletrial = function(seed,scenario,method,scorefn){
   load(file=datafilename(seed,scenario))
-  load(file=outputfilename(seed,scenario,method))
+  load(file=outputfilename(seed,scenario,method)) #also loads timedata
   results=scorefn(data,output)
-  save(results,file=resultsfilename(seed,scenario,method))
+  save(results,timedata,file=resultsfilename(seed,scenario,method))
   return(results)
 }
 
@@ -139,7 +139,7 @@ get_results_singletrial = function(seed,scenario,method){
   load(file=resultsfilename(seed,scenario,method))
   #convert NULL to NA to stop data.frame crashing
   results <- lapply(results, function(x)ifelse(is.null(x), NA, x))
-  return(data.frame(seed=seed, scenario=scenario$name, method=method$name, results))
+  return(data.frame(seed=seed, scenario=scenario$name, method=method$name, results, as.list(timedata)))
 }
 
 #' @title provide the results of a single method for a single trial
@@ -307,8 +307,8 @@ make_data = function(scenarios){
 apply_method_rsm = function(seed, scenario, method){
   if(!file.exists(outputfilename(seed,scenario,method))){
     load(datafilename(seed,scenario))
-    output = do.call(method$fn,list(input=data$input,args=method$args))
-    save(output,file=outputfilename(seed,scenario,method))
+    timedata = system.time(output <- do.call(method$fn,list(input=data$input,args=method$args)))
+    save(output,timedata,file=outputfilename(seed,scenario,method))
   }
 }
 
