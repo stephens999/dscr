@@ -71,10 +71,11 @@ results_subdir = function(methodname,indexlist, resultsdir="results"){
 #' 
 #' @export
 score_method_singletrial = function(seed,scenario,method,scorefn){
+  timedata = NULL #to provide backward compatibility for dscr before timedata added
   load(file=datafilename(seed,scenario))
   load(file=outputfilename(seed,scenario,method)) #also loads timedata
-  results=scorefn(data,output)
-  save(results,timedata,file=resultsfilename(seed,scenario,method))
+  results=c(scorefn(data,output),as.list(timedata))
+  save(results,file=resultsfilename(seed,scenario,method))
   return(results)
 }
 
@@ -139,7 +140,7 @@ get_results_singletrial = function(seed,scenario,method){
   load(file=resultsfilename(seed,scenario,method))
   #convert NULL to NA to stop data.frame crashing
   results <- lapply(results, function(x)ifelse(is.null(x), NA, x))
-  return(data.frame(seed=seed, scenario=scenario$name, method=method$name, results, as.list(timedata)))
+  return(data.frame(seed=seed, scenario=scenario$name, method=method$name, results))
 }
 
 #' @title provide the results of a single method for a single trial
