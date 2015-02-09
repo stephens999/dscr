@@ -1,0 +1,3 @@
+This example was set up to test solutions to issue #12
+The methods now also return a long vector test=1:10000
+which we want to quickly pass through score...

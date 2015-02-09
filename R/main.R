@@ -140,7 +140,11 @@ get_results_singletrial = function(seed,scenario,method){
   load(file=resultsfilename(seed,scenario,method))
   #convert NULL to NA to stop data.frame crashing
   results <- lapply(results, function(x)ifelse(is.null(x), NA, x))
-  return(data.frame(seed=seed, scenario=scenario$name, method=method$name, results))
+  temp = c(seed=seed, scenario=scenario$name, method=method$name, results)
+  class(temp)='data.frame'
+  row.names(temp)=1
+  #system.time({X<-(list(x='SomeText', y=200,z=1:10000)); class(X) <- 'data.frame'; row.names(X)<-1})
+  return(temp)
 }
 
 #' @title provide the results of a single method for a single trial
