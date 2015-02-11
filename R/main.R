@@ -207,7 +207,7 @@ inspect_data_singletrial = function(seed, scenario){
 #'
 #' @export 
 get_results_scenario = function(scenario, method){  
-  print(paste0("Getting results for scenario ",scenario$name," , method ",method$name,"\n"))
+  print(paste0("Getting results for scenario ",scenario$name," , method ",method$name))
   ldply(scenario$seed, get_results_singletrial, scenario=scenario, method=method)
 }
 
@@ -282,6 +282,7 @@ make_data_rs = function(seed,scenario,overwrite=FALSE){
 #' @return data are saved in files in the data subdirectory
 #' @export 
 make_data_scenario = function(scenario){
+  print(paste0("Making data for scenario ",scenario$name))
   lapply(scenario$seed,make_data_rs,scenario=scenario)
 }
   
@@ -328,6 +329,7 @@ apply_method_rsm = function(seed, scenario, method){
 #' @return none; output are saved in the output subdirectory
 #' @export 
 apply_method_.sm = function(scenario,method){
+  print(paste0("Applying method ", method$name," to scenario ",scenario$name))
   lapply(scenario$seed,apply_method_rsm,scenario=scenario,method=method)
 }
 
@@ -385,6 +387,24 @@ sourceDir <- function(path, trace = TRUE, ...) {
     if(trace) cat(nm,":")
     source(file.path(path, nm), ...)
     if(trace) cat("\n")
+  }
+}
+
+
+#' @title Removes all data, output and results for the dsc
+#'
+#' @description Removes all files in results/ data/ and output/ subdirectories. Mostly useful for testing purposes.
+#'
+#' @param force boolean, indicates whether to proceed without prompting user
+#' 
+#' @return nothing; simply deletes files
+#' @export
+reset_dsc = function(scenarios,methods,force=FALSE){
+  for(i in 1:length(scenarios)){
+    reset_scenario(scenarios[[i]]$name,force)
+  }
+  for(i in 1:length(methods)){
+    reset_method(methods[[i]]$name,force)
   }
 }
 
