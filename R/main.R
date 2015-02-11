@@ -71,12 +71,13 @@ results_subdir = function(methodname,indexlist, resultsdir="results"){
 #' 
 #' @export
 score_method_singletrial = function(seed,scenario,method,scorefn){
-  timedata = NULL #to provide backward compatibility for dscr before timedata added
-  load(file=datafilename(seed,scenario))
-  load(file=outputfilename(seed,scenario,method)) #also loads timedata
-  results=c(scorefn(data,output),as.list(timedata))
-  save(results,file=resultsfilename(seed,scenario,method))
-  return(results)
+  if(!file.exists(resultsfilename(seed,scenario,method))){
+    timedata = NULL #to provide backward compatibility for dscr before timedata added
+    load(file=datafilename(seed,scenario))
+    load(file=outputfilename(seed,scenario,method)) #also loads timedata
+    results=c(scorefn(data,output),as.list(timedata))
+    save(results,file=resultsfilename(seed,scenario,method))
+  }
 }
 
 #' @title Score a method on all trials for a single scenario
