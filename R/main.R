@@ -395,6 +395,8 @@ sourceDir <- function(path, trace = TRUE, ...) {
 #'
 #' @description Removes all files in results/ data/ and output/ subdirectories. Mostly useful for testing purposes.
 #'
+#' @param scenarios a list of scenarios in the dsc
+#' @param methods a list of methods in the dsc
 #' @param force boolean, indicates whether to proceed without prompting user
 #' 
 #' @return nothing; simply deletes files
