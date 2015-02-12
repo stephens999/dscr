@@ -13,4 +13,5 @@ Imports:
     psych,
     plyr,
     reshape2,
-    knitr
+    knitr,
+    BatchExperiments
