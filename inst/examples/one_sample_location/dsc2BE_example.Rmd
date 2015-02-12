@@ -28,7 +28,7 @@ system("rm -r one_sample_location-files")
 reg=dsc2BE(dsc,"one_sample_location")
 summarizeExperiments(reg)
 
-id1 <- findExperiments(reg, algo.pattern="mean")[2]
+id1 <- findExperiments(reg, algo.pattern="mean")[1]
 testJob(reg,id1)
 
 

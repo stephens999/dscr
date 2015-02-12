@@ -47,8 +47,6 @@ dsc2BE=function(dsc,id,repl=100){
       algo.designs[[i]]=makeDesign(id,exhaustive=dsc$methods[[i]]$args) 
     }
   }
-  print(prob.designs)
-  print(algo.designs)
   if(is.empty(prob.designs)){
     if(is.empty(algo.designs)){
       addExperiments(reg,repl=repl) 

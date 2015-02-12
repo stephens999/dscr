@@ -1,5 +1,5 @@
 datamaker = function(seed=NULL,args){
- # if(!is.null(seed)){set.seed(seed)}
+  if(!is.null(seed)){set.seed(seed)}
       
   nsamp=args$nsamp
   disttype=args$disttype
