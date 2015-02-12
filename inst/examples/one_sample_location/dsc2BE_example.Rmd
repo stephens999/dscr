@@ -3,7 +3,20 @@ title: "dsc2BE_example.Rmd"
 output: html_document
 ---
 
+This document shows an example of the use of the function dsc2BE
+which "converts" a dsc to a BatchExperiments registry so that you can
+use the BatchExperiments pipeline to run the dsc on a cluster.
 
+Note that as far as I can see the BatchExperiments pipeline does not
+save everything that the dsc pipeline saves. Specifically the BE pipeline
+only appears to save the final results of each method, which the way I have
+set it up here is the score. In comparison dsc saves the data, output and score.
+
+First I set up the DSC. There is one important change from the previous
+dscr-template setup: if you look at datamaker.R the default to seed is NULL,
+and the first line sets the
+seed only if the seed is supplied. This is to help make it work with
+the BE pipeline, which handles the seeds internally (which seems preferable to me now).
 
 
 ```{r}
@@ -19,7 +32,7 @@ res=run_dsc(scenarios,methods,score)
 
 ```
 
-Now convert to BE and run there
+Now convert to BE and test a job and then run all jobs. 
 ```{r}
 
 dsc = list(scenarios=scenarios,methods=methods,scorefn=score)
