@@ -390,6 +390,40 @@ sourceDir <- function(path, trace = TRUE, ...) {
   }
 }
 
+#' @title Initialise empty dsc
+#'
+#' @description returns a list that is a dsc
+#'
+#' @param name a string containing the name for your dsc
+#' 
+#' @return nothing; simply deletes files
+#' @export
+init_dsc = function(name){
+  list(methods=list(), scenarios=list(), scorefn=NULL, name=name) 
+}
+
+#' @title Add a scenario to a dsc
+#'
+#' @description Adds a scenario to a dsc
+#'
+#' @param dsc the dsc to add the sceanario to
+#' @param name a character string 
+#' @param datamaker the datamaker, a function that is the datamaker for the scenario
+#' @param args a list of arguments to the datamaker
+#' @param seed a vector of integers showing seeds to use for the scenario
+#' 
+#' @return nothing; simply deletes files
+#' @export
+addScenario = function(dsc,name, datamaker, args, seed){
+  if(name %*% in names(dsc)){stop("Error: that scenario name already exists")}
+  dsc[[name]]=list(name=name,fn=datamaker,args=args,seed=seed)
+}
+
+
+
+
+
+
 
 #' @title Removes all data, output and results for the dsc
 #'
@@ -401,12 +435,12 @@ sourceDir <- function(path, trace = TRUE, ...) {
 #' 
 #' @return nothing; simply deletes files
 #' @export
-reset_dsc = function(scenarios,methods,force=FALSE){
-  for(i in 1:length(scenarios)){
-    reset_scenario(scenarios[[i]]$name,force)
+reset_dsc = function(dsc,force=FALSE){
+  for(i in 1:length(dsc$scenarios)){
+    reset_scenario(dsc$scenarios[[i]]$name,force)
   }
-  for(i in 1:length(methods)){
-    reset_method(methods[[i]]$name,force)
+  for(i in 1:length(dsc$methods)){
+    reset_method(dsc$methods[[i]]$name,force)
   }
 }
 
@@ -479,7 +513,10 @@ reset_scenario = function(scenarioname,force=FALSE){
 #' 
 #' @return data frame of results from all methods run on all scenarios
 #' @export
-run_dsc=function(scenarios,methods,scorefn,scenariosubset=NULL, methodsubset=NULL){
+run_dsc=function(dsc,scenariosubset=NULL, methodsubset=NULL){
+  scenarios=dsc$scenarios
+  methods=dsc$methods
+  scorefn=dsc$scorefn
   if(!is.null(scenariosubset)){
     scenarionames=lapply(scenarios,function(x){return(x$name)})
     ssub = scenarionames %in% scenariosubset
@@ -510,10 +547,12 @@ run_dsc=function(scenarios,methods,scorefn,scenariosubset=NULL, methodsubset=NUL
 #' @param scenarios a list of scenarios used to produce data=list(input,meta)
 #' @return a list of names of the scenarios
 #' @export
-list_scenarios = function(){
+list_scenarios = function(dsc){
   get_name=function(x){return(x$name)}
-  print(apply(scenarios,get_name))
+  print(apply(dsc$scenarios,get_name))
 }
+
+
 
 #' 
 #' 
