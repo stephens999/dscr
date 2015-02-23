@@ -390,16 +390,21 @@ sourceDir <- function(path, trace = TRUE, ...) {
   }
 }
 
-#' @title Initialise empty dsc
+#' @title Start a new (empty) dsc
 #'
-#' @description returns a list that is a dsc
+#' @description returns an environment that is a dsc
 #'
 #' @param name a string containing the name for your dsc
 #' 
-#' @return nothing; simply deletes files
+#' @return dsc, an environmnet
 #' @export
-init_dsc = function(name){
-  list(methods=list(), scenarios=list(), scorefn=NULL, name=name) 
+new.dsc = function(name){
+  dsc=new.env()
+  dsc$methods=list()
+  dsc$scenarios=list()
+  dsc$scorefn=NULL
+  dsc$name=name 
+  return(dsc)
 }
 
 #' @title Add a scenario to a dsc
@@ -412,16 +417,55 @@ init_dsc = function(name){
 #' @param args a list of arguments to the datamaker
 #' @param seed a vector of integers showing seeds to use for the scenario
 #' 
-#' @return nothing; simply deletes files
+#' @return nothing, but modifies the dsc environment
 #' @export
 addScenario = function(dsc,name, datamaker, args, seed){
-  if(name %*% in names(dsc)){stop("Error: that scenario name already exists")}
-  dsc[[name]]=list(name=name,fn=datamaker,args=args,seed=seed)
+  if(name %in% names(dsc$scenarios)){stop("Error: that scenario name already exists")}
+  if(!is.character(name)){stop("Error: name must be a string")}
+  if(!is.function(datamaker)){stop("Error: datamaker must be a function")}
+  if(!is.list(args) & !is.null(args)){stop("Error: args must be a list or NULL")}  
+  if(!is.integer(seed)){stop("seed must be an integer vector")}
+  dsc$scenarios[[name]]=list(name=name,fn=datamaker,args=args,seed=seed)
 }
 
 
 
 
+#' @title Add a method to a dsc
+#'
+#' @description Adds a method to a dsc
+#'
+#' @param dsc the dsc to add the method to
+#' @param name a character string name for the method
+#' @param fn, a wrapper function that implements the method
+#' @param args a list of additional arguments to fn
+#' 
+#' @return nothing, but modifies the dsc environment
+#' @export
+addMethod = function(dsc,name, fn, args){
+  if(name %in% names(dsc$methods)){stop("Error: that method name already exists")}
+  if(!is.character(name)){stop("Error: name must be a string")}
+  if(!is.function(fn)){stop("Error: fn must be a function")}
+  if(!is.list(args) & !is.null(args)){stop("Error: args must be a list or NULL")}
+  
+  dsc$methods[[name]]=list(name=name,fn=fn,args=args)
+}
+
+
+
+#' @title Add a score function to a dsc
+#'
+#' @description Adds a score to a dsc
+#'
+#' @param dsc the dsc to add the score to
+#' @param scorefn, a score function
+#' 
+#' @return nothing, but modifies the dsc environment
+#' @export
+addScore = function(dsc,scorefn){
+  if(!is.null(dsc$scorefn)){warning("a dsc can currently have only one score function; replacing previous function")}
+  dsc$scorefn=scorefn
+}
 
 
 

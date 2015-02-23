@@ -1,12 +1,12 @@
 library(dscr)
 
-#init_dsc()
+dsc_eg=new.dsc("one-sample-location")
 source("scenarios.R")
 source("methods.R")
 source("score.R")
-dsc=list(scenarios=scenarios,methods=methods,scorefn=score)
-reset_dsc(dsc)
-res=run_dsc(dsc)
+
+reset_dsc(dsc_eg,force=TRUE)
+res=run_dsc(dsc_eg)
 
 aggregate(abs_error~method+scenario,res,mean)
 aggregate(squared_error~method+scenario,res,mean)
