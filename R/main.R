@@ -413,19 +413,19 @@ new.dsc = function(name){
 #'
 #' @param dsc the dsc to add the sceanario to
 #' @param name a character string 
-#' @param datamaker the datamaker, a function that is the datamaker for the scenario
+#' @param fn the datamaker, a function that is the datamaker for the scenario
 #' @param args a list of arguments to the datamaker
 #' @param seed a vector of integers showing seeds to use for the scenario
 #' 
 #' @return nothing, but modifies the dsc environment
 #' @export
-addScenario = function(dsc,name, datamaker, args, seed){
+addScenario = function(dsc,name, fn, args, seed){
   if(name %in% names(dsc$scenarios)){stop("Error: that scenario name already exists")}
   if(!is.character(name)){stop("Error: name must be a string")}
-  if(!is.function(datamaker)){stop("Error: datamaker must be a function")}
+  if(!is.function(fn)){stop("Error: fn must be a function")}
   if(!is.list(args) & !is.null(args)){stop("Error: args must be a list or NULL")}  
   if(!is.integer(seed)){stop("seed must be an integer vector")}
-  dsc$scenarios[[name]]=list(name=name,fn=datamaker,args=args,seed=seed)
+  dsc$scenarios[[name]]=list(name=name,fn=fn,args=args,seed=seed)
 }
 
 
