@@ -23,22 +23,22 @@ the BE pipeline, which handles the seeds internally (which seems preferable to m
 library("dscr")
 library("BatchExperiments")
 
+dsc_eg=new.dsc("one-sample-location")
 source("scenarios.R")
 source("methods.R")
 source("score.R")
-reset_dsc(scenarios,methods, force=TRUE)
-res=run_dsc(scenarios,methods,score)
+
+reset_dsc(dsc_eg,force=TRUE)
+res=run_dsc(dsc_eg)
 
 
 ```
 
 Now convert to BE and test a job and then run all jobs. 
 ```{r}
-
-dsc = list(scenarios=scenarios,methods=methods,scorefn=score)
 system("rm -r one_sample_location-files")
 
-reg=dsc2BE(dsc,"one_sample_location")
+reg=dsc2BE(dsc_eg,"one_sample_location")
 summarizeExperiments(reg)
 
 id1 <- findExperiments(reg, algo.pattern="mean")[1]
