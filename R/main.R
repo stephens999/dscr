@@ -419,7 +419,7 @@ new.dsc = function(name){
 #' 
 #' @return nothing, but modifies the dsc environment
 #' @export
-addScenario = function(dsc,name, fn, args, seed){
+addScenario = function(dsc,name, fn, args=NULL, seed){
   if(name %in% names(dsc$scenarios)){stop("Error: that scenario name already exists")}
   if(!is.character(name)){stop("Error: name must be a string")}
   if(!is.function(fn)){stop("Error: fn must be a function")}
@@ -442,7 +442,7 @@ addScenario = function(dsc,name, fn, args, seed){
 #' 
 #' @return nothing, but modifies the dsc environment
 #' @export
-addMethod = function(dsc,name, fn, args){
+addMethod = function(dsc,name, fn, args=NULL){
   if(name %in% names(dsc$methods)){stop("Error: that method name already exists")}
   if(!is.character(name)){stop("Error: name must be a string")}
   if(!is.function(fn)){stop("Error: fn must be a function")}
