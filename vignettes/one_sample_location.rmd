@@ -13,10 +13,12 @@ three scenarios: a normal distribution, a uniform distribution
 and a Cauchy (t distribution on 1df). And we'll compare three methods: 
 sample mean, sample median and the Winsorized mean (from the psych package). 
 
-First load the library.
+First load the library, and initialize a new "dsc" using new.dsc.
+This object will be used to store the details of the dsc.
 ```{r}
 library(dscr)
 #  install_github(repo="stephens999/dscr")
+dsc_osl = new.dsc("one_sample_location")
 ```
 
 Now define the function to create data, which consists of input, and meta-data. 
@@ -60,10 +62,9 @@ datamaker = function(seed,args){
 Now define the scenarios that use this datamaker. Each scenario is determined by the datamaker,
 its arguments, and the seeds it uses. (Maybe the list of seeds should not be part of the scenario definition - I'm not sure). Each scenario also has a name which is used for naming the scenario in results and also output directories - so use something that is a valid filename. 
 ```{r}
-scenarios=list()
-scenarios[[1]]=list(name="normal",fn=datamaker,args=list(disttype="normal",nsamp=1000),seed=1:100)
-scenarios[[2]]=list(name="uniform",fn=datamaker,args=list(disttype="uniform",nsamp=1000),seed=1:100)
-scenarios[[3]]=list(name="Cauchy",fn=datamaker,args=list(disttype="Cauchy",nsamp=1000),seed=1:100)
+addScenario(dsc_osl,name="normal",datamaker,args=list(disttype="normal",nsamp=1000),seed=1:100)
+addScenario(dsc_osl,name="uniform",datamaker,args=list(disttype="uniform",nsamp=1000),seed=1:100)
+addScenario(dsc_osl,name="Cauchy",datamaker,args=list(disttype="Cauchy",nsamp=1000),seed=1:100)
 ```
 
 
@@ -97,10 +98,9 @@ winsor.wrapper = function(input,args){
 Now define a list of the methods we'll use. 
 Each method is defined by its name, the function used to implement it, and any additional arguments (none here):
 ```{r}
-  methods=list()
-  methods[[1]] = list(name="mean",fn =mean.wrapper,args=NULL)
-  methods[[2]] = list(name="median",fn=median.wrapper,args=NULL)
-  methods[[3]] = list(name="winsor",fn=winsor.wrapper,args=NULL)
+  addMethod(dsc_osl,name="mean",fn =mean.wrapper,args=NULL)
+  addMethod(dsc_osl,name="median",fn=median.wrapper,args=NULL)
+  addMethod(dsc_osl,name="winsor",fn=winsor.wrapper,args=NULL)
 ```
 
 
@@ -110,13 +110,13 @@ and absolute error:
 score = function(data, output){
   return(list(squared_error = (data$meta$truemean-output$meanest)^2, abs_error = abs(data$meta$truemean-output$meanest)))
 }
+  addScore(dsc_osl,score)
 ```
 
 
 Now we'll run all the methods on all the scenarios:
 ```{r}
-  library(dscr)
-  res=run_dsc(scenarios,methods,score)
+  res=run_dsc(dsc_osl)
 ```
 
 This returns a dataframe with the results of running all the methods on all the scenarios:
@@ -138,10 +138,10 @@ Here is what we do (note that the different settings of the argument are treated
     return(list(meanest=mean(input$x,trim=args$trim)))
   }
 
-  methods[[4]] = list(name="trimmedmean1",fn = trimmedmean.wrapper,args=list(trim=0.2))
-  methods[[5]] = list(name="trimmedmean2",fn = trimmedmean.wrapper,args=list(trim=0.4))
+  addMethod(dsc_osl,name="trimmedmean1",fn = trimmedmean.wrapper,args=list(trim=0.2))
+  addMethod(dsc_osl,name="trimmedmean2",fn = trimmedmean.wrapper,args=list(trim=0.4))
 
-  res=run_dsc(scenarios, methods, score)
+  res=run_dsc(dsc_osl)
   aggregate(abs_error~method+scenario,res,mean)
   aggregate(squared_error~method+scenario,res,mean)
 ```
@@ -149,12 +149,12 @@ Here is what we do (note that the different settings of the argument are treated
 Note that at present run_dsc does not recreate any files that are already there.
 Thus in this case it is only running the new methods (trimmedmean1 and trimmedmean2)- the results for
 other methods are already there. If you want to force it to recreate the files then you need
-to delete them manually before running run_dsc.
+to delete them manually before running run_dsc. You can do this from with R using the functions `reset_dsc()` to remove all the results, or `reset_scenario`   or `reset_method`
+to remove results only for a particular method or scenario.
 
-I'm still wondering about how to deal with this best.
 I will note that it is possible within run_dsc to specify to run the dsc on only a subset of the methods and scenarios
 ```{r}
-  res = run_dsc(scenarios, methods, score, c("Cauchy","normal"),c("trimmedmean1"))
+  res = run_dsc(dsc_osl, c("Cauchy","normal"),c("trimmedmean1"))
   aggregate(abs_error~method+scenario,res,mean)
   aggregate(squared_error~method+scenario,res,mean)
 ```
