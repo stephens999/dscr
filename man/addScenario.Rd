@@ -4,14 +4,14 @@
 \alias{addScenario}
 \title{Add a scenario to a dsc}
 \usage{
-addScenario(dsc, name, datamaker, args, seed)
+addScenario(dsc, name, fn, args = NULL, seed)
 }
 \arguments{
 \item{dsc}{the dsc to add the sceanario to}
 
 \item{name}{a character string}
 
-\item{datamaker}{the datamaker, a function that is the datamaker for the scenario}
+\item{fn}{the datamaker, a function that is the datamaker for the scenario}
 
 \item{args}{a list of arguments to the datamaker}
 

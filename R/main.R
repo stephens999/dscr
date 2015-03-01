@@ -404,6 +404,7 @@ new.dsc = function(name){
   dsc$scenarios=list()
   dsc$scorefn=NULL
   dsc$name=name 
+  dsc$res = NULL
   return(dsc)
 }
 
@@ -580,7 +581,7 @@ run_dsc=function(dsc,scenariosubset=NULL, methodsubset=NULL){
   
       
   res=aggregate_results(scenarios[ssub],methods[msub])
-  
+  dsc$res = res
   return(res)
 }
 
@@ -596,8 +597,52 @@ list_scenarios = function(dsc){
   print(apply(dsc$scenarios,get_name))
 }
 
+#' @title plot results for DSC
+#'
+#' @description interactive plot for results of DSC
+#'
+#' @param dsc
+#' @return a shiny plot
+#' @export
+shiny_plot=function(dsc){
+  scenario_names = as.character(unique(dsc$res$scenario))
+  method_names = as.character(unique(dsc$res$method))
+  numeric_criteria = names(dsc$res)[unlist(lapply(dsc$res,is.numeric))]
 
+  ui=shinyUI(pageWithSidebar(
+    headerPanel('DSC Results'),
+    sidebarPanel(
+      checkboxGroupInput("scen.subset", "Choose Scenarios", 
+                                               choices  = scenario_names,
+                                               selected = scenario_names),
+      
+      checkboxGroupInput("method.subset", "Choose Methods", 
+                            choices  = method_names,
+                            selected = method_names),
+         
+      selectInput("criteria", "Choose Criteria", 
+                     choices  = numeric_criteria,
+                     selected = numeric_criteria[1])
 
+    ),
+    mainPanel(
+      plotOutput('plot1')
+    )
+  ))
+
+  server = shinyServer(
+    function(input, output, session) {
+      output$plot1 <- renderPlot({
+        res.filter = filter(dsc$res,scenario %in% input$scen.subset & method %in% input$method.subset)
+        print(input)
+        res.filter$value = res.filter[[input$criteria]]
+        ggplot(res.filter,aes(method,value,color=method)) + geom_boxplot() + facet_grid(.~scenario)
+      })
+    }
+  )
+  
+  shinyApp(ui=ui,server=server)
+}
 #' 
 #' 
 #' @title Create or update a Makefile for the package
