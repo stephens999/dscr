@@ -31,7 +31,7 @@ addScore(dsc_eg,score)
 
 reset_dsc(dsc_eg,force=TRUE)
 res=run_dsc(dsc_eg)
-save(res,dsc_eg,file="dsc_eg.RData")
+save(dsc_eg,file="dsc_eg.RData")
 
 aggregate(abs_error~method+scenario,res,mean)
 aggregate(squared_error~method+scenario,res,mean)

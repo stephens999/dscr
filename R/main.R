@@ -261,7 +261,7 @@ make_directories = function(scenarios,methods){
 #' I'm experiementing with naming conventions to try to make these easier to see, using . as a subscript to indicate
 #' that that subscript is applied over. By this logic make_data_scenario should be make_data_.s
 #' 
-#' @param seed (vector or list of integers) the seeds for the pseudo-rng which identifies/indexes trials
+#' @param seed (integer) the seed for the pseudo-rng 
 #' @param scenario a list including elements fn and args, the function name for the datamaker to be used and additional arguments
 #' @param overwrite boolean indicating whether to overwrite existing files; default is not to
 #' 
@@ -269,7 +269,8 @@ make_directories = function(scenarios,methods){
 #' @export 
 make_data_rs = function(seed,scenario,overwrite=FALSE){
   if(!file.exists(datafilename(seed,scenario)) | overwrite){
-    data = do.call(scenario$fn,list(seed=seed,args=scenario$args))
+    set.seed(seed)
+    data = do.call(scenario$fn,list(args=scenario$args))
     save(data,file=datafilename(seed,scenario))
   } 
 }
@@ -305,7 +306,7 @@ make_data = function(scenarios){
 #' @description Apply a method for a particular seed and scenario. THe subscript _rsm refers to a particular repetition
 #' of a particular scenario for particular method.
 #' 
-#' @param seed (vector or list of integers) the seeds for the pseudo-rng which identifies/indexes trials
+#' @param seed (integer) the seed for the pseudo-rng which identifies/indexes trials (the seed is set to seed+1 before the method is run)
 #' @param scenario a list including elements fn and args, the function name for the datamaker to be used and additional arguments
 #' @param method a list including elements fn, name and args
 #' 
@@ -314,6 +315,7 @@ make_data = function(scenarios){
 apply_method_rsm = function(seed, scenario, method){
   if(!file.exists(outputfilename(seed,scenario,method))){
     load(datafilename(seed,scenario))
+    set.seed(seed+1)
     timedata = system.time(output <- do.call(method$fn,list(input=data$input,args=method$args)))
     save(output,timedata,file=outputfilename(seed,scenario,method))
   }
