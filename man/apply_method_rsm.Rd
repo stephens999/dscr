@@ -7,7 +7,7 @@
 apply_method_rsm(seed, scenario, method)
 }
 \arguments{
-\item{seed}{(vector or list of integers) the seeds for the pseudo-rng which identifies/indexes trials}
+\item{seed}{(integer) the seed for the pseudo-rng which identifies/indexes trials (the seed is set to seed+1 before the method is run)}
 
 \item{scenario}{a list including elements fn and args, the function name for the datamaker to be used and additional arguments}
 

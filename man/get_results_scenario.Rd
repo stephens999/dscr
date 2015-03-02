@@ -4,7 +4,7 @@
 \alias{get_results_scenario}
 \title{Get the results of a single method for a single scenario}
 \usage{
-get_results_scenario(scenario, method)
+get_results_scenario(scenario, method, score)
 }
 \arguments{
 \item{scenario}{a scenario}

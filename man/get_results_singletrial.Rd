@@ -4,7 +4,7 @@
 \alias{get_results_singletrial}
 \title{Get the results of a single method for a single trial}
 \usage{
-get_results_singletrial(seed, scenario, method)
+get_results_singletrial(seed, scenario, method, score)
 }
 \arguments{
 \item{seed}{}

@@ -7,7 +7,7 @@
 make_data_rs(seed, scenario, overwrite = FALSE)
 }
 \arguments{
-\item{seed}{(vector or list of integers) the seeds for the pseudo-rng which identifies/indexes trials}
+\item{seed}{(integer) the seed for the pseudo-rng}
 
 \item{scenario}{a list including elements fn and args, the function name for the datamaker to be used and additional arguments}
 

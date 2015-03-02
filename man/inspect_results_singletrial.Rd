@@ -4,7 +4,7 @@
 \alias{inspect_results_singletrial}
 \title{provide the results of a single method for a single trial}
 \usage{
-inspect_results_singletrial(seed, scenario, method)
+inspect_results_singletrial(seed, scenario, method, score)
 }
 \arguments{
 \item{seed}{}

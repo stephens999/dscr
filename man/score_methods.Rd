@@ -4,7 +4,7 @@
 \alias{score_methods}
 \title{Score specified methods on specified scenarios}
 \usage{
-score_methods(scenarios, methods, scorefn)
+score_methods(scenarios, methods, score)
 }
 \arguments{
 \item{scenarios}{the scenarios to score}

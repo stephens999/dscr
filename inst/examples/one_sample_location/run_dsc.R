@@ -25,7 +25,7 @@ score = function(data, output){
               abs_error = abs(data$meta$truemean-output$meanest)))
 }
 
-addScore(dsc_eg,score)
+addScore(dsc_eg,"basicscore",score)
 
 ######## Run the DSC #################
 

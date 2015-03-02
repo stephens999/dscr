@@ -4,7 +4,7 @@
 \alias{aggregate_results}
 \title{Aggregate the results of multiple methods for multiple scenarios}
 \usage{
-aggregate_results(scenarios, methods)
+aggregate_results(scenarios, methods, score)
 }
 \arguments{
 \item{scenarios}{a list of scenarios.}

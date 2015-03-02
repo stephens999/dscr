@@ -37,20 +37,15 @@ data_subdir = function(indexlist,datadir="data"){
 
 
 #' @export
-outputfilename = function(seed, scenario, method, outputdir="output"){
-  return(file.path(outputdir,scenario$name,method$name,paste0("output.",seed,".RData")))
+outputfilename = function(seed, scenario, method, outputtype="defaultoutput", outputdir="output"){
+  return(file.path(outputdir,outputtype,scenario$name,method$name,paste0("output.",seed,".RData")))
 }
 
 
-
 #' @export
-output_subdir = function(methodname,indexlist, outputdir="output"){
-  return(file.path(outputdir,indexlist$scenarioname,methodname))
-}
-
-#' @export
-resultsfilename = function(seed, scenario, method, resultsdir="results"){
-  return(file.path(resultsdir,scenario$name,method$name,paste0("results.",seed,".RData")))
+resultsfilename = function(seed, scenario, method, score=NULL, resultsdir="results"){
+  if(is.null(score)){scorename="defaultscore"} else {scorename=score$name}
+  return(file.path(resultsdir,scorename,scenario$name,method$name,paste0("results.",seed,".RData")))
 }
 
 #' @export
@@ -70,13 +65,13 @@ results_subdir = function(methodname,indexlist, resultsdir="results"){
 #' @return results, a list of appropriate format to be determined by the comparison being run (maybe required to be a dataframe?)
 #' 
 #' @export
-score_method_singletrial = function(seed,scenario,method,scorefn){
-  if(!file.exists(resultsfilename(seed,scenario,method))){
+score_method_singletrial = function(seed,scenario,method,score){
+  if(!file.exists(resultsfilename(seed,scenario,method,score))){
     timedata = NULL #to provide backward compatibility for dscr before timedata added
     load(file=datafilename(seed,scenario))
     load(file=outputfilename(seed,scenario,method)) #also loads timedata
-    results=c(scorefn(data,output),as.list(timedata))
-    save(results,file=resultsfilename(seed,scenario,method))
+    results=c(score$fn(data,output),as.list(timedata))
+    save(results,file=resultsfilename(seed,scenario,method,score))
   }
 }
 
@@ -91,8 +86,8 @@ score_method_singletrial = function(seed,scenario,method,scorefn){
 #' @return results, a list of appropriate format to be determined by the comparison being run (maybe required to be a dataframe?)
 #' 
 #' @export
-score_method_scenario = function(scenario,method,scorefn){
-  lapply(scenario$seed,score_method_singletrial,scenario=scenario,method=method,scorefn=scorefn)  
+score_method_scenario = function(scenario,method,score){
+  lapply(scenario$seed,score_method_singletrial,scenario=scenario,method=method,score=score)  
 }
 
 #' @title Score a method on all scenarios
@@ -106,8 +101,8 @@ score_method_scenario = function(scenario,method,scorefn){
 #' @return results, a list of appropriate format to be determined by the comparison being run (maybe required to be a dataframe?)
 #' 
 #' @export
-score_method = function(scenarios,method,scorefn){
-  lapply(scenarios,score_method_scenario,method=method,scorefn=scorefn)  
+score_method = function(scenarios,method,score){
+  lapply(scenarios,score_method_scenario,method=method,score=score)  
 }
 
 #' @title Score specified methods on specified scenarios
@@ -121,8 +116,8 @@ score_method = function(scenarios,method,scorefn){
 #' @return results, a list of appropriate format to be determined by the comparison being run (maybe required to be a dataframe?)
 #' 
 #' @export
-score_methods = function(scenarios,methods,scorefn){
-  lapply(methods, score_method, scenarios=scenarios, scorefn=scorefn)
+score_methods = function(scenarios,methods,score){
+  lapply(methods, score_method, scenarios=scenarios, score=score)
 }
 
 
@@ -137,8 +132,8 @@ score_methods = function(scenarios,methods,scorefn){
 #' @return results, a data frame of results, the details will depend on the comparison being run
 #' 
 #' @export
-get_results_singletrial = function(seed,scenario,method){
-  load(file=resultsfilename(seed,scenario,method))
+get_results_singletrial = function(seed,scenario,method,score){
+  load(file=resultsfilename(seed,scenario,method,score))
   #convert NULL to NA to stop data.frame crashing
   results <- lapply(results, function(x)ifelse(is.null(x), NA, x))
   temp = c(seed=seed, scenario=scenario$name, method=method$name, results)
@@ -159,8 +154,8 @@ get_results_singletrial = function(seed,scenario,method){
 #' @return results output by score function, the details will depend on the comparison being run
 #' 
 #' @export
-inspect_results_singletrial = function(seed, scenario,method){
-  load(file=resultsfilename(seed,scenario,method))  
+inspect_results_singletrial = function(seed, scenario,method,score){
+  load(file=resultsfilename(seed,scenario,method,score))  
   return(results)
 }
 
@@ -206,15 +201,15 @@ inspect_data_singletrial = function(seed, scenario){
 #' 
 #'
 #' @export 
-get_results_scenario = function(scenario, method){  
+get_results_scenario = function(scenario, method,score){  
   print(paste0("Getting results for scenario ",scenario$name," , method ",method$name))
-  ldply(scenario$seed, get_results_singletrial, scenario=scenario, method=method)
+  ldply(scenario$seed, get_results_singletrial, scenario=scenario, method=method,score=score)
 }
 
 
 #' @export 
-get_results = function(scenarios,method){
-  ldply(scenarios, get_results_scenario, method=method)
+get_results = function(scenarios,method,score){
+  ldply(scenarios, get_results_scenario, method=method,score=score)
 }
 
 #' @title Aggregate the results of multiple methods for multiple scenarios
@@ -227,32 +222,55 @@ get_results = function(scenarios,method){
 #' 
 #' 
 #' @export 
-aggregate_results = function(scenarios,methods){
-  ldply(methods,get_results,scenarios=scenarios)
+aggregate_results = function(scenarios,methods,score){
+  ldply(methods,get_results,scenarios=scenarios,score=score)
+}
+
+
+#' @export 
+make_directories_score= function(score,method,scenario){ 
+  dir.create(file.path("results",score$name,scenario$name,method$name),showWarnings=FALSE)
 }
 
 
 #' @export 
 make_directories_method= function(method,scenario){ 
-  dir.create(file.path("output",scenario$name,method$name),showWarnings=FALSE)
-  dir.create(file.path("results",scenario$name,method$name),showWarnings=FALSE)
+  dir.create(file.path("output","defaultoutput",scenario$name,method$name),showWarnings=FALSE)
+  dir.create(file.path("results","defaultscore",scenario$name,method$name),showWarnings=FALSE)
 }
 
 
 #' @export 
 make_directories_scenario=function(scenario,methods){ 
   dir.create(file.path("data",scenario$name),showWarnings=FALSE)
-  dir.create(file.path("output",scenario$name),showWarnings=FALSE)
-  dir.create(file.path("results",scenario$name),showWarnings=FALSE)
+  dir.create(file.path("output","defaultoutput",scenario$name),showWarnings=FALSE)
+  dir.create(file.path("results","defaultscore",scenario$name),showWarnings=FALSE)
   l_ply(methods,make_directories_method,scenario=scenario)
 }
 
+make_dirs = function(namelist){
+  for(i in 1:length(namelist)){dir.create(namelist[i],recursive=TRUE,showWarnings=FALSE)}
+}
+
 #' @export 
-make_directories = function(scenarios,methods){
-  dir.create("data",showWarnings=FALSE)
-  dir.create("output",showWarnings=FALSE)
-  dir.create("results",showWarnings=FALSE)
-  l_ply(scenarios,make_directories_scenario,methods=methods)
+make_directories = function(dsc){
+  scenarionames = names(dsc$scenarios)
+  methodnames = names(dsc$methods)
+  scorenames = names(dsc$scores)
+  smdirs = as.vector(outer(scenarionames,methodnames,file.path))
+  ssmdirs = as.vector(outer(scorenames,smdirs,file.path))
+  
+  make_dirs(outer("data",scenarionames,file.path))
+  make_dirs(outer(file.path("output","defaultoutput"),smdirs,file.path))
+  make_dirs(outer("results",ssmdirs,file.path))
+  
+  #make_dirs(outer("output",))
+  #dir.create("data",showWarnings=FALSE)
+  #dir.create("output",showWarnings=FALSE)
+  #dir.create(file.path("output","defaultoutput"),showWarnings=FALSE)
+  #dir.create("results",showWarnings=FALSE)
+  #dir.create(file.path("results","defaultscore"),showWarnings=FALSE)
+  #l_ply(dsc$scenarios,make_directories_scenario,methods=dsc$methods)
 }
 
 #' @title Make the data (inputs and meta) for a DSC for a particular seed and scenario
@@ -404,7 +422,7 @@ new.dsc = function(name){
   dsc=new.env()
   dsc$methods=list()
   dsc$scenarios=list()
-  dsc$scorefn=NULL
+  dsc$scores=list()
   dsc$name=name 
   dsc$res = NULL
   return(dsc)
@@ -461,13 +479,18 @@ addMethod = function(dsc,name, fn, args=NULL){
 #' @description Adds a score to a dsc
 #'
 #' @param dsc the dsc to add the score to
-#' @param scorefn, a score function
+#' @param name string giving a name by which the score function is to be known by
+#' @param fn, a score function
+#' @param outputtype, the type of output the score function takes, as generated by a parser 
 #' 
 #' @return nothing, but modifies the dsc environment
 #' @export
-addScore = function(dsc,scorefn){
-  if(!is.null(dsc$scorefn)){warning("a dsc can currently have only one score function; replacing previous function")}
-  dsc$scorefn=scorefn
+addScore = function(dsc,name,fn,outputtype="defaultoutput"){
+  if(name %in% names(dsc$scores)){stop("Error: that method name already exists")}
+  if(!is.character(name)){stop("Error: name must be a string")}
+  if(!is.function(fn)){stop("Error: fn must be a function")}
+    
+  dsc$scores[[name]]=list(name=name,fn=fn,outputtype=outputtype)
 }
 
 
@@ -514,8 +537,8 @@ reset_method = function(methodname,force=FALSE){
   }
   
   if(force){
-    file.remove(Sys.glob(file.path("output","*",methodname,"*")))
-    file.remove(Sys.glob(file.path("results","*",methodname,"*")))    
+    file.remove(Sys.glob(file.path("output","*","*",methodname,"*")))
+    file.remove(Sys.glob(file.path("results","*","*",methodname,"*")))    
   }
 }
 
@@ -543,8 +566,8 @@ reset_scenario = function(scenarioname,force=FALSE){
   
   if(force){
     file.remove(Sys.glob(file.path("data",scenarioname,"*")))
-    file.remove(Sys.glob(file.path("output",scenarioname,"*","*")))
-    file.remove(Sys.glob(file.path("results",scenarioname,"*","*")))    
+    file.remove(Sys.glob(file.path("output","*",scenarioname,"*","*")))
+    file.remove(Sys.glob(file.path("results","*",scenarioname,"*","*")))    
   }
 }
 
@@ -563,7 +586,8 @@ reset_scenario = function(scenarioname,force=FALSE){
 run_dsc=function(dsc,scenariosubset=NULL, methodsubset=NULL){
   scenarios=dsc$scenarios
   methods=dsc$methods
-  scorefn=dsc$scorefn
+  score=dsc$scores[[1]]
+  
   if(!is.null(scenariosubset)){
     scenarionames=lapply(scenarios,function(x){return(x$name)})
     ssub = scenarionames %in% scenariosubset
@@ -574,15 +598,15 @@ run_dsc=function(dsc,scenariosubset=NULL, methodsubset=NULL){
     msub = methodnames %in% methodsubset
   } else { msub= rep(TRUE, length(methods))}
   
-  make_directories(scenarios[ssub],methods[msub])
+  make_directories(dsc)
   
   make_data(scenarios[ssub])
   apply_methods(scenarios[ssub],methods[msub])
   
-  score_methods(scenarios[ssub],methods[msub],scorefn)
+  score_methods(scenarios[ssub],methods[msub],score)
   
       
-  res=aggregate_results(scenarios[ssub],methods[msub])
+  res=aggregate_results(scenarios[ssub],methods[msub],score)
   dsc$res = res
   return(res)
 }
