@@ -37,7 +37,7 @@ data_subdir = function(indexlist,datadir="data"){
 
 
 #' @export
-outputfilename = function(seed, scenario, method, outputtype="defaultoutput", outputdir="output"){
+outputfilename = function(seed, scenario, method, outputtype="default_output", outputdir="output"){
   return(file.path(outputdir,outputtype,scenario$name,method$name,paste0("output.",seed,".RData")))
 }
 
@@ -226,28 +226,6 @@ aggregate_results = function(scenarios,methods,score){
   ldply(methods,get_results,scenarios=scenarios,score=score)
 }
 
-
-#' @export 
-make_directories_score= function(score,method,scenario){ 
-  dir.create(file.path("results",score$name,scenario$name,method$name),showWarnings=FALSE)
-}
-
-
-#' @export 
-make_directories_method= function(method,scenario){ 
-  dir.create(file.path("output","defaultoutput",scenario$name,method$name),showWarnings=FALSE)
-  dir.create(file.path("results","defaultscore",scenario$name,method$name),showWarnings=FALSE)
-}
-
-
-#' @export 
-make_directories_scenario=function(scenario,methods){ 
-  dir.create(file.path("data",scenario$name),showWarnings=FALSE)
-  dir.create(file.path("output","defaultoutput",scenario$name),showWarnings=FALSE)
-  dir.create(file.path("results","defaultscore",scenario$name),showWarnings=FALSE)
-  l_ply(methods,make_directories_method,scenario=scenario)
-}
-
 make_dirs = function(namelist){
   for(i in 1:length(namelist)){dir.create(namelist[i],recursive=TRUE,showWarnings=FALSE)}
 }
@@ -261,16 +239,8 @@ make_directories = function(dsc){
   ssmdirs = as.vector(outer(scorenames,smdirs,file.path))
   
   make_dirs(outer("data",scenarionames,file.path))
-  make_dirs(outer(file.path("output","defaultoutput"),smdirs,file.path))
+  make_dirs(outer(file.path("output","default_output"),smdirs,file.path))
   make_dirs(outer("results",ssmdirs,file.path))
-  
-  #make_dirs(outer("output",))
-  #dir.create("data",showWarnings=FALSE)
-  #dir.create("output",showWarnings=FALSE)
-  #dir.create(file.path("output","defaultoutput"),showWarnings=FALSE)
-  #dir.create("results",showWarnings=FALSE)
-  #dir.create(file.path("results","defaultscore"),showWarnings=FALSE)
-  #l_ply(dsc$scenarios,make_directories_scenario,methods=dsc$methods)
 }
 
 #' @title Make the data (inputs and meta) for a DSC for a particular seed and scenario
@@ -423,6 +393,7 @@ new.dsc = function(name){
   dsc$methods=list()
   dsc$scenarios=list()
   dsc$scores=list()
+  dsc$parsers=list()
   dsc$name=name 
   dsc$res = NULL
   return(dsc)
@@ -485,12 +456,46 @@ addMethod = function(dsc,name, fn, args=NULL){
 #' 
 #' @return nothing, but modifies the dsc environment
 #' @export
-addScore = function(dsc,name,fn,outputtype="defaultoutput"){
-  if(name %in% names(dsc$scores)){stop("Error: that method name already exists")}
+addScore = function(dsc,name,fn,outputtype="default_output"){
+  if(name %in% names(dsc$scores)){stop("Error: that score name already exists")}
   if(!is.character(name)){stop("Error: name must be a string")}
   if(!is.function(fn)){stop("Error: fn must be a function")}
     
   dsc$scores[[name]]=list(name=name,fn=fn,outputtype=outputtype)
+}
+
+#' @title Add a parser to a dsc
+#'
+#' @description Adds a parser to a dsc; a parser converts one type of output to another type
+#'
+#' @param dsc the dsc to add the parser
+#' @param name string giving a name by which the parser function is to be known by
+#' @param fn, a parser function
+#' @param outputtype, string naming the type of output the parser function creates. 
+#' @param methodnames, a list of methodnames that the parser can be applied to
+#' 
+#' @return nothing, but modifies the dsc environment
+#' @export
+addParser = function(dsc,name,fn,outputtype,methodnames){
+  if(name %in% names(dsc$parsers)){stop("Error: that parser name already exists")}
+  if(!is.character(name)){stop("Error: name must be a string")}
+  if(!is.function(fn)){stop("Error: fn must be a function")}
+  if(!all(methodnames %in% names(dsc$methods))){stop("Error: not all methodnames exist")}
+  dsc$parsers[[name]]=list(name=name,fn=fn,outputtype=outputtype,methodnames=methodnames)
+}
+
+#' @title Run a parser in a dsc
+#'
+#' @description Run the named parser to convert one type of output to another type
+#'
+#' @param dsc the dsc to use
+#' @param parsername the name of the parser function to be run
+#' 
+#' @return nothing, but outputs files to output/ directories
+#' @export
+runParser = function(dsc,parsername){
+  if(!(parsername %in% names(dsc$parsers))){stop("Error: that parsername does not exist")}
+  
 }
 
 

@@ -4,7 +4,7 @@
 \alias{addScore}
 \title{Add a score function to a dsc}
 \usage{
-addScore(dsc, name, fn, outputtype = "defaultoutput")
+addScore(dsc, name, fn, outputtype = "default_output")
 }
 \arguments{
 \item{dsc}{the dsc to add the score to}
