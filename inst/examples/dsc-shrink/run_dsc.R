@@ -127,14 +127,14 @@ ash2beta_est =function(output){
   return (list(beta_est=output$PosteriorMean))
 } 
 
-addParser(dsc_shrink,"ash2beta",ash2beta_est,"ash_output","est_output")
+addOutputParser(dsc_shrink,"ash2beta",ash2beta_est,"ash_output","est_output")
 
 #this parser extracts the estimate of pi0
 ash2pi0 =function(output){
   return (list(pi0_est=get_pi0(output)))
 } 
 
-addParser(dsc_shrink,"ash2pi0",ash2pi0,"ash_output","pi0_output")
+addOutputParser(dsc_shrink,"ash2pi0",ash2pi0,"ash_output","pi0_output")
 res2=run_dsc(dsc_shrink)
 
 
