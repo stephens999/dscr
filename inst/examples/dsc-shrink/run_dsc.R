@@ -28,7 +28,7 @@ addScenario(dsc_shrink,name="B",
               nsamp=1000,
               betahatsd=1
             ),
-            seed=1:100)
+            seed=1:2)
 
 
 addScenario(dsc_shrink,name="C",
@@ -40,7 +40,7 @@ addScenario(dsc_shrink,name="C",
               nsamp=1000,
               betahatsd=1
             ),
-            seed=1:100)
+            seed=1:2)
 
 #scenarios An, Bn, Cn are the same as A,B,C but with nulls included (pi0 uniform on [0,1])
 addScenario(dsc_shrink,name="An",
@@ -52,7 +52,7 @@ addScenario(dsc_shrink,name="An",
               nsamp=1000,
               betahatsd=1
             ),
-            seed=1:100)
+            seed=1:2)
 
 addScenario(dsc_shrink,name="Bn",
             fn=rnormmix_datamaker,
@@ -63,7 +63,7 @@ addScenario(dsc_shrink,name="Bn",
               nsamp=1000,
               betahatsd=1
             ),
-            seed=1:100)
+            seed=1:2)
 
 
 addScenario(dsc_shrink,name="Cn",
@@ -75,7 +75,7 @@ addScenario(dsc_shrink,name="Cn",
               nsamp=1000,
               betahatsd=1
             ),
-            seed=1:100)
+            seed=1:2)
 
 addScenario(dsc_shrink,name="hard",
             fn=rnormmix_datamaker,
@@ -86,7 +86,7 @@ addScenario(dsc_shrink,name="hard",
               nsamp=1000,
               betahatsd=1
             ),
-            seed=1:100)
+            seed=1:2)
 
 addScenario(dsc_shrink,name="easy",
             fn=rnormmix_datamaker,
@@ -97,7 +97,7 @@ addScenario(dsc_shrink,name="easy",
               nsamp=1000,
               betahatsd=1
             ),
-            seed=1:100)
+            seed=1:2)
 
 ###### Add Methods #####
 

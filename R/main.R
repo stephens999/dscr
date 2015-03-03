@@ -33,7 +33,7 @@ datafilename = function(dsc,seed,scenario,datadir="data"){
 #' @export
 outputfilename = function(dsc,seed, scenario, method, outputdir="output",outputtype=NULL){
   if(is.null(outputtype)){outputtype=method$outputtype}
-  return(file.path(dsc$file.dir,outputdir,outputtype,scenario$name,method$name,paste0("output.",seed,".RData")))
+  return(file.path(dsc$file.dir,outputdir,scenario$name,method$name,outputtype,paste0("output.",seed,".RData")))
 }
 
 
@@ -171,10 +171,10 @@ make_directories = function(dsc){
   ssmdirs = as.vector(outer(scorenames,smdirs,file.path))
   
   # outputtype-scenario-method combos
-  osmdirs = as.vector(outer(outputtypes,smdirs,file.path))
+  smodirs = as.vector(outer(smdirs,outputtypes,file.path))
   
   make_dirs(outer(file.path(dsc$file.dir,"data"),scenarionames,file.path))
-  make_dirs(outer(file.path(dsc$file.dir,"output"),osmdirs,file.path))  
+  make_dirs(outer(file.path(dsc$file.dir,"output"),smodirs,file.path))  
   make_dirs(outer(file.path(dsc$file.dir,"scores"),ssmdirs,file.path))
 }
 
@@ -388,8 +388,8 @@ runParser = function(dsc,parsername){
   assert_that(parserExists(dsc,parsername))
   print(paste0("running parser ",parsername))  
   parser = dsc$parsers[[parsername]]
-  from.dir = Sys.glob(file.path(dsc$file.dir,"output",parser$outputtype_from,"*","*"))
-  from.filename = Sys.glob(file.path(dsc$file.dir,"output",parser$outputtype_from,"*","*","*"))
+  from.dir = Sys.glob(file.path(dsc$file.dir,"output","*","*",parser$outputtype_from))
+  from.filename = Sys.glob(file.path(dsc$file.dir,"output","*","*",parser$outputtype_from,"*"))
   to.filename = gsub(parser$outputtype_from,parser$outputtype_to,from.filename)
   to.dir = gsub(parser$outputtype_from,parser$outputtype_to,from.dir)
   make_dirs(to.dir)
