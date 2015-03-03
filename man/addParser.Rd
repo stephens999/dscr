@@ -4,7 +4,7 @@
 \alias{addParser}
 \title{Add a parser to a dsc}
 \usage{
-addParser(dsc, name, fn, outputtype, methodnames)
+addParser(dsc, name, fn, outputtype_from = "default_output", outputtype_to)
 }
 \arguments{
 \item{dsc}{the dsc to add the parser}
@@ -13,12 +13,12 @@ addParser(dsc, name, fn, outputtype, methodnames)
 
 \item{fn,}{a parser function}
 
-\item{outputtype,}{string naming the type of output the parser function creates.}
+\item{outputtype_from,}{string naming the type of output the parser function takes as input}
 
-\item{methodnames,}{a list of methodnames that the parser can be applied to}
+\item{outputtype_to,}{string naming the type of output the parser function gives as output}
 }
 \value{
-nothing, but modifies the dsc environment
+nothing, but creates output files in output/outputtype_to subdir
 }
 \description{
 Adds a parser to a dsc; a parser converts one type of output to another type

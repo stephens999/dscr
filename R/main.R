@@ -31,8 +31,8 @@ datafilename = function(dsc,seed,scenario,datadir="data"){
 
 
 #' @export
-outputfilename = function(dsc,seed, scenario, method, outputtype="default_output", outputdir="output"){
-  return(file.path(dsc$file.dir,outputdir,outputtype,scenario$name,method$name,paste0("output.",seed,".RData")))
+outputfilename = function(dsc,seed, scenario, method, outputdir="output"){
+  return(file.path(dsc$file.dir,outputdir,method$outputtype,scenario$name,method$name,paste0("output.",seed,".RData")))
 }
 
 
@@ -224,11 +224,19 @@ make_directories = function(dsc){
   scenarionames = names(dsc$scenarios)
   methodnames = names(dsc$methods)
   scorenames = names(dsc$scores)
+  outputtypes = getOutputtypes(dsc)
+  
+  #directories corresponding to scenario-method combinations
   smdirs = as.vector(outer(scenarionames,methodnames,file.path))
+  
+  # seed-scenario-method combos
   ssmdirs = as.vector(outer(scorenames,smdirs,file.path))
   
+  # outputtype-scenario-method combos
+  osmdirs = as.vector(outer(outputtypes,smdirs,file.path))
+  
   make_dirs(outer(file.path(dsc$file.dir,"data"),scenarionames,file.path))
-  make_dirs(outer(file.path(dsc$file.dir,"output","default_output"),smdirs,file.path))
+  make_dirs(outer(file.path(dsc$file.dir,"output"),osmdirs,file.path))  
   make_dirs(outer(file.path(dsc$file.dir,"results"),ssmdirs,file.path))
 }
 
@@ -308,13 +316,11 @@ addScenario = function(dsc,name, fn, args=NULL, seed){
 #' 
 #' @return nothing, but modifies the dsc environment
 #' @export
-addMethod = function(dsc,name, fn, args=NULL){
+addMethod = function(dsc,name, fn, args=NULL,outputtype="default_output"){
+  assert_that(is.character(name),is.function(fn), is.list(args) | is.null(args))
   if(name %in% names(dsc$methods)){stop("Error: that method name already exists")}
-  if(!is.character(name)){stop("Error: name must be a string")}
-  if(!is.function(fn)){stop("Error: fn must be a function")}
-  if(!is.list(args) & !is.null(args)){stop("Error: args must be a list or NULL")}
   
-  dsc$methods[[name]]=list(name=name,fn=fn,args=args)
+  dsc$methods[[name]]=list(name=name,fn=fn,args=args,outputtype = outputtype)
 }
 
 
@@ -331,11 +337,22 @@ addMethod = function(dsc,name, fn, args=NULL){
 #' @return nothing, but modifies the dsc environment
 #' @export
 addScore = function(dsc,name,fn,outputtype="default_output"){
+  assert_that(is.character(name))
+  assert_that(is.function(fn))
   if(name %in% names(dsc$scores)){stop("Error: that score name already exists")}
-  if(!is.character(name)){stop("Error: name must be a string")}
-  if(!is.function(fn)){stop("Error: fn must be a function")}
-    
+  
   dsc$scores[[name]]=list(name=name,fn=fn,outputtype=outputtype)
+}
+
+#' @title return outputtypes of the methods in a dsc
+#'
+#' @description return outputtypes of the methods in a dsc
+#'
+#' @param dsc a dsc 
+#' @return list of outputtypes
+#' @export
+getOutputtypes=function(dsc){
+  lapply(dsc$methods,function(x){return(x$outputtype)})  
 }
 
 #' @title Add a parser to a dsc
@@ -345,17 +362,16 @@ addScore = function(dsc,name,fn,outputtype="default_output"){
 #' @param dsc the dsc to add the parser
 #' @param name string giving a name by which the parser function is to be known by
 #' @param fn, a parser function
-#' @param outputtype, string naming the type of output the parser function creates. 
-#' @param methodnames, a list of methodnames that the parser can be applied to
-#' 
-#' @return nothing, but modifies the dsc environment
+#' @param outputtype_from, string naming the type of output the parser function takes as input 
+#' @param outputtype_to, string naming the type of output the parser function gives as output 
+#' @return nothing, but creates output files in output/outputtype_to subdir
 #' @export
-addParser = function(dsc,name,fn,outputtype,methodnames){
+addParser = function(dsc,name,fn,outputtype_from="default_output",outputtype_to){
   if(name %in% names(dsc$parsers)){stop("Error: that parser name already exists")}
   if(!is.character(name)){stop("Error: name must be a string")}
   if(!is.function(fn)){stop("Error: fn must be a function")}
-  if(!all(methodnames %in% names(dsc$methods))){stop("Error: not all methodnames exist")}
-  dsc$parsers[[name]]=list(name=name,fn=fn,outputtype=outputtype,methodnames=methodnames)
+  assert_that(outputtype_from %in% getOutputtypes(dsc))  
+  dsc$parsers[[name]]=list(name=name,fn=fn,outputtype_from=outputtype_from,outputtype_to=outputtype_to)
 }
 
 

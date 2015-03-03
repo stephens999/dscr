@@ -4,7 +4,7 @@
 \alias{score_method_singletrial}
 \title{Score a method on a single trial and save results}
 \usage{
-score_method_singletrial(seed, scenario, method, score)
+score_method_singletrial(dsc, seed, scenario, method, score)
 }
 \arguments{
 \item{seed}{the seed to score}

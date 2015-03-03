@@ -4,7 +4,7 @@
 \alias{reset_method}
 \title{Removes all output and results for a method}
 \usage{
-reset_method(methodname, force = FALSE)
+reset_method(dsc, methodname, force = FALSE)
 }
 \arguments{
 \item{force}{boolean, indicates whether to proceed without prompting user (prompt is to be implemented)}

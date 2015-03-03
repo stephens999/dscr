@@ -4,7 +4,7 @@
 \alias{new.dsc}
 \title{Start a new (empty) dsc}
 \usage{
-new.dsc(name)
+new.dsc(name, file.dir)
 }
 \arguments{
 \item{name}{a string containing the name for your dsc}

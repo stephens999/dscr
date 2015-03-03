@@ -10,6 +10,7 @@ Description: Package containing functions to help build dynamic statistical
 VignetteBuilder: knitr
 License: GPL (>=2)
 Imports:
+    assertthat,
     psych,
     plyr,
     reshape2,

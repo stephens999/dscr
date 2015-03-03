@@ -4,7 +4,7 @@
 \alias{datafilename}
 \title{return the path to a data file, parameter file, output file or results file}
 \usage{
-datafilename(seed, scenario, datadir = "data")
+datafilename(dsc, seed, scenario, datadir = "data")
 }
 \arguments{
 \item{seed}{}

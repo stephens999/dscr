@@ -4,7 +4,7 @@
 \alias{score_method_scenario}
 \title{Score a method on all trials for a single scenario}
 \usage{
-score_method_scenario(scenario, method, score)
+score_method_scenario(dsc, scenario, method, score)
 }
 \arguments{
 \item{scenario}{the scenario to score}

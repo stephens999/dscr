@@ -4,7 +4,7 @@
 \alias{reset_scenario}
 \title{Removes all output and results for a scenario}
 \usage{
-reset_scenario(scenarioname, force = FALSE)
+reset_scenario(dsc, scenarioname, force = FALSE)
 }
 \arguments{
 \item{scenarioname}{string indicating name of scenario to remove}

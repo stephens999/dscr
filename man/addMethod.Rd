@@ -4,7 +4,7 @@
 \alias{addMethod}
 \title{Add a method to a dsc}
 \usage{
-addMethod(dsc, name, fn, args = NULL)
+addMethod(dsc, name, fn, args = NULL, outputtype = "default_output")
 }
 \arguments{
 \item{dsc}{the dsc to add the method to}
