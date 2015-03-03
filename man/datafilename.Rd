@@ -11,7 +11,7 @@ datafilename(dsc, seed, scenario, datadir = "data")
 
 \item{scenario}{}
 
-\item{datadir/paramdir/outputdir/resultsdir}{the (relative) path to the directory containing the relevant files}
+\item{datadir/paramdir/outputdir/scoresdir}{the (relative) path to the directory containing the relevant files}
 }
 \value{
 string containing path to file

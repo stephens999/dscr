@@ -144,4 +144,4 @@ score2 = function(data, output){
 addScore(dsc_shrink,"pi0score",score2,outputtype="pi0_output")
 res3=run_dsc(dsc_shrink)
 
-runScore(dsc_shrink,1,"A","ashr","pi0score")
+#runScore(dsc_shrink,1,"A","ashr","pi0score")

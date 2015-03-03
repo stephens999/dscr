@@ -12,6 +12,8 @@ get_results_singletrial(dsc, seed, scenario, method, score)
 \item{scenario}{}
 
 \item{method}{}
+
+\item{score}{}
 }
 \value{
 results, a data frame of results, the details will depend on the comparison being run
