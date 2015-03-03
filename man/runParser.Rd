@@ -9,12 +9,14 @@ runParser(dsc, parsername)
 \arguments{
 \item{dsc}{the dsc to use}
 
-\item{parsername}{the name of the parser function to be run}
+\item{parsername}{string giving the name of the parser to be run}
 }
 \value{
 nothing, but outputs files to output/ directories
 }
 \description{
-Run the named parser to convert one type of output to another type
+Run the named parser to convert one type of output to another type.
+The parser is run on all outputs in the appropriate output directory (output/outputtype_from)
+where outputtype_from is defined when the parser is added to the dsc
 }
 

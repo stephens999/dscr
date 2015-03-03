@@ -31,8 +31,9 @@ datafilename = function(dsc,seed,scenario,datadir="data"){
 
 
 #' @export
-outputfilename = function(dsc,seed, scenario, method, outputdir="output"){
-  return(file.path(dsc$file.dir,outputdir,method$outputtype,scenario$name,method$name,paste0("output.",seed,".RData")))
+outputfilename = function(dsc,seed, scenario, method, outputdir="output",outputtype=NULL){
+  if(is.null(outputtype)){outputtype=method$outputtype}
+  return(file.path(dsc$file.dir,outputdir,outputtype,scenario$name,method$name,paste0("output.",seed,".RData")))
 }
 
 
@@ -55,12 +56,14 @@ resultsfilename = function(dsc,seed, scenario, method, score=NULL, resultsdir="r
 #' 
 #' @export
 score_method_singletrial = function(dsc,seed,scenario,method,score){
-  if(!file.exists(resultsfilename(dsc,seed,scenario,method,score))){
-    timedata = NULL #to provide backward compatibility for dscr before timedata added
-    load(file=datafilename(dsc,seed,scenario))
-    load(file=outputfilename(dsc,seed,scenario,method)) #also loads timedata
-    results=c(score$fn(data,output),as.list(timedata))
-    save(results,file=resultsfilename(dsc,seed,scenario,method,score))
+  if(file.exists(outputfilename(dsc,seed,scenario,method,outputtype=score$outputtype))){
+    if(!file.exists(resultsfilename(dsc,seed,scenario,method,score))){
+      timedata = NULL #to provide backward compatibility for dscr before timedata added
+      load(file=datafilename(dsc,seed,scenario))
+      load(file=outputfilename(dsc,seed,scenario,method,outputtype=score$outputtype)) #also loads timedata
+      results=c(score$fn(data,output),as.list(timedata))
+      save(results,file=resultsfilename(dsc,seed,scenario,method,score))
+    }
   }
 }
 
@@ -122,7 +125,9 @@ score_methods = function(dsc,scenarios,methods,score){
 #' 
 #' @export
 get_results_singletrial = function(dsc,seed,scenario,method,score){
-  load(file=resultsfilename(dsc,seed,scenario,method,score))
+  if(file.exists(resultsfilename(dsc,seed,scenario,method,score))){
+    load(file=resultsfilename(dsc,seed,scenario,method,score))
+  } else {results = NULL}
   #convert NULL to NA to stop data.frame crashing
   results <- lapply(results, function(x)ifelse(is.null(x), NA, x))
   temp = c(seed=seed, scenario=scenario$name, method=method$name, results)
@@ -377,6 +382,11 @@ addParser = function(dsc,name,fn,outputtype_from="default_output",outputtype_to)
 
 getScenarioNames = function(dsc){return(names(dsc$scenarios))}
 getMethodNames = function(dsc){return(names(dsc$methods))}
+getParserNames = function(dsc){return(names(dsc$parsers))}
+
+scenarioExists = function(dsc,scenarioname){return(scenarioname %in% names(dsc$scenarios))}
+methodExists = function(dsc,methodname){return(methodname %in% names(dsc$methods))}
+parserExists = function(dsc,parsername){return(parsername %in% names(dsc$parsers))}
 
 #' @title List scenarios
 #'
@@ -395,6 +405,96 @@ listScenarios = function(dsc){print(getScenarioNames(dsc))}
 #' @return nothing
 #' @export
 listMethods = function(dsc){print(getMethodNames(dsc))}
+
+#' @title List parsers
+#'
+#' @description List parsers
+#' @param dsc the dsc to have its parsers listed
+#' 
+#' @return nothing
+#' @export
+listParsers = function(dsc){print(getParserNames(dsc))}
+
+#' @export
+runParserOnce = function(dsc,parsername,infile,outfile){
+  assert_that(file.exists(infile),is.character(parsername))
+  if(!file.exists(outfile)){
+    parser=dsc$parsers[[parsername]]
+    load(infile)
+    output = do.call(parser$fn,list(output=output))
+    save(output,timedata,file=outfile)
+  } 
+}
+
+#' @title Run a parser in a dsc
+#'
+#' @description Run the named parser to convert one type of output to another type. 
+#' The parser is run on all outputs in the appropriate output directory (output/outputtype_from)
+#' where outputtype_from is defined when the parser is added to the dsc
+#' 
+#' @param dsc the dsc to use
+#' @param parsername string giving the name of the parser to be run
+#' 
+#' @return nothing, but outputs files to output/ directories
+#' @export
+runParser = function(dsc,parsername){
+  assert_that(is.character(parsername))
+  assert_that(parserExists(dsc,parsername))
+  print(paste0("running parser ",parsername))  
+  parser = dsc$parsers[[parsername]]
+  from.dir = Sys.glob(file.path(dsc$file.dir,"output",parser$outputtype_from,"*","*"))
+  from.filename = Sys.glob(file.path(dsc$file.dir,"output",parser$outputtype_from,"*","*","*"))
+  to.filename = gsub(parser$outputtype_from,parser$outputtype_to,from.filename)
+  to.dir = gsub(parser$outputtype_from,parser$outputtype_to,from.dir)
+  make_dirs(to.dir)
+  mapply(runParserOnce,from.filename,to.filename,MoreArgs=list(dsc=dsc,parsername=parsername))
+}
+
+
+#' @title Run all parsers in a dsc
+#'
+#' @description Run all parsers to convert one type of output to another type. 
+#' Each parser is run on all outputs in the appropriate output directory (output/outputtype_from)
+#' where outputtype_from is defined when the parser is added to the dsc
+#' 
+#' @param dsc the dsc to use
+#' 
+#' @return nothing, but outputs files to output/ directories
+#' @export
+runParsers = function(dsc){
+  if(!is.null(dsc$parsers)){
+      mapply(runParser,names(dsc$parsers),MoreArgs=list(dsc=dsc))
+  }
+}
+
+
+
+
+# runParser=function(dsc,seed,scenarioname,methodname,parsername){
+#   assert_that(is.numeric(seed),is.character(scenarioname),is.character(methodname),is.character(parsername))
+#   assert_that(scenarioExists(dsc,scenarioname),methodExists(dsc,methodname),parserExists(dsc,parsername))
+#   scenario=dsc$scenarios[[scenarioname]]
+#   method = dsc$methods[[methodname]]
+#   parser = dsc$parsers[[parsername]]
+#   
+#   print(paste0("running parser ",parsername,", on scenario ", scenarioname, "method ", methodname, "seed ",seed))
+#   
+#   from.filename = outputfilename(dsc,seed,scenario,method,outputtype=parser$outputtype_from)
+#   to.filename = outputfilename(dsc,seed,scenario,method,outputtype=parser$outputtype_to)
+#   
+#   #check that file to be converted exists
+#   assert_that(file.exists(from.filename))
+#   
+#   #check that file to be created does not exist before creating
+#   if(!file.exists(to.filename)){
+#     load(from.filename)
+#     output = do.call(parser$fn,list(output=output))
+#     save(output,file=to.filename)
+#   }   
+# }
+
+
+
 
 #' @export
 runScenario=function(dsc,seed,scenarioname){
@@ -487,30 +587,6 @@ addFilenames=function(dsc,outputfiletype){
   dsc$db=mutate(dsc$db,outputfile=outputfilename2(seed,scenarioname,methodname),
                 datafile = datafilename2(seed,scenarioname))
 }
-
-#runParser = function(fn,infile,outfile){
-#  load(infile)
-#  output=fn(output)
-#  save(output,file=outfile)
-#}
-  
-#' @title Run a parser in a dsc
-#'
-#' @description Run the named parser to convert one type of output to another type
-#'
-#' @param dsc the dsc to use
-#' @param parsername the name of the parser function to be run
-#' 
-#' @return nothing, but outputs files to output/ directories
-#' @export
-runParser = function(dsc,parsername){
-  if(!(parsername %in% names(dsc$parsers))){stop("Error: that parsername does not exist")}
-  parser=dsc$parsers[[parsername]]
-  OutputFiles(dsc,ssub,msub)
-#  for each  method in parser$methodnames apply parser$fn to create parser$outputtype
-}
-
-
 
 #' @title Removes all data, output and results for the dsc
 #'
@@ -626,7 +702,8 @@ run_dsc=function(dsc,scenariosubset=NULL, methodsubset=NULL){
   
   runScenarios(dsc,scenariosubset)
   runMethods(dsc,scenariosubset,methodsubset)
-
+  runParsers(dsc)
+  
   #  make_data(scenarios[ssub])
 #  apply_methods(scenarios[ssub],methods[msub])
   

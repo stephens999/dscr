@@ -17,7 +17,7 @@ addScenario(dsc_shrink,name="A",
               nsamp=1000,
               betahatsd=1
             ),
-            seed=1:10)
+            seed=1:2)
 
 # addScenario(dsc_shrink,name="B",
 #             fn=rnormmix_datamaker,
@@ -111,13 +111,30 @@ score = function(data, output){
   return(list(RMSE=sqrt(mean((output$beta_est-data$meta$beta)^2))))
 }
 
-addScore(dsc_shrink,"basicscore",score)
+addScore(dsc_shrink,"basicscore",score,outputtype="est_output")
 
 ######## Run the DSC #################
 
 reset_dsc(dsc_shrink,force=TRUE)
-res=run_dsc(dsc_shrink)
+res1=run_dsc(dsc_shrink)
 save(dsc_shrink,file="dsc_shrink.RData")
 
 ### That doesn't work because the output format was not right - we need to add a parser
+
+#this parser converts the ash output to a list with element beta_est
+ash2beta_est =function(output){
+  return (list(beta_est=output$PosteriorMean))
+} 
+
+addParser(dsc_shrink,"ash2beta",ash2beta_est,"ash_output","est_output")
+
+#this parser extracts the estimate of pi0
+ash2pi0 =function(output){
+  return (list(pi0=get_pi0(output)))
+} 
+
+addParser(dsc_shrink,"ash2pi0",ash2pi0,"ash_output","pi0_output")
+
+res2=run_dsc(dsc_shrink)
+
 
