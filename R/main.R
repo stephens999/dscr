@@ -25,8 +25,9 @@ NULL
 #' @return string containing path to file
 #' 
 #' @export
-datafilename = function(dsc,seed,scenario,datadir="data"){
-  return(file.path(dsc$file.dir,datadir,scenario$name,paste0("data.",seed,".RData")))
+datafilename = function(dsc,seed,scenario,datadir="data",datatype=NULL){
+  if(is.null(datatype)){datatype=scenario$datatype}
+  return(file.path(dsc$file.dir,datadir,scenario$name,datatype,paste0("data.",seed,".RData")))
 }
 
 
@@ -163,17 +164,21 @@ make_directories = function(dsc){
   methodnames = names(dsc$methods)
   scorenames = names(dsc$scores)
   outputtypes = getOutputtypes(dsc)
+  datatypes = getDatatypes(dsc)
   
   #directories corresponding to scenario-method combinations
   smdirs = as.vector(outer(scenarionames,methodnames,file.path))
   
-  # seed-scenario-method combos
+  # scoretype-scenario-method combos
   ssmdirs = as.vector(outer(scorenames,smdirs,file.path))
   
-  # outputtype-scenario-method combos
+  #scenario-method-outputtype combos
   smodirs = as.vector(outer(smdirs,outputtypes,file.path))
   
-  make_dirs(outer(file.path(dsc$file.dir,"data"),scenarionames,file.path))
+  #scenario-datatype combos
+  sddirs = as.vector(outer(scenarionames,datatypes,file.path))
+  
+  make_dirs(outer(file.path(dsc$file.dir,"data"),sddirs,file.path))
   make_dirs(outer(file.path(dsc$file.dir,"output"),smodirs,file.path))  
   make_dirs(outer(file.path(dsc$file.dir,"scores"),ssmdirs,file.path))
 }
@@ -231,13 +236,13 @@ new.dsc = function(name,file.dir){
 #' 
 #' @return nothing, but modifies the dsc environment
 #' @export
-addScenario = function(dsc,name, fn, args=NULL, seed){
+addScenario = function(dsc,name, fn, args=NULL, seed,datatype="default_data"){
   if(name %in% names(dsc$scenarios)){stop("Error: that scenario name already exists")}
   if(!is.character(name)){stop("Error: name must be a string")}
   if(!is.function(fn)){stop("Error: fn must be a function")}
   if(!is.list(args) & !is.null(args)){stop("Error: args must be a list or NULL")}  
   if(!is.integer(seed)){stop("seed must be an integer vector")}
-  dsc$scenarios[[name]]=list(name=name,fn=fn,args=args,seed=seed)
+  dsc$scenarios[[name]]=list(name=name,fn=fn,args=args,seed=seed,datatype=datatype)
 }
 
 
@@ -292,6 +297,19 @@ addScore = function(dsc,name,fn,outputtype="default_output"){
 getOutputtypes=function(dsc){
   lapply(dsc$methods,function(x){return(x$outputtype)})  
 }
+
+#' @title return datatypes of the scenarios in a dsc
+#'
+#' @description return datatypes of the scenarios in a dsc
+#'
+#' @param dsc a dsc 
+#' @return list of datatypes
+#' @export
+getDatatypes=function(dsc){
+  lapply(dsc$scenarios,function(x){return(x$datatype)})  
+}
+
+
 
 #' @title Add a outputParser to a dsc
 #'
@@ -654,7 +672,7 @@ reset_scenario = function(dsc,scenarioname,force=FALSE){
   }
   
   if(force){
-    file.remove(Sys.glob(file.path(dsc$file.dir,"data",scenarioname,"*")))
+    file.remove(Sys.glob(file.path(dsc$file.dir,"data",scenarioname,"*","*")))
     file.remove(Sys.glob(file.path(dsc$file.dir,"output",scenarioname,"*","*","*")))
     file.remove(Sys.glob(file.path(dsc$file.dir,"scores","*",scenarioname,"*","*")))    
   }

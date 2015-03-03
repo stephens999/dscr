@@ -4,7 +4,7 @@
 \alias{addScenario}
 \title{Add a scenario to a dsc}
 \usage{
-addScenario(dsc, name, fn, args = NULL, seed)
+addScenario(dsc, name, fn, args = NULL, seed, datatype = "default_data")
 }
 \arguments{
 \item{dsc}{the dsc to add the sceanario to}
