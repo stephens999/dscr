@@ -18,7 +18,7 @@ This object will be used to store the details of the dsc.
 ```{r}
 library(dscr)
 #  install_github(repo="stephens999/dscr")
-dsc_osl = new.dsc("one_sample_location")
+dsc_osl = new.dsc("one_sample_location","one_samp_loc")
 ```
 
 Now define the function to create data, which consists of input, and meta-data. 
@@ -113,7 +113,7 @@ score = function(data, output){
 
 
 Now we'll run all the methods on all the scenarios:
-```{r}
+```{r,results='hide'}
   res=run_dsc(dsc_osl)
 ```
 
@@ -131,15 +131,17 @@ And we can summarize the results (eg mean squared error) using the aggregate fun
 Now suppose we are coming in and want to add a method, say the trimmed mean, to the comparison.
 Suppose also we want to try out the trimmed mean with two different settings of the trim argument. 
 Here is what we do (note that the different settings of the argument are treated as different methods, but the two methods use the same fn)
-```{r}
+```{r,results='hide'}
   trimmedmean.wrapper = function(input,args){
     return(list(meanest=mean(input$x,trim=args$trim)))
   }
 
   addMethod(dsc_osl,name="trimmedmean1",fn = trimmedmean.wrapper,args=list(trim=0.2))
   addMethod(dsc_osl,name="trimmedmean2",fn = trimmedmean.wrapper,args=list(trim=0.4))
-
   res=run_dsc(dsc_osl)
+```
+
+```{r}
   aggregate(abs_error~method+scenario,res,mean)
   aggregate(squared_error~method+scenario,res,mean)
 ```
@@ -151,8 +153,11 @@ to delete them manually before running run_dsc. You can do this from with R usin
 to remove results only for a particular method or scenario.
 
 I will note that it is possible within run_dsc to specify to run the dsc on only a subset of the methods and scenarios
-```{r}
+```{r,results='hide'}
   res = run_dsc(dsc_osl, c("Cauchy","normal"),c("trimmedmean1"))
+```
+
+```{r}
   aggregate(abs_error~method+scenario,res,mean)
   aggregate(squared_error~method+scenario,res,mean)
 ```

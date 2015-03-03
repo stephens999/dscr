@@ -15,4 +15,5 @@ Imports:
     reshape2,
     knitr,
     BatchExperiments,
+    BatchJobs,
     ggplot2
