@@ -130,11 +130,18 @@ addParser(dsc_shrink,"ash2beta",ash2beta_est,"ash_output","est_output")
 
 #this parser extracts the estimate of pi0
 ash2pi0 =function(output){
-  return (list(pi0=get_pi0(output)))
+  return (list(pi0_est=get_pi0(output)))
 } 
 
 addParser(dsc_shrink,"ash2pi0",ash2pi0,"ash_output","pi0_output")
-
 res2=run_dsc(dsc_shrink)
 
 
+score2 = function(data, output){
+  return(list(pi0_est=output$pi0_est,pi0=data$meta$pi0))
+}
+
+addScore(dsc_shrink,"pi0score",score2,outputtype="pi0_output")
+res3=run_dsc(dsc_shrink)
+
+runScore(dsc_shrink,1,"A","ashr","pi0score")

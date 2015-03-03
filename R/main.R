@@ -383,11 +383,13 @@ addParser = function(dsc,name,fn,outputtype_from="default_output",outputtype_to)
 getScenarioNames = function(dsc){return(names(dsc$scenarios))}
 getMethodNames = function(dsc){return(names(dsc$methods))}
 getParserNames = function(dsc){return(names(dsc$parsers))}
+getScoreNames = function(dsc){return(names(dsc$scores))}
 
 scenarioExists = function(dsc,scenarioname){return(scenarioname %in% names(dsc$scenarios))}
 methodExists = function(dsc,methodname){return(methodname %in% names(dsc$methods))}
 parserExists = function(dsc,parsername){return(parsername %in% names(dsc$parsers))}
-
+scoreExists = function(dsc,scorename){return(scorename %in% names(dsc$scores))}
+  
 #' @title List scenarios
 #'
 #' @description List scenarios
@@ -518,6 +520,46 @@ runScenarios=function(dsc,ssub=NULL){
   #submitJobs(reg1, ids)  
 }
 
+#' @title Score a method on a single trial and save results
+#'
+#' @description Score results of a single method for a single trial and produce (and save) corresponding results
+#' 
+#' @param seed the seed to score
+#' @param scenarioname the scenario to score
+#' @param methodname the method to score
+#' @param scorename the score to use
+#'
+#' @return results, a list of appropriate format to be determined by the comparison being run (maybe required to be a dataframe?)
+#' 
+#' @export
+runScore = function(dsc,seed,scenarioname,methodname,scorename){
+  assert_that(is.numeric(seed),is.character(scenarioname),is.character(methodname),is.character(scorename))
+  assert_that(scenarioExists(dsc,scenarioname),methodExists(dsc,methodname),scoreExists(dsc,scorename))
+  
+  score = dsc$scores[[scorename]]
+  scenario=dsc$scenarios[[scenarioname]]
+  method = dsc$methods[[methodname]]
+  
+  if(file.exists(outputfilename(dsc,seed,scenario,method,outputtype=score$outputtype))){
+    if(!file.exists(resultsfilename(dsc,seed,scenario,method,score))){
+      timedata = NULL #to provide backward compatibility for dscr before timedata added
+      load(file=datafilename(dsc,seed,scenario))
+      load(file=outputfilename(dsc,seed,scenario,method,outputtype=score$outputtype)) #also loads timedata
+      results=c(score$fn(data,output),as.list(timedata))
+      save(results,file=resultsfilename(dsc,seed,scenario,method,score))
+    }
+  }
+}
+
+#' @export
+runScores=function(dsc,ssub=NULL,msub=NULL,scoresub=NULL){
+  df = expandScenariosMethodsScores(dsc)
+  if(!is.null(ssub)){df = dplyr::filter(df,scenarioname %in% ssub)}
+  if(!is.null(msub)){df = dplyr::filter(df,methodname %in% msub)}
+  if(!is.null(scoresub)){df = dplyr::filter(df,scorename %in% scoresub)}  
+  print(paste0("running Scores"))
+  mapply(runScore,seed=df$seed,scenarioname=df$scenarioname,methodname=df$methodname,scorename=df$scorename,MoreArgs=list(dsc=dsc)) 
+}
 
 #' @export
 runMethod=function(dsc,seed,scenarioname,methodname){
@@ -536,7 +578,7 @@ runMethod=function(dsc,seed,scenarioname,methodname){
 
 #' @export
 runMethods=function(dsc,ssub=NULL,msub=NULL){
-  df = expandAll(dsc)
+  df = expandScenariosMethods(dsc)
   if(!is.null(ssub)){df = dplyr::filter(df,scenarioname %in% ssub)}
   if(!is.null(msub)){df = dplyr::filter(df,methodname %in% msub)}
   print(paste0("running Methods"))
@@ -574,8 +616,18 @@ expandScenarios = function(dsc){ldply(dsc$scenarios,expandScenario,.id="scenario
 #' 
 #' @return data frame of all combinations
 #' @export
-expandAll = function(dsc){merge(expandScenarios(dsc),data.frame(methodname=getMethodNames(dsc),stringsAsFactors=FALSE))}
-                                
+expandScenariosMethods = function(dsc){merge(expandScenarios(dsc),data.frame(methodname=getMethodNames(dsc),stringsAsFactors=FALSE))}
+    
+#' @title Create a dataframe of scenarioname, seed, method and score combinations
+#'
+#' @description  Create a dataframe of scenarioname, seed, method and score combinations
+#' @param dsc the dsc to expand
+#' 
+#' @return data frame of all combinations
+#' @export
+expandScenariosMethodsScores = function(dsc){merge(expandScenariosMethods(dsc),data.frame(scorename=getScoreNames(dsc),stringsAsFactors=FALSE))}
+
+
 #' @title Add outputfilenames to the database
 #'
 #' @description Add outputfilenames
@@ -665,7 +717,7 @@ reset_scenario = function(dsc,scenarioname,force=FALSE){
 }
 
 db.create=function(dsc){
-  dsc$db=expandAll(dsc)
+  dsc$db=expandScenariosMethods(dsc)
   addFilenames(dsc)
 }
 
@@ -703,11 +755,12 @@ run_dsc=function(dsc,scenariosubset=NULL, methodsubset=NULL){
   runScenarios(dsc,scenariosubset)
   runMethods(dsc,scenariosubset,methodsubset)
   runParsers(dsc)
+  runScores(dsc,scenariosubset,methodsubset)
   
   #  make_data(scenarios[ssub])
 #  apply_methods(scenarios[ssub],methods[msub])
   
-  score_methods(dsc,scenarios[ssub],methods[msub],score)
+#  score_methods(dsc,scenarios[ssub],methods[msub],score)
   
       
   res=aggregate_results(dsc,scenarios[ssub],methods[msub],score)
