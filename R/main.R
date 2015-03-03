@@ -29,27 +29,10 @@ datafilename = function(dsc,seed,scenario,datadir="data"){
   return(file.path(dsc$file.dir,datadir,scenario$name,paste0("data.",seed,".RData")))
 }
 
-datafilename2 = function(seed, scenarioname,datadir="data"){
-  return(file.path(datadir,scenarioname,paste0("data.",seed,".RData")))
-}
-
-
-
-#' @export
-data_subdir = function(indexlist,datadir="data"){
-  return(file.path(datadir,indexlist$scenarioname))
-}
-
-
 
 #' @export
 outputfilename = function(dsc,seed, scenario, method, outputtype="default_output", outputdir="output"){
   return(file.path(dsc$file.dir,outputdir,outputtype,scenario$name,method$name,paste0("output.",seed,".RData")))
-}
-
-#' @export
-outputfilename2 = function(seed, scenarioname,methodname, outputtype="default_output", outputdir="output"){
-  return(file.path(outputdir,outputtype,scenarioname,methodname,paste0("output.",seed,".RData")))
 }
 
 
@@ -57,11 +40,6 @@ outputfilename2 = function(seed, scenarioname,methodname, outputtype="default_ou
 resultsfilename = function(dsc,seed, scenario, method, score=NULL, resultsdir="results"){
   if(is.null(score)){scorename="defaultscore"} else {scorename=score$name}
   return(file.path(dsc$file.dir,resultsdir,scorename,scenario$name,method$name,paste0("results.",seed,".RData")))
-}
-
-#' @export
-results_subdir = function(methodname,indexlist, resultsdir="results"){
-  return(file.path(resultsdir,indexlist$scenarioname,methodname))
 }
 
 #' @title Score a method on a single trial and save results
@@ -254,125 +232,6 @@ make_directories = function(dsc){
   make_dirs(outer(file.path(dsc$file.dir,"results"),ssmdirs,file.path))
 }
 
-#' @title Make the data (inputs and meta) for a DSC for a particular seed and scenario
-#'
-#' @description Make the data (inputs and meta) for a DSC for a particular seed and scenario. THe subscript rs refers to the "repetition" of a "scenario".
-#' I'm experiementing with naming conventions to try to make these easier to see, using . as a subscript to indicate
-#' that that subscript is applied over. By this logic make_data_scenario should be make_data_.s
-#' 
-#' @param seed (integer) the seed for the pseudo-rng 
-#' @param scenario a list including elements fn and args, the function name for the datamaker to be used and additional arguments
-#' @param overwrite boolean indicating whether to overwrite existing files; default is not to
-#' 
-#' @return data are saved in files in the data subdirectory
-#' @export 
-make_data_rs = function(seed,scenario,overwrite=FALSE){
-  if(!file.exists(datafilename(seed,scenario)) | overwrite){
-    set.seed(seed)
-    data = do.call(scenario$fn,list(args=scenario$args))
-    save(data,file=datafilename(seed,scenario))
-  } 
-}
-#' @title Make the data (inputs and meta) for a DSC for a particular scenario
-#'
-#' @description Make the data (inputs and meta) for a DSC for a particular scenario
-#' 
-#' @param scenario a list including elements fn and args, the function name for the datamaker to be used and additional arguments
-#' 
-#' @return data are saved in files in the data subdirectory
-#' @export 
-make_data_scenario = function(scenario){
-  print(paste0("Making data for scenario ",scenario$name))
-  lapply(scenario$seed,make_data_rs,scenario=scenario)
-}
-  
-  
-#' @title Make all the data for a DSC
-#'
-#' @description Make all the data for DSC using all combinations of seed and scenario
-#' 
-#' @param scenarios a list of scenarios
-#' 
-#' @return none; data are saved in files in the data subdirectory
-#' @export 
-make_data = function(scenarios){
-  lapply(scenarios,make_data_scenario)
-}
-
-
-#' @title Apply a method for a particular seed and scenario
-#'
-#' @description Apply a method for a particular seed and scenario. THe subscript _rsm refers to a particular repetition
-#' of a particular scenario for particular method.
-#' 
-#' @param seed (integer) the seed for the pseudo-rng which identifies/indexes trials (the seed is set to seed+1 before the method is run)
-#' @param scenario a list including elements fn and args, the function name for the datamaker to be used and additional arguments
-#' @param method a list including elements fn, name and args
-#' 
-#' @return none; output are saved in the output subdirectory
-#' @export 
-apply_method_rsm = function(seed, scenario, method){
-  if(!file.exists(outputfilename(seed,scenario,method))){
-    load(datafilename(seed,scenario))
-    set.seed(seed+1)
-    timedata = system.time(output <- do.call(method$fn,list(input=data$input,args=method$args)))
-    save(output,timedata,file=outputfilename(seed,scenario,method))
-  }
-}
-
-#' @title Apply a method to all trials for a particular scenario
-#'
-#' @description Apply a method to all trials for a particular scenario
-#' 
-#' @param scenario a list including elements seed and name
-#' @param method a list including fn and name
-#' 
-#' @return none; output are saved in the output subdirectory
-#' @export 
-apply_method_.sm = function(scenario,method){
-  print(paste0("Applying method ", method$name," to scenario ",scenario$name))
-  lapply(scenario$seed,apply_method_rsm,scenario=scenario,method=method)
-}
-
-
-#' @title Apply method to all scenarios
-#'
-#' @description Apply method to all scenarios
-#' 
-#' @param scenarios a list of scenarios
-#' @param method a list containing the method name, fn, etc
-#' 
-#' @return none; data are saved in files in the output subdirectory
-#' @export
-apply_method_..m = function(scenarios,method){
-  lapply(scenarios,apply_method_.sm,method=method)
-}
-
-#' @title Apply all methods to a scenario
-#'
-#' @description Apply all methods to a scenario
-#' 
-#' @param scenario a scenario
-#' @param methods a list of methods
-#' 
-#' @return none; data are saved in files in the output subdirectory
-#' @export
-apply_method_.s. = function(scenario,methods){
-  lapply(methods,apply_method_.sm,scenario=scenario)
-}
-
-#' @title Apply all methods to all scenarios
-#'
-#' @description Apply all methods to all scenarios
-#' 
-#' @param scenarios a list of scenarios
-#' @param methods a list of methods
-#' 
-#' @return none; data are saved in files in the output subdirectory
-#' @export 
-apply_methods = function(scenarios,methods){
-  lapply(scenarios,apply_method_.s.,methods=methods)
-}
 
 #' @title Sources all R files in a directory
 #'
