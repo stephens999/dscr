@@ -25,7 +25,7 @@ score = function(data, output){
               abs_error = abs(data$meta$truemean-output$meanest)))
 }
 
-addScore(dsc_eg,"basicscore",score)
+addScore(dsc_eg,score)
 
 ######## Run the DSC #################
 
@@ -45,5 +45,5 @@ res = run_dsc(dsc_eg, c("Cauchy","normal"),c("trimmedmean1"))
 aggregate(abs_error~method+scenario,res,mean)
 aggregate(squared_error~method+scenario,res,mean)
 
-
+shiny_plot(res)
 

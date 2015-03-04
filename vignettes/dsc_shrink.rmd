@@ -131,10 +131,10 @@ ash.wrapper=function(input,args=NULL){
 }
 ```
 
-When we add a method using the wrapper we specify its outputtype:
+When we add methods using the wrapper, we specify its outputtype:
 ```{r}
-addMethod(dsc_shrink,"ashr",ash.wrapper,outputtype="ash_output")
-addMethod(dsc_shrink,"ashr-max100",ash.wrapper,outputtype="ash_output",args=list(control=list(maxiter=100)))
+addMethod(dsc_shrink,"ash.n",ash.wrapper,outputtype="ash_output",args=list(mixcompdist="normal"))
+addMethod(dsc_shrink,"ash.hu",ash.wrapper,outputtype="ash_output",args=list(mixcompdist="halfuniform"))
 ```
 
 Now we can define a parser to convert the ash output to a simple list with single element `beta_est`. Note that when we add this parser function, we specify what the output type it is designed to convert from (`ash_output`) and to (`est_output`):

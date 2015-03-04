@@ -66,7 +66,7 @@ timefilename = function(dsc,seed, scenario, method, outputdir="output"){
 #' @export
 scoresfilename = function(dsc,seed, scenario, method, score=NULL, scoresdir="scores"){
   if(is.null(score)){scorename="defaultscore"} else {scorename=score$name}
-  return(file.path(dsc$file.dir,scoresdir,scorename,scenario$name,method$name,paste0("scores.",seed,".rds")))
+  return(file.path(dsc$file.dir,scoresdir,scenario$name,method$name,scorename,paste0("scores.",seed,".rds")))
 }
 
 
@@ -192,8 +192,8 @@ makeDirectories = function(dsc){
   #directories corresponding to scenario-method combinations
   smdirs = as.vector(outer(scenarionames,methodnames,file.path))
   
-  # scoretype-scenario-method combos
-  ssmdirs = as.vector(outer(scorenames,smdirs,file.path))
+  # scenario-method-scoretype combos
+  smsdirs = as.vector(outer(smdirs,scorenames,file.path))
   
   #scenario-method-outputtype combos
   smodirs = as.vector(outer(smdirs,outputtypes,file.path))
@@ -204,7 +204,7 @@ makeDirectories = function(dsc){
   make_dirs(outer(file.path(dsc$file.dir,"meta"),sddirs,file.path))
   make_dirs(outer(file.path(dsc$file.dir,"input"),sddirs,file.path))
   make_dirs(outer(file.path(dsc$file.dir,"output"),smodirs,file.path))  
-  make_dirs(outer(file.path(dsc$file.dir,"scores"),ssmdirs,file.path))
+  make_dirs(outer(file.path(dsc$file.dir,"scores"),smsdirs,file.path))
 }
 
 
