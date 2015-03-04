@@ -4,12 +4,15 @@
 \alias{run_dsc}
 \title{Run all methods on all scenarios for a DSC}
 \usage{
-run_dsc(dsc, scenariosubset = NULL, methodsubset = NULL)
+run_dsc(dsc, scenariosubset = NULL, methodsubset = NULL,
+  seedsubset = NULL)
 }
 \arguments{
 \item{scenariosubset}{a vector of the names of the scenarios to actually make and run}
 
 \item{methodsubset}{a vector of the names of the methods to run (default is to run all of them)}
+
+\item{seedsubset}{a vector of which seeds to run. Eg 1:2 would do seeds 1 and 2 (for scenarios that use that seed)}
 
 \item{scenarios}{a list of scenarios used to produce data=list(input,meta)}
 

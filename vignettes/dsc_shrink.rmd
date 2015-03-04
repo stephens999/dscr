@@ -1,7 +1,7 @@
----
-title: "outputParser Illustration"
-output: html_document
----
+<!--
+%\VignetteEngine{knitr::knitr}
+%\VignetteIndexEntry{A Vignette to illustrate dscr}
+-->
 
 One original idea in introducing the DSC was to be very prescriptive about
 input formats and output formats: all methods had to use the same input and output formats.

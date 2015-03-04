@@ -490,9 +490,10 @@ runScenario=function(dsc,seed,scenarioname){
 }
 
 #' @export
-runScenarios=function(dsc,ssub=NULL){
+runScenarios=function(dsc,ssub=NULL,seedsubset=NULL){
   df = expandScenarios(dsc)
   if(!is.null(ssub)){df = dplyr::filter(df,scenarioname %in% ssub)}
+  if(!is.null(seedsubset)){df = dplyr::filter(df,seed %in% seedsubset)}
   print(paste0("running Scenarios"))
   mapply(runScenario,seed=df$seed,scenarioname=df$scenarioname,MoreArgs=list(dsc=dsc))
   #reg1 <- makeRegistry(id="my_reg1", seed=123, file.dir="my_job_dir1")
@@ -560,10 +561,12 @@ runMethod=function(dsc,seed,scenarioname,methodname){
 
 
 #' @export
-runMethods=function(dsc,ssub=NULL,msub=NULL){
+runMethods=function(dsc,ssub=NULL,msub=NULL,seedsubset=NULL){
   df = expandScenariosMethods(dsc)
   if(!is.null(ssub)){df = dplyr::filter(df,scenarioname %in% ssub)}
   if(!is.null(msub)){df = dplyr::filter(df,methodname %in% msub)}
+  if(!is.null(seedsubset)){df = dplyr::filter(df,seed %in% seedsubset)}
+  
   print(paste0("running Methods"))
   mapply(runMethod,seed=df$seed,scenarioname=df$scenarioname,methodname=df$methodname,MoreArgs=list(dsc=dsc))
   #reg2 <- makeRegistry(id="my_reg2", seed=123, file.dir="my_job_dir2")
@@ -711,10 +714,11 @@ reset_scenario = function(dsc,scenarioname,force=FALSE){
 #' @param scorefn a function that takes output and scores it against data
 #' @param scenariosubset a vector of the names of the scenarios to actually make and run
 #' @param methodsubset a vector of the names of the methods to run (default is to run all of them)
-#' 
+#' @param seedsubset a vector of which seeds to run. Eg 1:2 would do seeds 1 and 2 (for scenarios that use that seed)
+#'
 #' @return data frame of results from all methods run on all scenarios
 #' @export
-run_dsc=function(dsc,scenariosubset=NULL, methodsubset=NULL){
+run_dsc=function(dsc,scenariosubset=NULL, methodsubset=NULL,seedsubset=NULL){
   scenarios=dsc$scenarios
   methods=dsc$methods
   
@@ -730,8 +734,8 @@ run_dsc=function(dsc,scenariosubset=NULL, methodsubset=NULL){
   
   makeDirectories(dsc)
   
-  runScenarios(dsc,scenariosubset)
-  runMethods(dsc,scenariosubset,methodsubset)
+  runScenarios(dsc,scenariosubset,seedsubset)
+  runMethods(dsc,scenariosubset,methodsubset,seedsubset)
   runOutputParsers(dsc)
   runScores(dsc,scenariosubset,methodsubset)
   

@@ -51,9 +51,9 @@ run-methods-clean:
 vignettes: install
 	cd vignettes;\
 	R -q -e 'library("knitr"); knit2html("one_sample_location.rmd"); browseURL("one_sample_location.html")';\
+        R -q -e 'library("knitr"); knit2html("dsc_shrink.rmd"); browseURL("dsc_shrink.html")';\
 
 # test before running since this involves recursive deletion
 .PHONY: vignettes-clean
 vignettes-clean:
 	cd vignettes || { echo "Cannot find the vignettes directory"; exit 1; } ;\
-	R -q -e 'unlink(setdiff(list.files(), c("one_sample_location.rmd")), recursive=TRUE)';\
