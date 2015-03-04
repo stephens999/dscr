@@ -17,4 +17,5 @@ Imports:
     knitr,
     BatchExperiments,
     BatchJobs,
-    ggplot2
+    ggplot2,
+    shiny
