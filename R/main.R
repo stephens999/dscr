@@ -534,7 +534,7 @@ runMethod=function(dsc,seed,scenarioname,methodname){
   if(!file.exists(outputfilename(dsc,seed,scenario,method))){
     input=readRDS(inputfilename(dsc,seed,scenario))
     set.seed(seed+1)
-    timedata = system.time(output <- do.call(method$fn,list(input=input,args=method$args)))
+    timedata = system.time(output <- try(do.call(method$fn,list(input=input,args=method$args))))
     saveRDS(output,file=outputfilename(dsc,seed,scenario,method))
     saveRDS(timedata,file=timefilename(dsc,seed,scenario,method))
   }
