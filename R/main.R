@@ -25,9 +25,9 @@ NULL
 #' @return string containing path to file
 #' 
 #' @export
-inputfilename = function(dsc,seed,scenario,inputdir="input",datatype=NULL){
-  if(is.null(datatype)){datatype=scenario$datatype}
-  return(file.path(dsc$file.dir,inputdir,scenario$name,datatype,paste0("input.",seed,".rds")))
+inputfilename = function(dsc,seed,scenario,inputdir="input",inputtype=NULL){
+  if(is.null(inputtype)){inputtype=scenario$inputtype}
+  return(file.path(dsc$file.dir,inputdir,scenario$name,inputtype,paste0("input.",seed,".rds")))
 }
 
 #' @title return the path to a meta file, parameter file, output file or results file
@@ -43,9 +43,9 @@ inputfilename = function(dsc,seed,scenario,inputdir="input",datatype=NULL){
 #' @return string containing path to file
 #' 
 #' @export
-metafilename = function(dsc,seed,scenario,metadir="meta",datatype=NULL){
-  if(is.null(datatype)){datatype=scenario$datatype}
-  return(file.path(dsc$file.dir,metadir,scenario$name,datatype,paste0("meta.",seed,".rds")))
+metafilename = function(dsc,seed,scenario,metadir="meta",metatype=NULL){
+  if(is.null(metatype)){metatype=scenario$metatype}
+  return(file.path(dsc$file.dir,metadir,scenario$name,metatype,paste0("meta.",seed,".rds")))
 }
 
 
@@ -187,7 +187,8 @@ makeDirectories = function(dsc){
   methodnames = names(dsc$methods)
   scorenames = names(dsc$scores)
   outputtypes = getOutputtypes(dsc)
-  datatypes = getDatatypes(dsc)
+  inputtypes = getInputtypes(dsc)
+  metatypes = getMetatypes(dsc)
   
   #directories corresponding to scenario-method combinations
   smdirs = as.vector(outer(scenarionames,methodnames,file.path))
@@ -198,11 +199,13 @@ makeDirectories = function(dsc){
   #scenario-method-outputtype combos
   smodirs = as.vector(outer(smdirs,outputtypes,file.path))
   
-  #scenario-datatype combos
-  sddirs = as.vector(outer(scenarionames,datatypes,file.path))
+  #scenario-metatype combos
+  sMdirs = as.vector(outer(scenarionames,metatypes,file.path))
+  sIdirs = as.vector(outer(scenarionames,inputtypes,file.path))
   
-  make_dirs(outer(file.path(dsc$file.dir,"meta"),sddirs,file.path))
-  make_dirs(outer(file.path(dsc$file.dir,"input"),sddirs,file.path))
+  
+  make_dirs(outer(file.path(dsc$file.dir,"meta"),sMdirs,file.path))
+  make_dirs(outer(file.path(dsc$file.dir,"input"),sIdirs,file.path))
   make_dirs(outer(file.path(dsc$file.dir,"output"),smodirs,file.path))  
   make_dirs(outer(file.path(dsc$file.dir,"scores"),smsdirs,file.path))
 }
@@ -259,10 +262,10 @@ new.dsc = function(name,file.dir){
 #' 
 #' @return nothing, but modifies the dsc environment
 #' @export
-addScenario = function(dsc,name, fn, args=NULL, seed,datatype="default_data"){
+addScenario = function(dsc,name, fn, args=NULL, seed,metatype="default_meta",inputtype="default_input"){
   checkValidName(dsc,name) 
   assert_that(is.function(fn), is.list(args) | is.null(args),is.numeric(seed))
-  dsc$scenarios[[name]]=list(name=name,fn=fn,args=args,seed=seed,datatype=datatype)
+  dsc$scenarios[[name]]=list(name=name,fn=fn,args=args,seed=seed,metatype=metatype,inputtype=inputtype)
 }
 
 
@@ -317,16 +320,28 @@ getOutputtypes=function(dsc){
   lapply(dsc$methods,function(x){return(x$outputtype)})  
 }
 
-#' @title return datatypes of the scenarios in a dsc
+#' @title return inputtypes of the scenarios in a dsc
 #'
-#' @description return datatypes of the scenarios in a dsc
+#' @description return inputtypes of the scenarios in a dsc
 #'
 #' @param dsc a dsc 
-#' @return list of datatypes
+#' @return list of inputtypes
 #' @export
-getDatatypes=function(dsc){
-  lapply(dsc$scenarios,function(x){return(x$datatype)})  
+getInputtypes=function(dsc){
+  lapply(dsc$scenarios,function(x){return(x$inputtype)})  
 }
+
+#' @title return metatypes of the scenarios in a dsc
+#'
+#' @description return metatypes of the scenarios in a dsc
+#'
+#' @param dsc a dsc 
+#' @return list of inputtypes
+#' @export
+getMetatypes=function(dsc){
+  lapply(dsc$scenarios,function(x){return(x$metatype)})  
+}
+
 
 
 
@@ -356,7 +371,8 @@ getScoreNames = function(dsc){return(names(dsc$scores))}
 
 getAllNames = function(dsc){return(c(getScenarioNames(dsc),getMethodNames(dsc),
                                      getOutputParserNames(dsc),getScoreNames(dsc),
-                                     getOutputtypes(dsc),getDatatypes(dsc)))}
+                                     getOutputtypes(dsc),getInputtypes(dsc),
+                                     getMetatypes(dsc)))}
 
 checkValidName=function(dsc,name){
   assert_that(is.character(name))

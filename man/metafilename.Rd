@@ -4,7 +4,7 @@
 \alias{metafilename}
 \title{return the path to a meta file, parameter file, output file or results file}
 \usage{
-metafilename(dsc, seed, scenario, metadir = "meta", datatype = NULL)
+metafilename(dsc, seed, scenario, metadir = "meta", metatype = NULL)
 }
 \arguments{
 \item{dsc}{}

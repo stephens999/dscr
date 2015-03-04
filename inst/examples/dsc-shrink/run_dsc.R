@@ -112,7 +112,7 @@ score = function(data, output){
   return(list(RMSE=sqrt(mean((output$beta_est-data$meta$beta)^2))))
 }
 
-addScore(dsc_shrink,"basicscore",score,outputtype="est_output")
+addScore(dsc_shrink,score,"beta_score",outputtype="est_output")
 
 ######## Run the DSC #################
 
@@ -142,7 +142,7 @@ score2 = function(data, output){
   return(list(pi0_est=output$pi0_est,pi0=data$meta$pi0))
 }
 
-addScore(dsc_shrink,"pi0score",score2,outputtype="pi0_output")
+addScore(dsc_shrink,score2,"pi0score",outputtype="pi0_output")
 res3=run_dsc(dsc_shrink)
 
 #runScore(dsc_shrink,1,"A","ashr","pi0score")

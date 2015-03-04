@@ -4,7 +4,7 @@
 \alias{inputfilename}
 \title{return the path to a data file, parameter file, output file or results file}
 \usage{
-inputfilename(dsc, seed, scenario, inputdir = "input", datatype = NULL)
+inputfilename(dsc, seed, scenario, inputdir = "input", inputtype = NULL)
 }
 \arguments{
 \item{seed}{}
