@@ -4,10 +4,10 @@
 \alias{shiny_plot}
 \title{plot results for DSC}
 \usage{
-shiny_plot(dsc)
+shiny_plot(res)
 }
 \arguments{
-\item{dsc}{}
+\item{res}{}
 }
 \value{
 a shiny plot

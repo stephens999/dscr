@@ -2,7 +2,7 @@
 % Please edit documentation in R/main.R
 \name{reset_method}
 \alias{reset_method}
-\title{Removes all output and results for a method}
+\title{Removes all output and scoress for a method}
 \usage{
 reset_method(dsc, methodname, force = FALSE)
 }
@@ -12,10 +12,9 @@ reset_method(dsc, methodname, force = FALSE)
 \item{method}{string indicating name of methods to remove output}
 }
 \value{
-nothing; simply delets files
+nothing; simply deletes files
 }
 \description{
-Removes all output and results for a method; primary intended purpose is to force re-running of that method.
-Works only for unix look-alikes?
+Removes all output and scores for a method; primary intended purpose is to force re-running of that method.
 }
 

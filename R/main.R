@@ -10,7 +10,7 @@
 #' @docType package
 #' @author Matthew Stephens <\email{mstephens@@uchicago.edu}>
 #' @keywords dscr
-#' @import psych plyr reshape2 knitr assertthat
+#' @import psych plyr reshape2 knitr assertthat ggplot2 shiny
 NULL
 
 #' @title return the path to a data file, parameter file, output file or results file
@@ -25,10 +25,29 @@ NULL
 #' @return string containing path to file
 #' 
 #' @export
-datafilename = function(dsc,seed,scenario,datadir="data",datatype=NULL){
+inputfilename = function(dsc,seed,scenario,inputdir="input",datatype=NULL){
   if(is.null(datatype)){datatype=scenario$datatype}
-  return(file.path(dsc$file.dir,datadir,scenario$name,datatype,paste0("data.",seed,".rds")))
+  return(file.path(dsc$file.dir,inputdir,scenario$name,datatype,paste0("input.",seed,".rds")))
 }
+
+#' @title return the path to a meta file, parameter file, output file or results file
+#'
+#' @description return the path to a meta file, parameter file, output file or results file
+#' 
+#' @param dsc
+#' @param seed
+#' @param scenario
+#' 
+#' @param inputdir/metadir/outputdir/scoresdir the (relative) path to the directory containing the relevant files
+#' 
+#' @return string containing path to file
+#' 
+#' @export
+metafilename = function(dsc,seed,scenario,metadir="meta",datatype=NULL){
+  if(is.null(datatype)){datatype=scenario$datatype}
+  return(file.path(dsc$file.dir,metadir,scenario$name,datatype,paste0("meta.",seed,".rds")))
+}
+
 
 
 #' @export
@@ -119,7 +138,8 @@ inspect_output_singletrial = function(seed, scenario,method){
 #' 
 #' @export
 inspect_data_singletrial = function(seed, scenario){
-  readRDS(file=datafilename(seed,scenario))  
+  list(meta=readRDS(file=metafilename(seed,scenario)),
+       input=readRDS(file=metafilename(seed,scenario)))
 }
 
 #' @title Get the results of a single method for a single scenario
@@ -162,7 +182,7 @@ make_dirs = function(namelist){
 }
 
 #' @export 
-make_directories = function(dsc){
+makeDirectories = function(dsc){
   scenarionames = names(dsc$scenarios)
   methodnames = names(dsc$methods)
   scorenames = names(dsc$scores)
@@ -181,7 +201,8 @@ make_directories = function(dsc){
   #scenario-datatype combos
   sddirs = as.vector(outer(scenarionames,datatypes,file.path))
   
-  make_dirs(outer(file.path(dsc$file.dir,"data"),sddirs,file.path))
+  make_dirs(outer(file.path(dsc$file.dir,"meta"),sddirs,file.path))
+  make_dirs(outer(file.path(dsc$file.dir,"input"),sddirs,file.path))
   make_dirs(outer(file.path(dsc$file.dir,"output"),smodirs,file.path))  
   make_dirs(outer(file.path(dsc$file.dir,"scores"),ssmdirs,file.path))
 }
@@ -219,7 +240,6 @@ new.dsc = function(name,file.dir){
   dsc$scores=list()
   dsc$outputParsers=list()
   dsc$name=name 
-  dsc$db=NULL
   dsc$res = NULL
   dsc$file.dir=file.dir
   return(dsc)
@@ -444,10 +464,11 @@ runOutputParsers = function(dsc){
 #' @export
 runScenario=function(dsc,seed,scenarioname){
   scenario = dsc$scenarios[[scenarioname]]
-  if(!file.exists(datafilename(dsc,seed,scenario))){
+  if(!file.exists(inputfilename(dsc,seed,scenario))){
     set.seed(seed)
     data = do.call(scenario$fn,list(args=scenario$args))
-    saveRDS(data,file=datafilename(dsc,seed,scenario))
+    saveRDS(data$meta,file=metafilename(dsc,seed,scenario))
+    saveRDS(data$input,file=inputfilename(dsc,seed,scenario))
   }   
 }
 
@@ -485,7 +506,8 @@ runScore = function(dsc,seed,scenarioname,methodname,scorename){
   
   if(file.exists(outputfilename(dsc,seed,scenario,method,outputtype=score$outputtype))){
     if(!file.exists(scoresfilename(dsc,seed,scenario,method,score))){
-      data=readRDS(file=datafilename(dsc,seed,scenario))
+      data=list(input=readRDS(file=inputfilename(dsc,seed,scenario)),
+                meta=readRDS(file=metafilename(dsc,seed,scenario)))
       output=readRDS(file=outputfilename(dsc,seed,scenario,method,outputtype=score$outputtype)) #also loads timedata
       timedata=readRDS(file=timefilename(dsc,seed,scenario,method))
       results=c(score$fn(data,output),as.list(timedata))
@@ -510,9 +532,9 @@ runMethod=function(dsc,seed,scenarioname,methodname){
   scenario = dsc$scenarios[[scenarioname]]
   method = dsc$methods[[methodname]]
   if(!file.exists(outputfilename(dsc,seed,scenario,method))){
-    data=readRDS(datafilename(dsc,seed,scenario))
+    input=readRDS(inputfilename(dsc,seed,scenario))
     set.seed(seed+1)
-    timedata = system.time(output <- do.call(method$fn,list(input=data$input,args=method$args)))
+    timedata = system.time(output <- do.call(method$fn,list(input=input,args=method$args)))
     saveRDS(output,file=outputfilename(dsc,seed,scenario,method))
     saveRDS(timedata,file=timefilename(dsc,seed,scenario,method))
   }
@@ -572,21 +594,21 @@ expandScenariosMethods = function(dsc){merge(expandScenarios(dsc),data.frame(met
 expandScenariosMethodsScores = function(dsc){merge(expandScenariosMethods(dsc),data.frame(scorename=getScoreNames(dsc),stringsAsFactors=FALSE))}
 
 
-#' @title Add outputfilenames to the database
-#'
-#' @description Add outputfilenames
-#' @param dsc the dsc to use
-#' 
-#' @return nothing, but modified dsc
-#' @export
-addFilenames=function(dsc,outputfiletype){
-  dsc$db=mutate(dsc$db,outputfile=outputfilename2(seed,scenarioname,methodname),
-                datafile = datafilename2(seed,scenarioname))
-}
+# #' @title Add outputfilenames to the database
+# #'
+# #' @description Add outputfilenames
+# #' @param dsc the dsc to use
+# #' 
+# #' @return nothing, but modified dsc
+# #' @export
+# addFilenames=function(dsc,outputfiletype){
+#   dsc$db=mutate(dsc$db,outputfile=outputfilename2(seed,scenarioname,methodname),
+#                 inputfile = inputfilename2(seed,scenarioname))
+# }
 
 #' @title Removes all data, output and results for the dsc
 #'
-#' @description Removes all files in results/ data/ and output/ subdirectories. Mostly useful for testing purposes.
+#' @description Removes all files in scores/ meta/, input/ and output/ subdirectories. Mostly useful for testing purposes.
 #'
 #' @param scenarios a list of scenarios in the dsc
 #' @param methods a list of methods in the dsc
@@ -603,15 +625,14 @@ reset_dsc = function(dsc,force=FALSE){
   }
 }
 
-#' @title Removes all output and results for a method
+#' @title Removes all output and scoress for a method
 #'
-#' @description Removes all output and results for a method; primary intended purpose is to force re-running of that method.
-#' Works only for unix look-alikes?
+#' @description Removes all output and scores for a method; primary intended purpose is to force re-running of that method.
 #'
 #' @param method string indicating name of methods to remove output
 #' @param force boolean, indicates whether to proceed without prompting user (prompt is to be implemented)
 #' 
-#' @return nothing; simply delets files
+#' @return nothing; simply deletes files
 #' @export
 reset_method = function(dsc,methodname,force=FALSE){
   assert_that(is.character(methodname))
@@ -652,16 +673,17 @@ reset_scenario = function(dsc,scenarioname,force=FALSE){
   }
   
   if(force){
-    file.remove(Sys.glob(file.path(dsc$file.dir,"data",scenarioname,"*","*")))
+    file.remove(Sys.glob(file.path(dsc$file.dir,"meta",scenarioname,"*","*")))
+    file.remove(Sys.glob(file.path(dsc$file.dir,"input",scenarioname,"*","*")))
     file.remove(Sys.glob(file.path(dsc$file.dir,"output",scenarioname,"*","*","*")))
     file.remove(Sys.glob(file.path(dsc$file.dir,"scores","*",scenarioname,"*","*")))    
   }
 }
 
-db.create=function(dsc){
-  dsc$db=expandScenariosMethods(dsc)
-  addFilenames(dsc)
-}
+# db.create=function(dsc){
+#   dsc$db=expandScenariosMethods(dsc)
+#   addFilenames(dsc)
+# }
 
 #' @title Run all methods on all scenarios for a DSC
 #'
@@ -688,10 +710,8 @@ run_dsc=function(dsc,scenariosubset=NULL, methodsubset=NULL){
     methodnames=lapply(methods,function(x){return(x$name)})
     msub = methodnames %in% methodsubset
   } else { msub= rep(TRUE, length(methods))}
-  #dsc$db=NULL
-  #db.create(dsc)
   
-  make_directories(dsc)
+  makeDirectories(dsc)
   
   runScenarios(dsc,scenariosubset)
   runMethods(dsc,scenariosubset,methodsubset)
@@ -719,13 +739,13 @@ run_dsc=function(dsc,scenariosubset=NULL, methodsubset=NULL){
 #'
 #' @description interactive plot for results of DSC
 #'
-#' @param dsc
+#' @param res
 #' @return a shiny plot
 #' @export
-shiny_plot=function(dsc){
-  scenario_names = as.character(unique(dsc$res$scenario))
-  method_names = as.character(unique(dsc$res$method))
-  numeric_criteria = names(dsc$res)[unlist(lapply(dsc$res,is.numeric))]
+shiny_plot=function(res){
+  scenario_names = as.character(unique(res$scenario))
+  method_names = as.character(unique(res$method))
+  numeric_criteria = names(res)[unlist(lapply(res,is.numeric))]
 
   ui=shinyUI(pageWithSidebar(
     headerPanel('DSC Results'),
@@ -751,7 +771,7 @@ shiny_plot=function(dsc){
   server = shinyServer(
     function(input, output, session) {
       output$plot1 <- renderPlot({
-        res.filter = dplyr::filter(dsc$res,scenario %in% input$scen.subset & method %in% input$method.subset)
+        res.filter = dplyr::filter(res,scenario %in% input$scen.subset & method %in% input$method.subset)
         print(input)
         res.filter$value = res.filter[[input$criteria]]
         ggplot(res.filter,aes(method,value,color=method)) + geom_boxplot() + facet_grid(.~scenario)

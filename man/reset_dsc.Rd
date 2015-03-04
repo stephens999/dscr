@@ -2,11 +2,17 @@
 % Please edit documentation in R/main.R
 \name{reset_dsc}
 \alias{reset_dsc}
-\title{Removes all data, output and results for the dsc}
+\title{Add outputfilenames to the database
+#
+#}
 \usage{
 reset_dsc(dsc, force = FALSE)
 }
 \arguments{
+\item{dsc}{the dsc to use
+#
+#}
+
 \item{force}{boolean, indicates whether to proceed without prompting user}
 
 \item{scenarios}{a list of scenarios in the dsc}
@@ -14,9 +20,16 @@ reset_dsc(dsc, force = FALSE)
 \item{methods}{a list of methods in the dsc}
 }
 \value{
+nothing, but modified dsc
+#
+
 nothing; simply deletes files
 }
 \description{
-Removes all files in results/ data/ and output/ subdirectories. Mostly useful for testing purposes.
+Add outputfilenames
+#
+}
+\details{
+#
 }
 
