@@ -111,6 +111,32 @@ inspect_results_singletrial = function(seed, scenario,method,score){
   readRDS(file=scoresfilename(seed,scenario,method,score))  
 }
 
+#' @title return the data and output for a single method for a single trial
+#'
+#' @description return a list containing data and output for a single method,trial
+#' @param seed
+#' @param scenario
+#' @param method
+#' 
+#' @return results list with components data, output
+#' 
+#' @export
+loadExample = function(dsc,seed, scenarioname,methodname){
+  assert_that(is.numeric(seed))
+  checkValidName(dsc,scenarioname)
+  checkValidName(dsc,methodname)
+  assert_that(methodname %in% getMethodNames(dsc))
+  assert_that(scenarioname %in% getScenarioNames(dsc))
+  scenario=dsc$scenarios[[scenarioname]]
+  method=dsc$methods[[methodname]]
+  output= readRDS(file=outputfilename(dsc,seed,scenario,method))
+  input = readRDS(file=inputfilename(dsc,seed,scenario))
+  meta = readRDS(file =metafilename(dsc,seed,scenario))
+  return(list(input=input, meta=meta, output=output))
+}
+  
+  
+  
 #' @title provide the output of a single method for a single trial
 #'
 #' @description provide the output of a single method for a single trial; intended primarily for troubleshooting and debugging
@@ -264,6 +290,7 @@ new.dsc = function(name,file.dir){
 #' @export
 addScenario = function(dsc,name, fn, args=NULL, seed,metatype="default_meta",inputtype="default_input"){
   checkValidName(dsc,name) 
+  checkUniqueName(dsc,name)
   assert_that(is.function(fn), is.list(args) | is.null(args),is.numeric(seed))
   dsc$scenarios[[name]]=list(name=name,fn=fn,args=args,seed=seed,metatype=metatype,inputtype=inputtype)
 }
@@ -284,6 +311,7 @@ addScenario = function(dsc,name, fn, args=NULL, seed,metatype="default_meta",inp
 #' @export
 addMethod = function(dsc,name, fn, args=NULL,outputtype="default_output"){
   checkValidName(dsc,name) 
+  checkUniqueName(dsc,name)
   assert_that(is.function(fn), is.list(args) | is.null(args))
   dsc$methods[[name]]=list(name=name,fn=fn,args=args,outputtype = outputtype)
 }
@@ -304,6 +332,7 @@ addMethod = function(dsc,name, fn, args=NULL,outputtype="default_output"){
 #' @export
 addScore = function(dsc,fn,name="default_score",outputtype="default_output"){
   checkValidName(dsc,name)
+  checkUniqueName(dsc,name)
   assert_that(is.function(fn))
  
   dsc$scores[[name]]=list(name=name,fn=fn,outputtype=outputtype)
@@ -358,6 +387,7 @@ getMetatypes=function(dsc){
 #' @export
 addOutputParser = function(dsc,name,fn,outputtype_from="default_output",outputtype_to){
   checkValidName(dsc,name)  
+  checkUniqueName(dsc,name)
   assert_that(is.function(fn))
   assert_that(outputtype_from %in% getOutputtypes(dsc))  
   dsc$outputParsers[[name]]=list(name=name,fn=fn,outputtype_from=outputtype_from,outputtype_to=outputtype_to)
@@ -376,8 +406,11 @@ getAllNames = function(dsc){return(c(getScenarioNames(dsc),getMethodNames(dsc),
 
 checkValidName=function(dsc,name){
   assert_that(is.character(name))
-  assert_that(!(name %in% getAllNames(dsc))) #make all names unique
   assert_that(!grepl("[/\\:*\"?<>|]",name)) #exclude characters not allowed in filename
+}
+
+checkUniqueName=function(dsc,name){
+  assert_that(!(name %in% getAllNames(dsc))) #make all names unique
 }
 
 scenarioExists = function(dsc,scenarioname){return(scenarioname %in% names(dsc$scenarios))}

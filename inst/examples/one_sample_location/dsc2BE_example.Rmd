@@ -23,7 +23,7 @@ the BE pipeline, which handles the seeds internally (which seems preferable to m
 library("dscr")
 library("BatchExperiments")
 
-dsc_eg=new.dsc("one-sample-location")
+dsc_eg=new.dsc("one-sample-location","osl-files")
 
 sourceDir("methods")
 sourceDir("datamakers")
