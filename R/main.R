@@ -745,8 +745,8 @@ run_dsc=function(dsc,scenariosubset=NULL, methodsubset=NULL,seedsubset=NULL){
 #  score_methods(dsc,scenarios[ssub],methods[msub],score)
   
   if(length(dsc$scores)>1){
-    dsc$res=mapply(aggregate_results,dsc$scores,
-             MoreArgs=list(dsc=dsc,scenarios=scenarios[ssub],methods=methods[msub]))
+    dsc$res=lapply(dsc$scores,aggregate_results,
+             dsc=dsc,scenarios=scenarios[ssub],methods=methods[msub])
   } else {
     dsc$res=aggregate_results(dsc=dsc,scenarios=scenarios[ssub],methods=methods[msub],dsc$scores[[1]])
   }
