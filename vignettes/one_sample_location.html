@@ -216,21 +216,26 @@ three scenarios: a normal distribution, a uniform distribution
 and a Cauchy (t distribution on 1df). And we&#39;ll compare three methods: 
 sample mean, sample median and the Winsorized mean (from the psych package). </p>
 
-<p>First load the library.</p>
+<p>First load the library, and initialize a new &ldquo;dsc&rdquo; using new.dsc.
+This object will be used to store the details of the dsc.</p>
 
 <pre><code class="r">library(dscr)
-#  install_github(repo=&quot;stephens999/dscr&quot;)
+</code></pre>
+
+<pre><code>## Warning: replacing previous import by &#39;psych::%+%&#39; when loading &#39;dscr&#39;
+</code></pre>
+
+<pre><code class="r">#  install_github(repo=&quot;stephens999/dscr&quot;)
+dsc_osl = new.dsc(&quot;one_sample_location&quot;,&quot;one_samp_loc&quot;)
 </code></pre>
 
 <p>Now define the function to create data, which consists of input, and meta-data. 
 The input is what the methods will be given. The meta data will be used
 when scoring the methods. So here, the input is a random sample, and the meta-data is the true mean (0). </p>
 
-<p>This function must take a first parameter seed (which is the seed of the pseudo-random number generator, set before any data are generated). Additional arguments can be passed through a second parameter, args, which is a list. In this case we use args to pass number of samples and the type distribution to be simulated from.</p>
+<p>This function can take a single parameter args, which is a list. In this case we use args to pass number of samples and the type distribution to be simulated from.</p>
 
-<pre><code class="r">datamaker = function(seed,args){
-
-  set.seed(seed)
+<pre><code class="r">datamaker = function(args){
 
   nsamp=args$nsamp
   disttype=args$disttype
@@ -261,10 +266,9 @@ when scoring the methods. So here, the input is a random sample, and the meta-da
 <p>Now define the scenarios that use this datamaker. Each scenario is determined by the datamaker,
 its arguments, and the seeds it uses. (Maybe the list of seeds should not be part of the scenario definition - I&#39;m not sure). Each scenario also has a name which is used for naming the scenario in results and also output directories - so use something that is a valid filename. </p>
 
-<pre><code class="r">scenarios=list()
-scenarios[[1]]=list(name=&quot;normal&quot;,fn=datamaker,args=list(disttype=&quot;normal&quot;,nsamp=1000),seed=1:100)
-scenarios[[2]]=list(name=&quot;uniform&quot;,fn=datamaker,args=list(disttype=&quot;uniform&quot;,nsamp=1000),seed=1:100)
-scenarios[[3]]=list(name=&quot;Cauchy&quot;,fn=datamaker,args=list(disttype=&quot;Cauchy&quot;,nsamp=1000),seed=1:100)
+<pre><code class="r">addScenario(dsc_osl,name=&quot;normal&quot;,datamaker,args=list(disttype=&quot;normal&quot;,nsamp=1000),seed=1:100)
+addScenario(dsc_osl,name=&quot;uniform&quot;,datamaker,args=list(disttype=&quot;uniform&quot;,nsamp=1000),seed=1:100)
+addScenario(dsc_osl,name=&quot;Cauchy&quot;,datamaker,args=list(disttype=&quot;Cauchy&quot;,nsamp=1000),seed=1:100)
 </code></pre>
 
 <p>Now define the methods.
@@ -295,10 +299,9 @@ winsor.wrapper = function(input,args){
 <p>Now define a list of the methods we&#39;ll use. 
 Each method is defined by its name, the function used to implement it, and any additional arguments (none here):</p>
 
-<pre><code class="r">  methods=list()
-  methods[[1]] = list(name=&quot;mean&quot;,fn =mean.wrapper,args=NULL)
-  methods[[2]] = list(name=&quot;median&quot;,fn=median.wrapper,args=NULL)
-  methods[[3]] = list(name=&quot;winsor&quot;,fn=winsor.wrapper,args=NULL)
+<pre><code class="r">  addMethod(dsc_osl,name=&quot;mean&quot;,fn =mean.wrapper,args=NULL)
+  addMethod(dsc_osl,name=&quot;median&quot;,fn=median.wrapper,args=NULL)
+  addMethod(dsc_osl,name=&quot;winsor&quot;,fn=winsor.wrapper,args=NULL)
 </code></pre>
 
 <p>And define a score function that says how well a method has done. Here we&#39;ll use squared error
@@ -307,12 +310,12 @@ and absolute error:</p>
 <pre><code class="r">score = function(data, output){
   return(list(squared_error = (data$meta$truemean-output$meanest)^2, abs_error = abs(data$meta$truemean-output$meanest)))
 }
+  addScore(dsc_osl,score)
 </code></pre>
 
 <p>Now we&#39;ll run all the methods on all the scenarios:</p>
 
-<pre><code class="r">  library(dscr)
-  res=run_dsc(scenarios,methods,score)
+<pre><code class="r">  res=run_dsc(dsc_osl)
 </code></pre>
 
 <p>This returns a dataframe with the results of running all the methods on all the scenarios:</p>
@@ -320,13 +323,20 @@ and absolute error:</p>
 <pre><code class="r">  head(res)
 </code></pre>
 
-<pre><code>##   seed scenario method squared_error   abs_error
-## 1    1   normal   mean  1.356792e-04 0.011648142
-## 2    2   normal   mean  3.843843e-03 0.061998736
-## 3    3   normal   mean  4.091567e-05 0.006396535
-## 4    4   normal   mean  1.185285e-03 0.034427966
-## 5    5   normal   mean  3.027412e-04 0.017399459
-## 6    6   normal   mean  6.387521e-04 0.025273546
+<pre><code>##      .id seed scenario method squared_error   abs_error user.self sys.self
+## 1 normal    1   normal   mean  1.356792e-04 0.011648142         0        0
+## 2 normal    2   normal   mean  3.843843e-03 0.061998736         0        0
+## 3 normal    3   normal   mean  4.091567e-05 0.006396535         0        0
+## 4 normal    4   normal   mean  1.185285e-03 0.034427966         0        0
+## 5 normal    5   normal   mean  3.027412e-04 0.017399459         0        0
+## 6 normal    6   normal   mean  6.387521e-04 0.025273546         0        0
+##   elapsed user.child sys.child
+## 1   0.000          0         0
+## 2   0.000          0         0
+## 3   0.000          0         0
+## 4   0.000          0         0
+## 5   0.000          0         0
+## 6   0.001          0         0
 </code></pre>
 
 <p>And we can summarize the results (eg mean squared error) using the aggregate function</p>
@@ -335,30 +345,30 @@ and absolute error:</p>
 </code></pre>
 
 <pre><code>##   method scenario  abs_error
-## 1   mean   normal 0.02723692
-## 2 median   normal 0.03276252
-## 3 winsor   normal 0.02801455
-## 4   mean  uniform 0.01434410
-## 5 median  uniform 0.02357357
-## 6 winsor  uniform 0.01739025
-## 7   mean   Cauchy 1.57503809
-## 8 median   Cauchy 0.04001257
-## 9 winsor   Cauchy 0.05056598
+## 1   mean   Cauchy 1.57503809
+## 2 median   Cauchy 0.04001257
+## 3 winsor   Cauchy 0.05056598
+## 4   mean   normal 0.02723692
+## 5 median   normal 0.03276252
+## 6 winsor   normal 0.02801455
+## 7   mean  uniform 0.01434410
+## 8 median  uniform 0.02357357
+## 9 winsor  uniform 0.01739025
 </code></pre>
 
 <pre><code class="r">  aggregate(squared_error~method+scenario,res,mean)
 </code></pre>
 
 <pre><code>##   method scenario squared_error
-## 1   mean   normal  1.128859e-03
-## 2 median   normal  1.609965e-03
-## 3 winsor   normal  1.213718e-03
-## 4   mean  uniform  2.922071e-04
-## 5 median  uniform  7.871420e-04
-## 6 winsor  uniform  4.371870e-04
-## 7   mean   Cauchy  1.082254e+01
-## 8 median   Cauchy  2.752190e-03
-## 9 winsor   Cauchy  4.545666e-03
+## 1   mean   Cauchy  1.082254e+01
+## 2 median   Cauchy  2.752190e-03
+## 3 winsor   Cauchy  4.545666e-03
+## 4   mean   normal  1.128859e-03
+## 5 median   normal  1.609965e-03
+## 6 winsor   normal  1.213718e-03
+## 7   mean  uniform  2.922071e-04
+## 8 median  uniform  7.871420e-04
+## 9 winsor  uniform  4.371870e-04
 </code></pre>
 
 <p>Now suppose we are coming in and want to add a method, say the trimmed mean, to the comparison.
@@ -369,75 +379,78 @@ Here is what we do (note that the different settings of the argument are treated
     return(list(meanest=mean(input$x,trim=args$trim)))
   }
 
-  methods[[4]] = list(name=&quot;trimmedmean1&quot;,fn = trimmedmean.wrapper,args=list(trim=0.2))
-  methods[[5]] = list(name=&quot;trimmedmean2&quot;,fn = trimmedmean.wrapper,args=list(trim=0.4))
+  addMethod(dsc_osl,name=&quot;trimmedmean1&quot;,fn = trimmedmean.wrapper,args=list(trim=0.2))
+  addMethod(dsc_osl,name=&quot;trimmedmean2&quot;,fn = trimmedmean.wrapper,args=list(trim=0.4))
+  res=run_dsc(dsc_osl)
+</code></pre>
 
-  res=run_dsc(scenarios, methods, score)
-  aggregate(abs_error~method+scenario,res,mean)
+<pre><code class="r">  aggregate(abs_error~method+scenario,res,mean)
 </code></pre>
 
 <pre><code>##          method scenario  abs_error
-## 1          mean   normal 0.02723692
-## 2        median   normal 0.03276252
-## 3        winsor   normal 0.02801455
-## 4  trimmedmean1   normal 0.02847477
-## 5  trimmedmean2   normal 0.02944465
-## 6          mean  uniform 0.01434410
-## 7        median  uniform 0.02357357
-## 8        winsor  uniform 0.01739025
-## 9  trimmedmean1  uniform 0.01922955
-## 10 trimmedmean2  uniform 0.02201650
-## 11         mean   Cauchy 1.57503809
-## 12       median   Cauchy 0.04001257
-## 13       winsor   Cauchy 0.05056598
-## 14 trimmedmean1   Cauchy 0.04126206
-## 15 trimmedmean2   Cauchy 0.03925086
+## 1          mean   Cauchy 1.57503809
+## 2        median   Cauchy 0.04001257
+## 3  trimmedmean1   Cauchy 0.04126206
+## 4  trimmedmean2   Cauchy 0.03925086
+## 5        winsor   Cauchy 0.05056598
+## 6          mean   normal 0.02723692
+## 7        median   normal 0.03276252
+## 8  trimmedmean1   normal 0.02847477
+## 9  trimmedmean2   normal 0.02944465
+## 10       winsor   normal 0.02801455
+## 11         mean  uniform 0.01434410
+## 12       median  uniform 0.02357357
+## 13 trimmedmean1  uniform 0.01922955
+## 14 trimmedmean2  uniform 0.02201650
+## 15       winsor  uniform 0.01739025
 </code></pre>
 
 <pre><code class="r">  aggregate(squared_error~method+scenario,res,mean)
 </code></pre>
 
 <pre><code>##          method scenario squared_error
-## 1          mean   normal  1.128859e-03
-## 2        median   normal  1.609965e-03
-## 3        winsor   normal  1.213718e-03
-## 4  trimmedmean1   normal  1.230613e-03
-## 5  trimmedmean2   normal  1.339422e-03
-## 6          mean  uniform  2.922071e-04
-## 7        median  uniform  7.871420e-04
-## 8        winsor  uniform  4.371870e-04
-## 9  trimmedmean1  uniform  5.299378e-04
-## 10 trimmedmean2  uniform  7.128600e-04
-## 11         mean   Cauchy  1.082254e+01
-## 12       median   Cauchy  2.752190e-03
-## 13       winsor   Cauchy  4.545666e-03
-## 14 trimmedmean1   Cauchy  3.041337e-03
-## 15 trimmedmean2   Cauchy  2.570032e-03
+## 1          mean   Cauchy  1.082254e+01
+## 2        median   Cauchy  2.752190e-03
+## 3  trimmedmean1   Cauchy  3.041337e-03
+## 4  trimmedmean2   Cauchy  2.570032e-03
+## 5        winsor   Cauchy  4.545666e-03
+## 6          mean   normal  1.128859e-03
+## 7        median   normal  1.609965e-03
+## 8  trimmedmean1   normal  1.230613e-03
+## 9  trimmedmean2   normal  1.339422e-03
+## 10       winsor   normal  1.213718e-03
+## 11         mean  uniform  2.922071e-04
+## 12       median  uniform  7.871420e-04
+## 13 trimmedmean1  uniform  5.299378e-04
+## 14 trimmedmean2  uniform  7.128600e-04
+## 15       winsor  uniform  4.371870e-04
 </code></pre>
 
 <p>Note that at present run_dsc does not recreate any files that are already there.
 Thus in this case it is only running the new methods (trimmedmean1 and trimmedmean2)- the results for
 other methods are already there. If you want to force it to recreate the files then you need
-to delete them manually before running run_dsc.</p>
+to delete them manually before running run_dsc. You can do this from with R using the functions <code>reset_dsc()</code> to remove all the results, or <code>reset_scenario</code>   or <code>reset_method</code>
+to remove results only for a particular method or scenario.</p>
 
-<p>I&#39;m still wondering about how to deal with this best.
-I will note that it is possible within run_dsc to specify to run the dsc on only a subset of the methods and scenarios</p>
+<p>I will note that it is possible within run_dsc to specify to run the dsc on only a subset of the methods and scenarios</p>
 
-<pre><code class="r">  res = run_dsc(scenarios, methods, score, c(&quot;Cauchy&quot;,&quot;normal&quot;),c(&quot;trimmedmean1&quot;))
-  aggregate(abs_error~method+scenario,res,mean)
+<pre><code class="r">  res = run_dsc(dsc_osl, c(&quot;Cauchy&quot;,&quot;normal&quot;),c(&quot;trimmedmean1&quot;))
+</code></pre>
+
+<pre><code class="r">  aggregate(abs_error~method+scenario,res,mean)
 </code></pre>
 
 <pre><code>##         method scenario  abs_error
-## 1 trimmedmean1   normal 0.02847477
-## 2 trimmedmean1   Cauchy 0.04126206
+## 1 trimmedmean1   Cauchy 0.04126206
+## 2 trimmedmean1   normal 0.02847477
 </code></pre>
 
 <pre><code class="r">  aggregate(squared_error~method+scenario,res,mean)
 </code></pre>
 
 <pre><code>##         method scenario squared_error
-## 1 trimmedmean1   normal   0.001230613
-## 2 trimmedmean1   Cauchy   0.003041337
+## 1 trimmedmean1   Cauchy   0.003041337
+## 2 trimmedmean1   normal   0.001230613
 </code></pre>
 
 </body>
