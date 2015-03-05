@@ -42,7 +42,7 @@ dsc2BE=function(dsc,id,repl=100){
     }
   }
   for(i in 1:length(dsc$methods)){
-    addAlgorithm(reg, id=dsc$methods[[i]]$name, fun=msfn2afn(dsc$methods[[i]]$fn,dsc$scorefn))
+    addAlgorithm(reg, id=dsc$methods[[i]]$name, fun=msfn2afn(dsc$methods[[i]]$fn,dsc$scores[[1]]$fn))
     if(!is.null(dsc$methods[[i]]$args)){
       algo.designs[[i]]=makeDesign(id,exhaustive=dsc$methods[[i]]$args) 
     }
