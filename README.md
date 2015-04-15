@@ -11,6 +11,7 @@ One vignette depends on the `ashr` package, so to get that to work you will have
 You can do this using:
 
 `devtools::install_github("stephens999/ashr")` 
+
 `devtools::install_github("stephens999/dscr",build_vignettes=TRUE)` 
 
 in R.
