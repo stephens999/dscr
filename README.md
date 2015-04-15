@@ -7,7 +7,13 @@ This repo contains work on an R package for performing dynamic statistical compa
 
 For a brief introduction to DSCs see [here](https://github.com/stephens999/dscr/blob/master/intro.md).
 
-To install use `devtools::install_github("stephens999/dscr",build_vignettes=TRUE)` in R.
+One vignette depends on the `ashr` package, so to get that to work you will have to install both `ashr` and `dscr`.
+You can do this using:
+
+`devtools::install_github("stephens999/ashr")` 
+`devtools::install_github("stephens999/dscr",build_vignettes=TRUE)` 
+
+in R.
 
 Or in terminal use:
 
