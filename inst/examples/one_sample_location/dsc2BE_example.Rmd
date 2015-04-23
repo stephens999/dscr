@@ -12,11 +12,7 @@ save everything that the dsc pipeline saves. Specifically the BE pipeline
 only appears to save the final results of each method, which the way I have
 set it up here is the score. In comparison dsc saves the data, output and score.
 
-First I set up the DSC. There is one important change from the previous
-dscr-template setup: if you look at datamaker.R the default to seed is NULL,
-and the first line sets the
-seed only if the seed is supplied. This is to help make it work with
-the BE pipeline, which handles the seeds internally (which seems preferable to me now).
+First I set up the DSC. 
 
 
 ```{r}

@@ -561,7 +561,7 @@ runScore = function(dsc,seed,scenarioname,methodname,scorename){
                 meta=readRDS(file=metafilename(dsc,seed,scenario)))
       output=readRDS(file=outputfilename(dsc,seed,scenario,method,outputtype=score$outputtype)) #also loads timedata
       timedata=readRDS(file=timefilename(dsc,seed,scenario,method))
-      results=c(score$fn(data,output),as.list(timedata))
+      results=c(score=score$fn(data,output),as.list(timedata))
       saveRDS(results,file=scoresfilename(dsc,seed,scenario,method,score))
     }
   }
