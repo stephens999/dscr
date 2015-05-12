@@ -537,6 +537,19 @@ runScenarios=function(dsc,ssub=NULL,seedsubset=NULL){
 
 #' @title Score a method on a single trial and save results
 #'
+#' @description tries to deal with scores that don't have names
+#' 
+#' @param score, the vector of scores with some elements possibly named
+#'
+#' @return a vector of names for a score. For elements of score already named, the name stays the same; for unnamed elements the name is scorej where j is the index of the element
+#' 
+#' @export
+makeNiceScoreNames = function(s){  
+  paste0(ifelse(names(s)=="","score",""),ifelse(names(s)=="",1:length(s),names(s)))
+}
+
+#' @title Score a method on a single trial and save results
+#'
 #' @description Score results of a single method for a single trial and produce (and save) corresponding results
 #' 
 #' @param seed the seed to score
@@ -561,7 +574,9 @@ runScore = function(dsc,seed,scenarioname,methodname,scorename){
                 meta=readRDS(file=metafilename(dsc,seed,scenario)))
       output=readRDS(file=outputfilename(dsc,seed,scenario,method,outputtype=score$outputtype)) #also loads timedata
       timedata=readRDS(file=timefilename(dsc,seed,scenario,method))
-      results=c(score=score$fn(data,output),as.list(timedata))
+      res=score$fn(data,output)
+      names(res)=makeNiceScoreNames(res)
+      results=c(res,as.list(timedata))
       saveRDS(results,file=scoresfilename(dsc,seed,scenario,method,score))
     }
   }
