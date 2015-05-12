@@ -10,7 +10,7 @@
 #' @docType package
 #' @author Matthew Stephens <\email{mstephens@@uchicago.edu}>
 #' @keywords dscr
-#' @import psych plyr reshape2 knitr assertthat ggplot2 shiny
+#' @import plyr reshape2 knitr assertthat ggplot2 shiny
 NULL
 
 #' @title return the path to a data file, parameter file, output file or results file
