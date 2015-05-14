@@ -220,12 +220,7 @@ sample mean, sample median and the Winsorized mean (from the psych package). </p
 This object will be used to store the details of the dsc.</p>
 
 <pre><code class="r">library(dscr)
-</code></pre>
-
-<pre><code>## Warning: replacing previous import by &#39;psych::%+%&#39; when loading &#39;dscr&#39;
-</code></pre>
-
-<pre><code class="r">#  install_github(repo=&quot;stephens999/dscr&quot;)
+#  install_github(repo=&quot;stephens999/dscr&quot;)
 dsc_osl = new.dsc(&quot;one_sample_location&quot;,&quot;one_samp_loc&quot;)
 </code></pre>
 
@@ -281,9 +276,7 @@ that makes sure that they conform to this input-output requirement. (Note that t
 winsor.wrapper function makes use of the function winsor.mean from the psych package.)
 Note that we allow for additional arguments ot each function, but don&#39;t use them here.</p>
 
-<pre><code class="r">library(psych)
-
-mean.wrapper = function(input,args){
+<pre><code class="r">mean.wrapper = function(input,args){
   return(list(meanest = mean(input$x)))  
 }
 
@@ -292,7 +285,7 @@ median.wrapper = function(input,args){
 }
 
 winsor.wrapper = function(input,args){
-  return(list(meanest = winsor.mean(input$x,trim=0.2)))
+  return(list(meanest = psych::winsor.mean(input$x,trim=0.2)))
 }
 </code></pre>
 
@@ -331,12 +324,12 @@ and absolute error:</p>
 ## 5 normal    5   normal   mean  3.027412e-04 0.017399459         0        0
 ## 6 normal    6   normal   mean  6.387521e-04 0.025273546         0        0
 ##   elapsed user.child sys.child
-## 1   0.000          0         0
-## 2   0.000          0         0
-## 3   0.000          0         0
-## 4   0.000          0         0
-## 5   0.000          0         0
-## 6   0.001          0         0
+## 1       0          0         0
+## 2       0          0         0
+## 3       0          0         0
+## 4       0          0         0
+## 5       0          0         0
+## 6       0          0         0
 </code></pre>
 
 <p>And we can summarize the results (eg mean squared error) using the aggregate function</p>

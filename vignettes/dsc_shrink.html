@@ -235,18 +235,17 @@ mixture, where one of the components is a point mass at 0 of mass \(\pi_0\), whi
 and the estimates \(\hat\beta\) and \(s\) as input-data.</p>
 
 <pre><code class="r">library(dscr)
-</code></pre>
-
-<pre><code>## Warning: replacing previous import by &#39;psych::%+%&#39; when loading &#39;dscr&#39;
-</code></pre>
-
-<pre><code class="r">library(ashr)
+library(ashr)
 </code></pre>
 
 <pre><code>## Loading required package: truncnorm
+## Loading required package: plyr
 ## Loading required package: SQUAREM
 ## Loading required package: doParallel
 ## Loading required package: foreach
+## foreach: simple, scalable parallel programming from Revolution Analytics
+## Use Revolution R for scalability, fault tolerance and more.
+## http://www.revolutionanalytics.com
 ## Loading required package: iterators
 ## Loading required package: parallel
 ## Loading required package: pscl
@@ -403,14 +402,42 @@ on all relevant output before running the scores:</p>
 ## [1] &quot;running method ash.n, on scenario Bn, seed 1&quot;
 ## [1] &quot;running method ash.n, on scenario Bn, seed 2&quot;
 ## [1] &quot;running method ash.n, on scenario Cn, seed 1&quot;
-## [1] &quot;running method ash.n, on scenario Cn, seed 2&quot;
-## [1] &quot;running method ash.hu, on scenario An, seed 1&quot;
+</code></pre>
+
+<pre><code>## Warning in ash.workhorse(betahat, sebetahat, mixcompdist = mixcompdist, :
+## It&#39;s likely that the input data is not coming from a distribution with
+## zero mean, consider to set nonzeromode=TRUE when applying ash()
+</code></pre>
+
+<pre><code>## [1] &quot;running method ash.n, on scenario Cn, seed 2&quot;
+</code></pre>
+
+<pre><code>## Warning in ash.workhorse(betahat, sebetahat, mixcompdist = mixcompdist, :
+## It&#39;s likely that the input data is not coming from a distribution with
+## zero mean, consider to set nonzeromode=TRUE when applying ash()
+</code></pre>
+
+<pre><code>## [1] &quot;running method ash.hu, on scenario An, seed 1&quot;
 ## [1] &quot;running method ash.hu, on scenario An, seed 2&quot;
 ## [1] &quot;running method ash.hu, on scenario Bn, seed 1&quot;
 ## [1] &quot;running method ash.hu, on scenario Bn, seed 2&quot;
 ## [1] &quot;running method ash.hu, on scenario Cn, seed 1&quot;
-## [1] &quot;running method ash.hu, on scenario Cn, seed 2&quot;
-## [1] &quot;running outputParser ash2beta&quot;
+</code></pre>
+
+<pre><code>## Warning in ash.workhorse(betahat, sebetahat, mixcompdist = mixcompdist, :
+## It&#39;s likely that the input data is not coming from a distribution with
+## zero mean, consider to set nonzeromode=TRUE when applying ash()
+</code></pre>
+
+<pre><code>## [1] &quot;running method ash.hu, on scenario Cn, seed 2&quot;
+</code></pre>
+
+<pre><code>## Warning in ash.workhorse(betahat, sebetahat, mixcompdist = mixcompdist, :
+## It&#39;s likely that the input data is not coming from a distribution with
+## zero mean, consider to set nonzeromode=TRUE when applying ash()
+</code></pre>
+
+<pre><code>## [1] &quot;running outputParser ash2beta&quot;
 ## [1] &quot;running Scores&quot;
 ## [1] &quot;Getting results for scenario An , method ash.n&quot;
 ## [1] &quot;Getting results for scenario Bn , method ash.n&quot;
@@ -424,12 +451,12 @@ on all relevant output before running the scores:</p>
 </code></pre>
 
 <pre><code>##   .id seed scenario method      RMSE user.self sys.self elapsed user.child
-## 1  An    1       An  ash.n 0.7336363     0.151    0.008   0.166          0
-## 2  An    2       An  ash.n 0.7968913     0.254    0.032   0.330          0
-## 3  Bn    1       Bn  ash.n 0.6965511     0.174    0.003   0.179          0
-## 4  Bn    2       Bn  ash.n 0.7303138     0.247    0.003   0.257          0
-## 5  Cn    1       Cn  ash.n 0.7996125     0.156    0.020   0.182          0
-## 6  Cn    2       Cn  ash.n 0.8490035     0.098    0.020   0.120          0
+## 1  An    1       An  ash.n 0.7336363     0.085    0.001   0.086          0
+## 2  An    2       An  ash.n 0.7968913     0.148    0.019   0.167          0
+## 3  Bn    1       Bn  ash.n 0.6965511     0.109    0.004   0.112          0
+## 4  Bn    2       Bn  ash.n 0.7303138     0.181    0.001   0.182          0
+## 5  Cn    1       Cn  ash.n 0.7996125     0.073    0.015   0.089          0
+## 6  Cn    2       Cn  ash.n 0.8490035     0.105    0.013   0.118          0
 ##   sys.child
 ## 1         0
 ## 2         0
@@ -500,12 +527,12 @@ res2=run_dsc(dsc_shrink)
 </code></pre>
 
 <pre><code>##   .id seed scenario method   pi0_est       pi0 user.self sys.self elapsed
-## 1  An    1       An  ash.n 0.4792831 0.2655087     0.151    0.008   0.166
-## 2  An    2       An  ash.n 0.4528962 0.1848823     0.254    0.032   0.330
-## 3  Bn    1       Bn  ash.n 0.4047015 0.2655087     0.174    0.003   0.179
-## 4  Bn    2       Bn  ash.n 0.2254747 0.1848823     0.247    0.003   0.257
-## 5  Cn    1       Cn  ash.n 0.4656377 0.2655087     0.156    0.020   0.182
-## 6  Cn    2       Cn  ash.n 0.2930233 0.1848823     0.098    0.020   0.120
+## 1  An    1       An  ash.n 0.4792831 0.2655087     0.085    0.001   0.086
+## 2  An    2       An  ash.n 0.4528962 0.1848823     0.148    0.019   0.167
+## 3  Bn    1       Bn  ash.n 0.4047015 0.2655087     0.109    0.004   0.112
+## 4  Bn    2       Bn  ash.n 0.2254747 0.1848823     0.181    0.001   0.182
+## 5  Cn    1       Cn  ash.n 0.4656377 0.2655087     0.073    0.015   0.089
+## 6  Cn    2       Cn  ash.n 0.2930233 0.1848823     0.105    0.013   0.118
 ##   user.child sys.child
 ## 1          0         0
 ## 2          0         0
@@ -519,12 +546,12 @@ res2=run_dsc(dsc_shrink)
 </code></pre>
 
 <pre><code>##   .id seed scenario method      RMSE user.self sys.self elapsed user.child
-## 1  An    1       An  ash.n 0.7336363     0.151    0.008   0.166          0
-## 2  An    2       An  ash.n 0.7968913     0.254    0.032   0.330          0
-## 3  Bn    1       Bn  ash.n 0.6965511     0.174    0.003   0.179          0
-## 4  Bn    2       Bn  ash.n 0.7303138     0.247    0.003   0.257          0
-## 5  Cn    1       Cn  ash.n 0.7996125     0.156    0.020   0.182          0
-## 6  Cn    2       Cn  ash.n 0.8490035     0.098    0.020   0.120          0
+## 1  An    1       An  ash.n 0.7336363     0.085    0.001   0.086          0
+## 2  An    2       An  ash.n 0.7968913     0.148    0.019   0.167          0
+## 3  Bn    1       Bn  ash.n 0.6965511     0.109    0.004   0.112          0
+## 4  Bn    2       Bn  ash.n 0.7303138     0.181    0.001   0.182          0
+## 5  Cn    1       Cn  ash.n 0.7996125     0.073    0.015   0.089          0
+## 6  Cn    2       Cn  ash.n 0.8490035     0.105    0.013   0.118          0
 ##   sys.child
 ## 1         0
 ## 2         0

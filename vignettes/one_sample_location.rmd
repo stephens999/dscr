@@ -77,8 +77,6 @@ winsor.wrapper function makes use of the function winsor.mean from the psych pac
 Note that we allow for additional arguments ot each function, but don't use them here.
 
 ```{r}
-library(psych)
-
 mean.wrapper = function(input,args){
   return(list(meanest = mean(input$x)))  
 }
@@ -88,7 +86,7 @@ median.wrapper = function(input,args){
 }
 
 winsor.wrapper = function(input,args){
-  return(list(meanest = winsor.mean(input$x,trim=0.2)))
+  return(list(meanest = psych::winsor.mean(input$x,trim=0.2)))
 }
 
 ```

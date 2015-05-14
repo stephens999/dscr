@@ -2,8 +2,5 @@
 .Rhistory
 .RData
 .DS_Store
-vignettes/data
-vignettes/param
-vignettes/output
-vignettes/results
+vignettes/dsc-shrink-files
 inst/doc/
