@@ -2,5 +2,6 @@
 .Rhistory
 .RData
 .DS_Store
-vignettes/dsc-shrink-files
+vignettes/dsc-shrink-files/
+vignettes/one_samp_loc/
 inst/doc/
