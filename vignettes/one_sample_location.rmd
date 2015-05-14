@@ -1,6 +1,6 @@
 <!--
 %\VignetteEngine{knitr::knitr}
-%\VignetteIndexEntry{A Vignette to illustrate dscr}
+%\VignetteIndexEntry{Evaluating Mean-Estimation Methods}
 -->
 
 # One sample location estimation; DSCR example
