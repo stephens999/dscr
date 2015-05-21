@@ -4,7 +4,8 @@
 \alias{addScenarioGroup}
 \title{Add a set of scenarios to a dsc}
 \usage{
-addScenarioGroup(dsc, args, flexible.args, name = NULL, ...)
+addScenarioGroup(dsc, args, flexible.args,
+  flexible.args.name = names(flexible.args), name = NULL, ...)
 }
 \arguments{
 \item{args}{Arguments that should be passed to
@@ -13,6 +14,9 @@ all simulations}
 \item{flexible.args}{data.frame of argument combinations;
     each combinations corresponds to one scenario, the names
 of the argument are taken from the names() attribute}
+
+\item{flexible.args.name}{str of the names of the columns
+in flexible.args, should have the same length}
 
 \item{name}{function or character or NULL
  if function, this will get passed a set of flexible

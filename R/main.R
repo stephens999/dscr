@@ -863,6 +863,8 @@ shiny_plot=function(res){
 #' @param flexible.args data.frame of argument combinations;
 #' 	each combinations corresponds to one scenario, the names
 #' of the argument are taken from the names() attribute
+#' @param flexible.args.name str of the names of the columns
+#'      in flexible.args, should have the same length
 #' @param name function or character or NULL
 #'      if function, this will get passed a set of flexible
 #' 	args and should return a scenario name
@@ -882,7 +884,9 @@ shiny_plot=function(res){
 #' name="norm", fn=datamaker, seed=1:5)
 #' }
 #' @export
-addScenarioGroup <- function(dsc, args, flexible.args, name=NULL, ...){
+addScenarioGroup <- function(dsc, args, flexible.args, 
+                             flexible.args.name=names(flexible.args),
+                             name=NULL, ...){
     if(is.null(name)) name <- "ScenarioGroup"
     if(is.character(name)){
 	name.fn <- function(pars){
@@ -895,10 +899,9 @@ addScenarioGroup <- function(dsc, args, flexible.args, name=NULL, ...){
     }
 
     single.run <- function(params){
-	par.names <- names(params)
 
         for(i in 1:length(params)){
-            n <- par.names[i]
+            n <- flexible.args.name[i]
             p <- params[i]
             args[[n]] <- p
         }
