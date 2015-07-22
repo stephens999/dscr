@@ -1,6 +1,6 @@
 <!--
 %\VignetteEngine{knitr::knitr}
-%\VignetteIndexEntry{A Vignette to illustrate dscr}
+%\VignetteIndexEntry{More Advanced: Using Parsers to Test Adaptive Shrinkage}
 -->
 
 One original idea in introducing the DSC was to be very prescriptive about
