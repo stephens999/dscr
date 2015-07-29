@@ -307,15 +307,15 @@ rnormmix_datamaker = function(args){
 }
 </code></pre>
 
-<p>Now initialize the dsc using <code>new.dsc</code>, and add three scenarios using this datamaker:</p>
+<p>Now initialize the dsc using <code>new_dsc</code>, and add three scenarios using this datamaker:</p>
 
 <pre><code class="r">###### Initialize #######
 
-dsc_shrink=new.dsc(&quot;shrinkage&quot;,&quot;dsc-shrink-files&quot;)
+dsc_shrink=new_dsc(&quot;shrinkage&quot;,&quot;dsc-shrink-files&quot;)
 
 ###### Add Scenarios #####
 
-addScenario(dsc_shrink,name=&quot;An&quot;,
+add_scenario(dsc_shrink,name=&quot;An&quot;,
             fn=rnormmix_datamaker,
             args=list(
               g=normalmix(c(2/3,1/3),c(0,0),c(1,2)),
@@ -326,7 +326,7 @@ addScenario(dsc_shrink,name=&quot;An&quot;,
             ),
             seed=1:2)
 
-addScenario(dsc_shrink,name=&quot;Bn&quot;,
+add_scenario(dsc_shrink,name=&quot;Bn&quot;,
             fn=rnormmix_datamaker,
             args=list(
               g=normalmix(rep(1/7,7),c(-1.5,-1,-0.5,0,0.5,1,1.5),rep(0.5,7)),
@@ -338,7 +338,7 @@ addScenario(dsc_shrink,name=&quot;Bn&quot;,
             seed=1:2)
 
 
-addScenario(dsc_shrink,name=&quot;Cn&quot;,
+add_scenario(dsc_shrink,name=&quot;Cn&quot;,
             fn=rnormmix_datamaker,
             args=list(
               g=normalmix(c(1/4,1/4,1/3,1/6),c(-2,-1,0,1),c(2,1.5,1,1)),
@@ -365,8 +365,8 @@ returns the entire ash output.</p>
 
 <p>When we add methods using the wrapper, we specify its outputtype:</p>
 
-<pre><code class="r">addMethod(dsc_shrink,&quot;ash.n&quot;,ash.wrapper,outputtype=&quot;ash_output&quot;,args=list(mixcompdist=&quot;normal&quot;))
-addMethod(dsc_shrink,&quot;ash.hu&quot;,ash.wrapper,outputtype=&quot;ash_output&quot;,args=list(mixcompdist=&quot;halfuniform&quot;))
+<pre><code class="r">add_method(dsc_shrink,&quot;ash.n&quot;,ash.wrapper,outputtype=&quot;ash_output&quot;,args=list(mixcompdist=&quot;normal&quot;))
+add_method(dsc_shrink,&quot;ash.hu&quot;,ash.wrapper,outputtype=&quot;ash_output&quot;,args=list(mixcompdist=&quot;halfuniform&quot;))
 </code></pre>
 
 <p>Now we can define a parser to convert the ash output to a simple list with single element <code>beta_est</code>. Note that when we add this parser function, we specify what the output type it is designed to convert from (<code>ash_output</code>) and to (<code>est_output</code>):</p>
@@ -375,7 +375,7 @@ addMethod(dsc_shrink,&quot;ash.hu&quot;,ash.wrapper,outputtype=&quot;ash_output&
 ash2beta_est =function(output){
   return (list(beta_est=output$PosteriorMean))
 } 
-addOutputParser(dsc_shrink,&quot;ash2beta&quot;,ash2beta_est,&quot;ash_output&quot;,&quot;est_output&quot;)
+add_output_parser(dsc_shrink,&quot;ash2beta&quot;,ash2beta_est,&quot;ash_output&quot;,&quot;est_output&quot;)
 </code></pre>
 
 <p>When we add the score function we specify what outputtype it is designed to use:</p>
@@ -386,7 +386,7 @@ score = function(data, output){
   return(list(RMSE=sqrt(mean((output$beta_est-data$meta$beta)^2))))
 }
 
-addScore(dsc_shrink,score,name=&quot;basicscore&quot;,outputtype=&quot;est_output&quot;)
+add_score(dsc_shrink,score,name=&quot;basicscore&quot;,outputtype=&quot;est_output&quot;)
 </code></pre>
 
 <p>Now we can run the DSC: it runs every method on every scenario, and then every parser
@@ -402,42 +402,14 @@ on all relevant output before running the scores:</p>
 ## [1] &quot;running method ash.n, on scenario Bn, seed 1&quot;
 ## [1] &quot;running method ash.n, on scenario Bn, seed 2&quot;
 ## [1] &quot;running method ash.n, on scenario Cn, seed 1&quot;
-</code></pre>
-
-<pre><code>## Warning in ash.workhorse(betahat, sebetahat, mixcompdist = mixcompdist, :
-## It&#39;s likely that the input data is not coming from a distribution with
-## zero mean, consider to set nonzeromode=TRUE when applying ash()
-</code></pre>
-
-<pre><code>## [1] &quot;running method ash.n, on scenario Cn, seed 2&quot;
-</code></pre>
-
-<pre><code>## Warning in ash.workhorse(betahat, sebetahat, mixcompdist = mixcompdist, :
-## It&#39;s likely that the input data is not coming from a distribution with
-## zero mean, consider to set nonzeromode=TRUE when applying ash()
-</code></pre>
-
-<pre><code>## [1] &quot;running method ash.hu, on scenario An, seed 1&quot;
+## [1] &quot;running method ash.n, on scenario Cn, seed 2&quot;
+## [1] &quot;running method ash.hu, on scenario An, seed 1&quot;
 ## [1] &quot;running method ash.hu, on scenario An, seed 2&quot;
 ## [1] &quot;running method ash.hu, on scenario Bn, seed 1&quot;
 ## [1] &quot;running method ash.hu, on scenario Bn, seed 2&quot;
 ## [1] &quot;running method ash.hu, on scenario Cn, seed 1&quot;
-</code></pre>
-
-<pre><code>## Warning in ash.workhorse(betahat, sebetahat, mixcompdist = mixcompdist, :
-## It&#39;s likely that the input data is not coming from a distribution with
-## zero mean, consider to set nonzeromode=TRUE when applying ash()
-</code></pre>
-
-<pre><code>## [1] &quot;running method ash.hu, on scenario Cn, seed 2&quot;
-</code></pre>
-
-<pre><code>## Warning in ash.workhorse(betahat, sebetahat, mixcompdist = mixcompdist, :
-## It&#39;s likely that the input data is not coming from a distribution with
-## zero mean, consider to set nonzeromode=TRUE when applying ash()
-</code></pre>
-
-<pre><code>## [1] &quot;running outputParser ash2beta&quot;
+## [1] &quot;running method ash.hu, on scenario Cn, seed 2&quot;
+## [1] &quot;running outputParser ash2beta&quot;
 ## [1] &quot;running Scores&quot;
 ## [1] &quot;Getting results for scenario An , method ash.n&quot;
 ## [1] &quot;Getting results for scenario Bn , method ash.n&quot;
@@ -481,13 +453,13 @@ ash2pi0 =function(output){
   return (list(pi0_est=get_pi0(output)))
 } 
 
-addOutputParser(dsc_shrink,&quot;ash2pi0&quot;,ash2pi0,&quot;ash_output&quot;,&quot;pi0_output&quot;)
+add_output_parser(dsc_shrink,&quot;ash2pi0&quot;,ash2pi0,&quot;ash_output&quot;,&quot;pi0_output&quot;)
 
 score2 = function(data, output){
   return(list(pi0_est=output$pi0_est,pi0=data$meta$pi0))
 }
 
-addScore(dsc_shrink,score2,&quot;pi0score&quot;,outputtype=&quot;pi0_output&quot;)
+add_score(dsc_shrink,score2,&quot;pi0score&quot;,outputtype=&quot;pi0_output&quot;)
 
 res2=run_dsc(dsc_shrink)
 </code></pre>

@@ -216,12 +216,12 @@ three scenarios: a normal distribution, a uniform distribution
 and a Cauchy (t distribution on 1df). And we&#39;ll compare three methods: 
 sample mean, sample median and the Winsorized mean (from the psych package). </p>
 
-<p>First load the library, and initialize a new &ldquo;dsc&rdquo; using new.dsc.
+<p>First load the library, and initialize a new &ldquo;dsc&rdquo; using new_dsc.
 This object will be used to store the details of the dsc.</p>
 
 <pre><code class="r">library(dscr)
 #  install_github(repo=&quot;stephens999/dscr&quot;)
-dsc_osl = new.dsc(&quot;one_sample_location&quot;,&quot;one_samp_loc&quot;)
+dsc_osl = new_dsc(&quot;one_sample_location&quot;,&quot;one_samp_loc&quot;)
 </code></pre>
 
 <p>Now define the function to create data, which consists of input, and meta-data. 
@@ -261,9 +261,9 @@ when scoring the methods. So here, the input is a random sample, and the meta-da
 <p>Now define the scenarios that use this datamaker. Each scenario is determined by the datamaker,
 its arguments, and the seeds it uses. (Maybe the list of seeds should not be part of the scenario definition - I&#39;m not sure). Each scenario also has a name which is used for naming the scenario in results and also output directories - so use something that is a valid filename. </p>
 
-<pre><code class="r">addScenario(dsc_osl,name=&quot;normal&quot;,datamaker,args=list(disttype=&quot;normal&quot;,nsamp=1000),seed=1:100)
-addScenario(dsc_osl,name=&quot;uniform&quot;,datamaker,args=list(disttype=&quot;uniform&quot;,nsamp=1000),seed=1:100)
-addScenario(dsc_osl,name=&quot;Cauchy&quot;,datamaker,args=list(disttype=&quot;Cauchy&quot;,nsamp=1000),seed=1:100)
+<pre><code class="r">add_scenario(dsc_osl,name=&quot;normal&quot;,datamaker,args=list(disttype=&quot;normal&quot;,nsamp=1000),seed=1:100)
+add_scenario(dsc_osl,name=&quot;uniform&quot;,datamaker,args=list(disttype=&quot;uniform&quot;,nsamp=1000),seed=1:100)
+add_scenario(dsc_osl,name=&quot;Cauchy&quot;,datamaker,args=list(disttype=&quot;Cauchy&quot;,nsamp=1000),seed=1:100)
 </code></pre>
 
 <p>Now define the methods.
@@ -292,9 +292,9 @@ winsor.wrapper = function(input,args){
 <p>Now define a list of the methods we&#39;ll use. 
 Each method is defined by its name, the function used to implement it, and any additional arguments (none here):</p>
 
-<pre><code class="r">  addMethod(dsc_osl,name=&quot;mean&quot;,fn =mean.wrapper,args=NULL)
-  addMethod(dsc_osl,name=&quot;median&quot;,fn=median.wrapper,args=NULL)
-  addMethod(dsc_osl,name=&quot;winsor&quot;,fn=winsor.wrapper,args=NULL)
+<pre><code class="r">  add_method(dsc_osl,name=&quot;mean&quot;,fn =mean.wrapper,args=NULL)
+  add_method(dsc_osl,name=&quot;median&quot;,fn=median.wrapper,args=NULL)
+  add_method(dsc_osl,name=&quot;winsor&quot;,fn=winsor.wrapper,args=NULL)
 </code></pre>
 
 <p>And define a score function that says how well a method has done. Here we&#39;ll use squared error
@@ -303,7 +303,7 @@ and absolute error:</p>
 <pre><code class="r">score = function(data, output){
   return(list(squared_error = (data$meta$truemean-output$meanest)^2, abs_error = abs(data$meta$truemean-output$meanest)))
 }
-  addScore(dsc_osl,score)
+  add_score(dsc_osl,score)
 </code></pre>
 
 <p>Now we&#39;ll run all the methods on all the scenarios:</p>
@@ -372,8 +372,8 @@ Here is what we do (note that the different settings of the argument are treated
     return(list(meanest=mean(input$x,trim=args$trim)))
   }
 
-  addMethod(dsc_osl,name=&quot;trimmedmean1&quot;,fn = trimmedmean.wrapper,args=list(trim=0.2))
-  addMethod(dsc_osl,name=&quot;trimmedmean2&quot;,fn = trimmedmean.wrapper,args=list(trim=0.4))
+  add_method(dsc_osl,name=&quot;trimmedmean1&quot;,fn = trimmedmean.wrapper,args=list(trim=0.2))
+  add_method(dsc_osl,name=&quot;trimmedmean2&quot;,fn = trimmedmean.wrapper,args=list(trim=0.4))
   res=run_dsc(dsc_osl)
 </code></pre>
 
