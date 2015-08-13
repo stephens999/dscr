@@ -37,14 +37,6 @@ addScore <- function(...) {
     return(add_score(...))
 }
 
-#' Deprecated alias to \code{\link{dsc_to_be}}.
-#'
-#' @export
-dsc2BE <- function(...) {
-    warning('The function dsc2BE is deprecated. Use dsc_to_be instead.')
-    return(dsc_to_be(...))
-}
-
 #' Deprecated alias to \code{\link{get_output_types}}.
 #'
 #' @export
