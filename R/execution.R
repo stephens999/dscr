@@ -30,9 +30,11 @@ seeded_function_call <- function(fxn_to_call, seed, mem_params,
 
         loaded_params <- lapply(disk_params$file_names, readRDS)
         Map(assign, disk_params$variable_names, loaded_params)
+    } else {
+        loaded_params <- NULL
     }
 
     set.seed(seed)
 
-    return(do.call(fxn_to_call, c(mem_params, loaded_params)))
+    return(try(do.call(fxn_to_call, c(mem_params, loaded_params))))
 }
