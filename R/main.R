@@ -465,8 +465,7 @@ run_output_parsers = function(dsc){
 run_scenario=function(dsc,seed,scenarioname){
   scenario = dsc$scenarios[[scenarioname]]
   if(!file.exists(input_file_name(dsc,seed,scenario))){
-    set.seed(seed)
-    data = do.call(scenario$fn,list(args=scenario$args))
+    data <- seeded_function_call(scenario$fn, seed, list(args = scenario$args))
     saveRDS(data$meta,file=meta_file_name(dsc,seed,scenario))
     saveRDS(data$input,file=input_file_name(dsc,seed,scenario))
   }   
@@ -541,9 +540,14 @@ run_method=function(dsc,seed,scenarioname,methodname){
   scenario = dsc$scenarios[[scenarioname]]
   method = dsc$methods[[methodname]]
   if(!file.exists(output_file_name(dsc,seed,scenario,method))){
-    input=readRDS(input_file_name(dsc,seed,scenario))
-    set.seed(seed+1)
-    timedata = system.time(output <- try(do.call(method$fn,list(input=input,args=method$args))))
+    input_frame <- data.frame(file_names = input_file_name(dsc, seed, scenario),
+                              variable_names = 'input')
+    timedata <- system.time(
+      output <- seeded_function_call(method$fn,
+                                     seed + 1,
+                                     list(args = method$args),
+                                     input_frame)
+    )
     saveRDS(output,file=output_file_name(dsc,seed,scenario,method))
     saveRDS(timedata,file=time_file_name(dsc,seed,scenario,method))
   }
