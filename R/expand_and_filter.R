@@ -42,14 +42,14 @@ expand_dsc <- function(dsc, phase) {
 
     ## methods stage
     if (grepl('methods', phase)) {
-        result <- merge(result, data.frame(methodname = names(dsc$methods)),
-                        stringsAsFactors = FALSE)
+        result <- merge(result, data.frame(methodname = names(dsc$methods),
+                                           stringsAsFactors = FALSE))
     }
 
     ## scores stage
     if (grepl('scores', phase)) {
-        result <- merge(result, data.frame(scorename = names(dsc$scores)),
-                        stringsAsFactors = FALSE)
+        result <- merge(result, data.frame(scorename = names(dsc$scores),
+                                           stringsAsFactors = FALSE))
     }
 
     return(result)
