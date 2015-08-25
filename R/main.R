@@ -472,7 +472,7 @@ run_scenario=function(dsc,seed,scenarioname){
 }
 
 run_scenarios=function(dsc,ssub=NULL,seedsubset=NULL){
-  df = expand_scenarios(dsc)
+  df = expand_dsc(dsc, 'scenarios')
   if(!is.null(ssub)){df = dplyr::filter(df,scenarioname %in% ssub)}
   if(!is.null(seedsubset)){df = dplyr::filter(df,seed %in% seedsubset)}
   print(paste0("running Scenarios"))
@@ -527,7 +527,7 @@ run_score = function(dsc,seed,scenarioname,methodname,scorename){
 }
 
 run_scores=function(dsc,ssub=NULL,msub=NULL,scoresub=NULL){
-  df = expand_scenarios_methods_scores(dsc)
+  df = expand_dsc(dsc, 'scenarios_methods_scores')
   if(!is.null(ssub)){df = dplyr::filter(df,scenarioname %in% ssub)}
   if(!is.null(msub)){df = dplyr::filter(df,methodname %in% msub)}
   if(!is.null(scoresub)){df = dplyr::filter(df,scorename %in% scoresub)}  
@@ -554,7 +554,7 @@ run_method=function(dsc,seed,scenarioname,methodname){
 }
 
 run_methods=function(dsc,ssub=NULL,msub=NULL,seedsubset=NULL){
-  df = expand_scenarios_methods(dsc)
+  df = expand_dsc(dsc, 'scenarios_methods')
   if(!is.null(ssub)){df = dplyr::filter(df,scenarioname %in% ssub)}
   if(!is.null(msub)){df = dplyr::filter(df,methodname %in% msub)}
   if(!is.null(seedsubset)){df = dplyr::filter(df,seed %in% seedsubset)}
@@ -566,40 +566,6 @@ run_methods=function(dsc,ssub=NULL,msub=NULL,seedsubset=NULL){
   #ids <- getJobIds(reg2)
   #submitJobs(reg2, ids)  
 }
-
-
-
-#' @title Create a dataframe of scenarioname and seed combinations
-#'
-#' @description Create a dataframe of scenarioname and seed combinations
-#' @param scenario the scenario to be expanded
-#' 
-#' @return data frame of scenarioname and seed combinations
-expand_scenario = function(scenario){data.frame(scenarioname=scenario$name,seed=scenario$seed,stringsAsFactors=FALSE)}
-
-#' @title Create a dataframe of all scenarioname and seed combinations
-#'
-#' @description Create a dataframe of all scenarioname and seed combinations
-#' @param dsc the dsc to be expanded
-#' 
-#' @return data frame of all scenarioname and seed combinations
-expand_scenarios = function(dsc){ldply(dsc$scenarios,expand_scenario,.id="scenarioname")}
-
-#' @title Create a list of scenarioname, seed and method combinations
-#'
-#' @description  Create a list of scenarioname, seed and method combinations
-#' @param dsc the dsc to expand
-#' 
-#' @return data frame of all combinations
-expand_scenarios_methods = function(dsc){merge(expand_scenarios(dsc),data.frame(methodname=get_method_names(dsc),stringsAsFactors=FALSE))}
-    
-#' @title Create a dataframe of scenarioname, seed, method and score combinations
-#'
-#' @description  Create a dataframe of scenarioname, seed, method and score combinations
-#' @param dsc the dsc to expand
-#' 
-#' @return data frame of all combinations
-expand_scenarios_methods_scores = function(dsc){merge(expand_scenarios_methods(dsc),data.frame(scorename=get_score_names(dsc),stringsAsFactors=FALSE))}
 
 #' @title Removes all data, output and results for the dsc
 #'
