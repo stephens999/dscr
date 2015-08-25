@@ -8,7 +8,8 @@
 #'   giving an integer vector of random seeds.
 #'
 #' @return Data frame with columns \code{scenarioname} and
-#'   \code{seed}.
+#'   \code{seed}. The column \code{scenarioname} is coerced to a
+#'   character vector.
 expand_scenario <- function(scenario) {
     return(data.frame(scenarioname = scenario$name,
                       seed = scenario$seed,
@@ -17,15 +18,21 @@ expand_scenario <- function(scenario) {
 
 #' Comprehensively tabulate a phase of \code{dscr} execution.
 #'
-#' Depending of the phase of execution requested, compute the
-#' Cartesian product of all scenario-seed combinations (as specified
-#' in \code{dsc$scenarios}), the set of methods (as specified in
-#' \code{dsc$methods}), and the set of scores (as specified in
-#' \code{dsc$scores}).
+#' Depending on the phase of execution requested, starting from
+#' \enumerate{
+#'   \item the set of scenario-seed combinations (as specified
+#'     in \code{dsc$scenarios}),
+#'   \item the set of methods (as specified in
+#'     \code{dsc$methods}), and
+#'   \item the set of scores (as specified in
+#'     \code{dsc$scores}),
+#' }
+#' compute (1), the Cartesian product of (1) and (2), or the Cartesian
+#' product of (1), (2), and (3).
 #'
 #' @param dsc The \code{dscr} data structure to expand.
 #' @param phase The phase of execution to tabulate, either
-#'   'scenarios', 'scenarios_methods', and 'scenarios_methods_scores'.
+#'   'scenarios', 'scenarios_methods', or 'scenarios_methods_scores'.
 #'
 #' @return Data frame with columns \code{scenarioname}, \code{seed},
 #'   \code{methodname} (if one of the latter two phases is requested),

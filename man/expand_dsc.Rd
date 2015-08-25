@@ -10,7 +10,7 @@ expand_dsc(dsc, phase)
 \item{dsc}{The \code{dscr} data structure to expand.}
 
 \item{phase}{The phase of execution to tabulate, either
-  'scenarios', 'scenarios_methods', and 'scenarios_methods_scores'.}
+  'scenarios', 'scenarios_methods', or 'scenarios_methods_scores'.}
 }
 \value{
 Data frame with columns \code{scenarioname}, \code{seed},
@@ -18,10 +18,16 @@ Data frame with columns \code{scenarioname}, \code{seed},
   and \code{scorename} (if the last phase is selected).
 }
 \description{
-Depending of the phase of execution requested, compute the
-Cartesian product of all scenario-seed combinations (as specified
-in \code{dsc$scenarios}), the set of methods (as specified in
-\code{dsc$methods}), and the set of scores (as specified in
-\code{dsc$scores}).
+Depending on the phase of execution requested, starting from
+\enumerate{
+  \item the set of scenario-seed combinations (as specified
+    in \code{dsc$scenarios}),
+  \item the set of methods (as specified in
+    \code{dsc$methods}), and
+  \item the set of scores (as specified in
+    \code{dsc$scores}),
+}
+compute (1), the Cartesian product of (1) and (2), or the Cartesian
+product of (1), (2), and (3).
 }
 

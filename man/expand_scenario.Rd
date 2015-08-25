@@ -13,7 +13,8 @@ expand_scenario(scenario)
 }
 \value{
 Data frame with columns \code{scenarioname} and
-  \code{seed}.
+  \code{seed}. The column \code{scenarioname} is coerced to a
+  character vector.
 }
 \description{
 Given a scenario, return a data frame tabulating a scenario's name
