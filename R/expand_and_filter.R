@@ -61,3 +61,43 @@ expand_dsc <- function(dsc, phase) {
 
     return(result)
 }
+
+#' Apply multiple filters to a data frame.
+#'
+#' Build and execute a \code{dplyr::filter} call against a data frame
+#' with an arbitrary number of filtering clauses, some of which can be
+#' inactive by being set to \code{NULL}. For example,
+#' \code{multiple_filter(df, some_col = c(1, 2), other_col = NULL)}
+#' returns the value of \code{dplyr::filter(df, some_col \%in\% c(1,
+#' 2))}. Return the data frame unchanged if there are no active
+#' filters.
+#'
+#' @param df Data frame to filter.
+#' @param ... Set of filters to apply to the data frame. The names of
+#'     the list elements correspond to column names in \code{df},
+#'     while the values of the list elements correspond to the values
+#'     that the column will be restricted to.
+multiple_filter <- function(df, ...) {
+    ## Basic sanity check
+    filter_list <- list(...)
+    assert_that(all(names(filter_list) %in% names(df)))
+
+    active_filter_list <- Filter(Negate(is.null), filter_list)
+
+    if (length(active_filter_list) == 0) {
+        return(df)
+    } else {
+        ## We execute the filter call against a custom environment to
+        ## avoid scoping issues.
+        filter_env <- new.env()
+        filter_env$df <- df
+        filter_env$arg_list <- active_filter_list
+
+        clauses <- lapply(names(active_filter_list),
+                          function(name) paste0(name, ' %in% arg_list$', name))
+        clauses_text <- paste(clauses, collapse = ', ')
+        filter_call <- paste0('dplyr::filter(df, ', clauses_text, ')')
+
+        return(eval(parse(text = filter_call), filter_env))
+    }
+}
