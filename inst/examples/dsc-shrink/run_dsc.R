@@ -144,5 +144,3 @@ score2 = function(data, output){
 
 addScore(dsc_shrink,score2,"pi0score",outputtype="pi0_output")
 res3=run_dsc(dsc_shrink,seedsubset = 1:3)
-
-#runScore(dsc_shrink,1,"A","ashr","pi0score")
