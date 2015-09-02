@@ -64,3 +64,28 @@ test_that("expand_dsc expands scenarios/methods/scores", {
     expect_true('methodname' %in% names(output))
     expect_true('scorename' %in% names(output))
 })
+
+test_that("multiple_filter checks the names of the named filters", {
+    expect_error(multiple_filter(expand_dsc(fake_dsc, 'scenarios'), foo = 1))
+})
+
+test_that("multiple_filter returns the data frame given no active filters", {
+    sdf <- expand_dsc(fake_dsc, 'scenarios')
+
+    expect_identical(multiple_filter(sdf), sdf)
+    expect_identical(multiple_filter(sdf, seed = NULL, scenarioname = NULL), sdf)
+})
+
+test_that("multiple_filter filters according to non-null arguments", {
+    smdf <- expand_dsc(fake_dsc, 'scenarios_methods')
+
+    mf_output <- multiple_filter(
+        smdf, seed = 1, scenarioname = NULL, methodname = c('meth2', 'meth3')
+    )
+
+    dplyr_output <- dplyr::filter(
+        smdf, seed %in% 1, methodname %in% c('meth2', 'meth3')
+    )
+        
+    expect_identical(mf_output, dplyr_output)
+})
