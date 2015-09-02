@@ -9,7 +9,7 @@ Description: Package containing functions to help build dynamic statistical
     comparisons in R
 VignetteBuilder: knitr
 License: GPL (>=2)
-Imports:
+Imports: 
     assertthat,
     psych,
     plyr,
@@ -19,3 +19,4 @@ Imports:
     BatchJobs,
     ggplot2,
     shiny
+Suggests: testthat
