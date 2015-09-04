@@ -11,6 +11,7 @@
 #' @author Matthew Stephens <\email{mstephens@@uchicago.edu}>
 #' @keywords dscr
 #' @import plyr reshape2 knitr assertthat ggplot2 shiny
+#' @importFrom dplyr `%>%`
 NULL
 
 #' @title return the path to a data file, parameter file, output file or results file
@@ -472,9 +473,8 @@ run_scenario=function(dsc,seed,scenarioname){
 }
 
 run_scenarios=function(dsc,ssub=NULL,seedsubset=NULL){
-  df = expand_dsc(dsc, 'scenarios')
-  if(!is.null(ssub)){df = dplyr::filter(df,scenarioname %in% ssub)}
-  if(!is.null(seedsubset)){df = dplyr::filter(df,seed %in% seedsubset)}
+  df = expand_dsc(dsc, 'scenarios') %>%
+    multiple_filter(scenarioname = ssub, seed = seedsubset)
   print(paste0("running Scenarios"))
   mapply(run_scenario,seed=df$seed,scenarioname=df$scenarioname,MoreArgs=list(dsc=dsc))
   #reg1 <- makeRegistry(id="my_reg1", seed=123, file.dir="my_job_dir1")
@@ -527,10 +527,10 @@ run_score = function(dsc,seed,scenarioname,methodname,scorename){
 }
 
 run_scores=function(dsc,ssub=NULL,msub=NULL,scoresub=NULL){
-  df = expand_dsc(dsc, 'scenarios_methods_scores')
-  if(!is.null(ssub)){df = dplyr::filter(df,scenarioname %in% ssub)}
-  if(!is.null(msub)){df = dplyr::filter(df,methodname %in% msub)}
-  if(!is.null(scoresub)){df = dplyr::filter(df,scorename %in% scoresub)}  
+  ## TODO: Should there be a seed subset here too?
+  df = expand_dsc(dsc, 'scenarios_methods_scores') %>%
+    multiple_filter(scenarioname = ssub, methodname = msub,
+                    scorename = scoresub)
   print(paste0("running Scores"))
   mapply(run_score,seed=df$seed,scenarioname=df$scenarioname,methodname=df$methodname,scorename=df$scorename,MoreArgs=list(dsc=dsc)) 
 }
@@ -554,10 +554,8 @@ run_method=function(dsc,seed,scenarioname,methodname){
 }
 
 run_methods=function(dsc,ssub=NULL,msub=NULL,seedsubset=NULL){
-  df = expand_dsc(dsc, 'scenarios_methods')
-  if(!is.null(ssub)){df = dplyr::filter(df,scenarioname %in% ssub)}
-  if(!is.null(msub)){df = dplyr::filter(df,methodname %in% msub)}
-  if(!is.null(seedsubset)){df = dplyr::filter(df,seed %in% seedsubset)}
+  df = expand_dsc(dsc, 'scenarios_methods') %>%
+    multiple_filter(scenarioname = ssub, methodname = msub, seed = seedsubset)
   
   print(paste0("running Methods"))
   mapply(run_method,seed=df$seed,scenarioname=df$scenarioname,methodname=df$methodname,MoreArgs=list(dsc=dsc))
