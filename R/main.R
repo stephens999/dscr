@@ -11,7 +11,7 @@
 #' @author Matthew Stephens <\email{mstephens@@uchicago.edu}>
 #' @keywords dscr
 #' @import plyr reshape2 knitr assertthat ggplot2 shiny
-#' @importFrom dplyr `%>%`
+#' @importFrom magrittr "%>%"
 NULL
 
 #' @title return the path to a data file, parameter file, output file or results file
