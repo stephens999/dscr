@@ -85,19 +85,6 @@ get_results_singletrial = function(dsc,seed,scenario,method,score){
   return(temp)
 }
 
-#' @title provide the results of a single method for a single trial
-#'
-#' @description provide the results of a single method for a single trial; intended primarily for troubleshooting and debugging
-#' 
-#' @param seed
-#' @param scenario
-#' @param method
-#' 
-#' @return results output by score function, the details will depend on the comparison being run
-inspect_results_singletrial = function(seed, scenario,method,score){
-  readRDS(file=scores_file_name(seed,scenario,method,score))  
-}
-
 #' @title return the data and output for a single method for a single trial
 #'
 #' @description return a list containing data and output for a single method,trial
@@ -120,35 +107,6 @@ load_example = function(dsc,seed, scenarioname,methodname){
   input = readRDS(file=input_file_name(dsc,seed,scenario))
   meta = readRDS(file =meta_file_name(dsc,seed,scenario))
   return(list(input=input, meta=meta, output=output))
-}
-  
-  
-  
-#' @title provide the output of a single method for a single trial
-#'
-#' @description provide the output of a single method for a single trial; intended primarily for troubleshooting and debugging
-#' 
-#' @param seed
-#' @param scenario
-#' @param method
-#' 
-#' @return output from method, the details will depend on the comparison being run
-inspect_output_singletrial = function(seed, scenario,method){
-  readRDS(file=output_file_name(seed,scenario,method))  
-}
-
-
-#' @title provide the data of a single scenario for a single trial
-#'
-#' @description provide the data of a single scenario for a single trial; intended primarily for troubleshooting and debugging
-#' 
-#' @param seed
-#' @param scenario
-#' 
-#' @return output from method, the details will depend on the comparison being run
-inspect_data_singletrial = function(seed, scenario){
-  list(meta=readRDS(file=meta_file_name(seed,scenario)),
-       input=readRDS(file=meta_file_name(seed,scenario)))
 }
 
 #' @title Get the results of a single method for a single scenario
