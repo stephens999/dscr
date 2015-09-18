@@ -13,6 +13,7 @@ Imports:
     assertthat,
     psych,
     plyr,
+    magrittr,
     dplyr,
     reshape2,
     knitr,
