@@ -242,7 +242,7 @@ add_method = function(dsc,name, fn, args=NULL,outputtype="default_output",gold_f
   check_valid_name(dsc,name) 
   check_unique_name(dsc,name)
   assert_that(is.function(fn), is.list(args) | is.null(args))
-  dsc$methods[[name]]=list(name=name,fn=fn,args=args,outputtype = outputtype)
+  dsc$methods[[name]]=list(name=name,fn=fn,args=args,outputtype = outputtype, gold_flag=gold_flag)
 }
 
 #' @title Add a score function to a dsc

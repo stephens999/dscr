@@ -4,7 +4,8 @@
 \alias{add_method}
 \title{Add a method to a dsc}
 \usage{
-add_method(dsc, name, fn, args = NULL, outputtype = "default_output")
+add_method(dsc, name, fn, args = NULL, outputtype = "default_output",
+  gold_flag = FALSE)
 }
 \arguments{
 \item{dsc}{the dsc to add the method to}
@@ -14,6 +15,10 @@ add_method(dsc, name, fn, args = NULL, outputtype = "default_output")
 \item{fn,}{a wrapper function that implements the method}
 
 \item{args}{a list of additional arguments to fn}
+
+\item{outputtype}{a string to indicate what type of output}
+
+\item{gold_flag}{a flag to indicate if the method is a "gold" method (which gets passed meta data as well as input data)}
 }
 \value{
 nothing, but modifies the dsc environment
