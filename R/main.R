@@ -501,14 +501,14 @@ run_method=function(dsc,seed,scenarioname,methodname){
   method = dsc$methods[[methodname]]
   if(!file.exists(output_file_name(dsc,seed,scenario,method))){
     if(method$gold_flag){
-      input_frame <- data.frame(file_names = input_file_name(dsc, seed, scenario),
-                              variable_names = 'input')
-    }
-    else{
       input_frame <- data.frame(file_names = 
                                   c(input_file_name(dsc, seed, scenario),
                                     meta_file_name(dsc, seed, scenario)),
-                                   variable_names = c('input','meta'))
+                                variable_names = c('input','meta'))
+    }
+    else{
+      input_frame <- data.frame(file_names = input_file_name(dsc, seed, scenario),
+                              variable_names = 'input')
     }
   
     timedata <- system.time(
