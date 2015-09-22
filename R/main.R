@@ -231,16 +231,18 @@ add_scenario = function(dsc,name, fn, args=NULL, seed,metatype="default_meta",in
 #'
 #' @param dsc the dsc to add the method to
 #' @param name a character string name for the method
-#' @param fn, a wrapper function that implements the method
+#' @param fn a wrapper function that implements the method
 #' @param args a list of additional arguments to fn
+#' @param outputtype a string to indicate what type of output
+#' @param gold_flag a flag to indicate if the method is a "gold" method (which gets passed meta data as well as input data)
 #' 
 #' @return nothing, but modifies the dsc environment
 #' @export
-add_method = function(dsc,name, fn, args=NULL,outputtype="default_output"){
+add_method = function(dsc,name, fn, args=NULL,outputtype="default_output",gold_flag=FALSE){
   check_valid_name(dsc,name) 
   check_unique_name(dsc,name)
   assert_that(is.function(fn), is.list(args) | is.null(args))
-  dsc$methods[[name]]=list(name=name,fn=fn,args=args,outputtype = outputtype)
+  dsc$methods[[name]]=list(name=name,fn=fn,args=args,outputtype = outputtype, gold_flag=gold_flag)
 }
 
 #' @title Add a score function to a dsc
@@ -498,8 +500,17 @@ run_method=function(dsc,seed,scenarioname,methodname){
   scenario = dsc$scenarios[[scenarioname]]
   method = dsc$methods[[methodname]]
   if(!file.exists(output_file_name(dsc,seed,scenario,method))){
-    input_frame <- data.frame(file_names = input_file_name(dsc, seed, scenario),
+    if(method$gold_flag){
+      input_frame <- data.frame(file_names = 
+                                  c(input_file_name(dsc, seed, scenario),
+                                    meta_file_name(dsc, seed, scenario)),
+                                variable_names = c('input','meta'))
+    }
+    else{
+      input_frame <- data.frame(file_names = input_file_name(dsc, seed, scenario),
                               variable_names = 'input')
+    }
+  
     timedata <- system.time(
       output <- seeded_function_call(method$fn,
                                      seed + 1,

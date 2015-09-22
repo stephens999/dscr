@@ -160,3 +160,17 @@ I will note that it is possible within run_dsc to specify to run the dsc on only
   aggregate(squared_error~method+scenario,res,mean)
 ```
 
+Finally, dscr has the ability to add a method that can "cheat" by taking not only the input data, but also the meta data. Sometimes this can be useful
+to allow implementation of a "gold standard" method against which other methods can be compared (even if the gold standard is not achievable in practice). In this case the method "truth" trivially cheats by passing back the truth as its estimate! This is of course just for illustration - in practice the gold standard method would usually be more subtle than this.
+For instance a gold standard method might perform (in some sense optimal) inference under the model used to simulate the data...
+```{r}
+  #define a wrapper function that takes both input and meta for its arguments
+  truth.wrapper = function(input,meta,args){
+    return(list(meanest = meta$truemean))
+  }
+  #indicate that this is a gold standard method by passing a gold_flag=TRUE
+  add_method(dsc_osl,"truth",truth.wrapper,gold_flag=TRUE)
+  res=run_dsc(dsc_osl)
+  aggregate(abs_error~method+scenario,res,mean)
+  aggregate(squared_error~method+scenario,res,mean)
+```
