@@ -12,7 +12,7 @@ add_method(dsc, name, fn, args = NULL, outputtype = "default_output",
 
 \item{name}{a character string name for the method}
 
-\item{fn,}{a wrapper function that implements the method}
+\item{fn}{a wrapper function that implements the method}
 
 \item{args}{a list of additional arguments to fn}
 

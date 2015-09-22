@@ -231,7 +231,7 @@ add_scenario = function(dsc,name, fn, args=NULL, seed,metatype="default_meta",in
 #'
 #' @param dsc the dsc to add the method to
 #' @param name a character string name for the method
-#' @param fn, a wrapper function that implements the method
+#' @param fn a wrapper function that implements the method
 #' @param args a list of additional arguments to fn
 #' @param outputtype a string to indicate what type of output
 #' @param gold_flag a flag to indicate if the method is a "gold" method (which gets passed meta data as well as input data)
