@@ -446,6 +446,71 @@ to remove results only for a particular method or scenario.</p>
 ## 2 trimmedmean1   normal   0.001230613
 </code></pre>
 
+<p>Finally, dscr has the ability to add a method that can &ldquo;cheat&rdquo; by taking not only the input data, but also the meta data. Sometimes this can be useful
+to allow implementation of a &ldquo;gold standard&rdquo; method against which other methods can be compared (even if the gold standard is not achievable in practice). In this case the method &ldquo;truth&rdquo; trivially cheats by passing back the truth as its estimate! This is of course just for illustration - in practice the gold standard method would usually be more subtle than this.
+For instance a gold standard method might perform (in some sense optimal) inference under the model used to simulate the data&hellip;</p>
+
+<pre><code class="r">  #define a wrapper function that takes both input and meta for its arguments
+  truth.wrapper = function(input,meta,args){
+    return(list(meanest = meta$truemean))
+  }
+  #indicate that this is a gold standard method by passing a gold_flag=TRUE
+  add_method(dsc_osl,&quot;truth&quot;,truth.wrapper,gold_flag=TRUE)
+</code></pre>
+
+<p>Then we can re-run the dsc:</p>
+
+<pre><code class="r">  res=run_dsc(dsc_osl)
+</code></pre>
+
+<pre><code class="r">  aggregate(abs_error~method+scenario,res,mean)
+</code></pre>
+
+<pre><code>##          method scenario  abs_error
+## 1          mean   Cauchy 1.57503809
+## 2        median   Cauchy 0.04001257
+## 3  trimmedmean1   Cauchy 0.04126206
+## 4  trimmedmean2   Cauchy 0.03925086
+## 5         truth   Cauchy 0.00000000
+## 6        winsor   Cauchy 0.05056598
+## 7          mean   normal 0.02723692
+## 8        median   normal 0.03276252
+## 9  trimmedmean1   normal 0.02847477
+## 10 trimmedmean2   normal 0.02944465
+## 11        truth   normal 0.00000000
+## 12       winsor   normal 0.02801455
+## 13         mean  uniform 0.01434410
+## 14       median  uniform 0.02357357
+## 15 trimmedmean1  uniform 0.01922955
+## 16 trimmedmean2  uniform 0.02201650
+## 17        truth  uniform 0.00000000
+## 18       winsor  uniform 0.01739025
+</code></pre>
+
+<pre><code class="r">  aggregate(squared_error~method+scenario,res,mean)
+</code></pre>
+
+<pre><code>##          method scenario squared_error
+## 1          mean   Cauchy  1.082254e+01
+## 2        median   Cauchy  2.752190e-03
+## 3  trimmedmean1   Cauchy  3.041337e-03
+## 4  trimmedmean2   Cauchy  2.570032e-03
+## 5         truth   Cauchy  0.000000e+00
+## 6        winsor   Cauchy  4.545666e-03
+## 7          mean   normal  1.128859e-03
+## 8        median   normal  1.609965e-03
+## 9  trimmedmean1   normal  1.230613e-03
+## 10 trimmedmean2   normal  1.339422e-03
+## 11        truth   normal  0.000000e+00
+## 12       winsor   normal  1.213718e-03
+## 13         mean  uniform  2.922071e-04
+## 14       median  uniform  7.871420e-04
+## 15 trimmedmean1  uniform  5.299378e-04
+## 16 trimmedmean2  uniform  7.128600e-04
+## 17        truth  uniform  0.000000e+00
+## 18       winsor  uniform  4.371870e-04
+</code></pre>
+
 </body>
 
 </html>

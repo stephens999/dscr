@@ -170,7 +170,14 @@ For instance a gold standard method might perform (in some sense optimal) infere
   }
   #indicate that this is a gold standard method by passing a gold_flag=TRUE
   add_method(dsc_osl,"truth",truth.wrapper,gold_flag=TRUE)
+```
+
+Then we can re-run the dsc:
+```{r, results='hide'}
   res=run_dsc(dsc_osl)
+```
+
+```{r}
   aggregate(abs_error~method+scenario,res,mean)
   aggregate(squared_error~method+scenario,res,mean)
 ```
