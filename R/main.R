@@ -479,7 +479,9 @@ run_score = function(dsc,seed,scenarioname,methodname,scorename){
       output=readRDS(file=output_file_name(dsc,seed,scenario,method,outputtype=score$outputtype)) #also loads timedata
       timedata=readRDS(file=time_file_name(dsc,seed,scenario,method))
       res=score$fn(data,output)
-      names(res)=make_nice_score_names(res)
+      if(!is.null(res)){
+        names(res)=make_nice_score_names(res)
+      }
       results=c(res,as.list(timedata))
       saveRDS(results,file=scores_file_name(dsc,seed,scenario,method,score))
     }
