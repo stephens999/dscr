@@ -4,14 +4,16 @@
 \alias{load_example}
 \title{return the data and output for a single method for a single trial}
 \usage{
-load_example(dsc, seed, scenarioname, methodname)
+load_example(dsc, seed, scenarioname, methodname, homedir = ".")
 }
 \arguments{
 \item{seed}{}
 
-\item{scenario}{}
+\item{scenarioname}{}
 
-\item{method}{}
+\item{methodname}{}
+
+\item{homedir}{the directory holding the outputfiles of the dsc}
 }
 \value{
 results list with components data, output

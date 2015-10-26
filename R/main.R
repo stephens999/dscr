@@ -89,13 +89,14 @@ get_results_singletrial = function(dsc,seed,scenario,method,score){
 #'
 #' @description return a list containing data and output for a single method,trial
 #' @param seed
-#' @param scenario
-#' @param method
+#' @param scenarioname
+#' @param methodname
+#' @param homedir the directory holding the outputfiles of the dsc
 #' 
 #' @return results list with components data, output
 #' 
 #' @export
-load_example = function(dsc,seed, scenarioname,methodname){
+load_example = function(dsc,seed, scenarioname,methodname,homedir="."){
   assert_that(is.numeric(seed))
   check_valid_name(dsc,scenarioname)
   check_valid_name(dsc,methodname)
@@ -103,9 +104,9 @@ load_example = function(dsc,seed, scenarioname,methodname){
   assert_that(scenarioname %in% get_scenario_names(dsc))
   scenario=dsc$scenarios[[scenarioname]]
   method=dsc$methods[[methodname]]
-  output= readRDS(file=output_file_name(dsc,seed,scenario,method))
-  input = readRDS(file=input_file_name(dsc,seed,scenario))
-  meta = readRDS(file =meta_file_name(dsc,seed,scenario))
+  output= readRDS(file=file.path(homedir,output_file_name(dsc,seed,scenario,method)))
+  input = readRDS(file=file.path(homedir,input_file_name(dsc,seed,scenario)))
+  meta = readRDS(file =file.path(homedir,meta_file_name(dsc,seed,scenario)))
   return(list(input=input, meta=meta, output=output))
 }
 
