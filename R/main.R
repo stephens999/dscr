@@ -91,7 +91,7 @@ get_results_singletrial = function(dsc,seed,scenario,method,score){
 #' @param seed
 #' @param scenarioname
 #' @param methodname
-#' @param homedir the directory holding the outputfiles of the dsc
+#' @param homedir the directory from which the dsc was run
 #' 
 #' @return results list with components data, output
 #' 

@@ -13,7 +13,7 @@ load_example(dsc, seed, scenarioname, methodname, homedir = ".")
 
 \item{methodname}{}
 
-\item{homedir}{the directory holding the outputfiles of the dsc}
+\item{homedir}{the directory from which the dsc was run}
 }
 \value{
 results list with components data, output
