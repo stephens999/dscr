@@ -5,7 +5,11 @@ dscr
 
 This repo contains work on an R package for performing dynamic statistical comparisons (DSCs) in R.
 
+For a simple vignette see [here] (https://github.com/stephens999/dscr/blob/master/vignettes/one_sample_location.rmd)
+
 For a brief introduction to DSCs see [here](https://github.com/stephens999/dscr/blob/master/intro.md).
+
+# Installation
 
 One vignette depends on the `ashr` package, so to get that to work you will have to install both `ashr` and `dscr`.
 You can do this using:
