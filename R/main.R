@@ -701,7 +701,7 @@ shiny_plot=function(res, s = "scenario", m = "method"){
         res.filter = dplyr::filter(res,rlang::UQ(as.name(s)) %in% input$scen.subset & rlang::UQ(as.name(m)) %in% input$method.subset)
         print(input)
         res.filter$value = res.filter[[input$criteria]]
-        ggplot(dscout, aes_string(m, quote(value), color=m)) + 
+        ggplot(res.filter, aes_string(m, quote(value), color=m)) + 
           +     geom_boxplot() + facet_grid(as.formula(paste("~",s)))
       })
     }
