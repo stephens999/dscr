@@ -702,7 +702,7 @@ shiny_plot=function(res, s = "scenario", m = "method"){
         print(input)
         res.filter$value = res.filter[[input$criteria]]
         ggplot(res.filter, aes_string(m, quote(value), color=m)) + 
-          +     geom_boxplot() + facet_grid(as.formula(paste("~",s)))
+              geom_boxplot() + facet_grid(as.formula(paste("~",s)))
       })
     }
   )
