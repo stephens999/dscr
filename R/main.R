@@ -698,7 +698,7 @@ shiny_plot=function(res, s = "scenario", m = "method"){
   server = shinyServer(
     function(input, output, session) {
       output$plot1 <- renderPlot({
-        res.filter = dplyr::filter(res,scenario %in% input$scen.subset & method %in% input$method.subset)
+        res.filter = dplyr::filter(res,rlang::UQ(as.name(s)) %in% input$scen.subset & rlang::UQ(as.name(m)) %in% input$method.subset)
         print(input)
         res.filter$value = res.filter[[input$criteria]]
         ggplot(res.filter,aes(method,value,color=method)) + geom_boxplot() + facet_grid(.~scenario)
