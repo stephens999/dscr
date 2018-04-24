@@ -669,9 +669,9 @@ run_dsc=function(dsc,scenariosubset=NULL, methodsubset=NULL,seedsubset=NULL){
 #' @param res
 #' @return a shiny plot
 #' @export
-shiny_plot=function(res){
-  scenario_names = as.character(unique(res$scenario))
-  method_names = as.character(unique(res$method))
+shiny_plot=function(res, s = "scenario", m = "method"){
+  scenario_names = as.character(unique(res[[s]]))
+  method_names = as.character(unique(res[[m]]))
   numeric_criteria = names(res)[unlist(lapply(res,is.numeric))]
 
   ui=shinyUI(pageWithSidebar(
