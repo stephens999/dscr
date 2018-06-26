@@ -2,25 +2,30 @@
 % Please edit documentation in R/main.R
 \name{add_output_parser}
 \alias{add_output_parser}
-\title{Add a outputParser to a dsc}
+\title{Add an outputParser to a dsc.}
 \usage{
 add_output_parser(dsc, name, fn, outputtype_from = "default_output",
   outputtype_to)
 }
 \arguments{
-\item{dsc}{the dsc to add the outputParser}
+\item{dsc}{The dsc to add the outputParser.}
 
-\item{name}{string giving a name by which the outputParser function is to be known by}
+\item{name}{String giving a name by which the outputParser function
+is to be known by.}
 
-\item{fn, }{a outputParser function}
+\item{fn}{A outputParser function.}
 
-\item{outputtype_from, }{string naming the type of output the outputParser function takes as input}
+\item{outputtype_from}{String naming the type of output the
+outputParser function takes as input.}
 
-\item{outputtype_to, }{string naming the type of output the outputParser function gives as output}
+\item{outputtype_to}{String naming the type of output the
+outputParser function gives as output.}
 }
 \value{
-nothing, but creates output files in output/outputtype_to subdir
+Nothing, but creates output files in output/outputtype_to
+  subdir.
 }
 \description{
-Adds a outputParser to a dsc; a outputParser converts one type of output to another type
+Adds a outputParser to a dsc; a outputParser converts
+  one type of output to another type.
 }

@@ -21,6 +21,7 @@ Imports:
     dplyr,
     reshape2,
     knitr,
+    rlang,
     BatchJobs,
     ggplot2,
     shiny

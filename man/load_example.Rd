@@ -2,16 +2,24 @@
 % Please edit documentation in R/main.R
 \name{load_example}
 \alias{load_example}
-\title{return the data and output for a single method for a single trial}
+\title{Return the data and output for a single method for a single
+  trial.}
 \usage{
 load_example(dsc, seed, scenarioname, methodname, homedir = ".")
 }
 \arguments{
-\item{homedir}{the directory from which the dsc was run}
+\item{seed}{}
+
+\item{scenarioname}{Name of the  selected scenario.}
+
+\item{methodname}{Name of the selected method.}
+
+\item{homedir}{The directory from which the dsc was run.}
 }
 \value{
-results list with components data, output
+Results list with components \code{data} and \code{output}.
 }
 \description{
-return a list containing data and output for a single method,trial
+Return a list containing data and output for a single
+  trial.
 }

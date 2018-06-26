@@ -16,27 +16,32 @@ expand_scenario <- function(scenario) {
                       stringsAsFactors = FALSE))
 }
 
-#' Comprehensively tabulate a phase of \code{dscr} execution.
-#'
-#' Depending on the phase of execution requested, starting from
-#' \enumerate{
-#'   \item the set of scenario-seed combinations (as specified
-#'     in \code{dsc$scenarios}),
-#'   \item the set of methods (as specified in
-#'     \code{dsc$methods}), and
-#'   \item the set of scores (as specified in
-#'     \code{dsc$scores}),
-#' }
-#' compute (1), the Cartesian product of (1) and (2), or the Cartesian
-#' product of (1), (2), and (3).
-#'
-#' @param dsc The \code{dscr} data structure to expand.
-#' @param phase The phase of execution to tabulate, either
-#'   'scenarios', 'scenarios_methods', or 'scenarios_methods_scores'.
-#'
-#' @return Data frame with columns \code{scenarioname}, \code{seed},
-#'   \code{methodname} (if one of the latter two phases is requested),
-#'   and \code{scorename} (if the last phase is selected).
+# @title Comprehensively tabulate a phase of \code{dscr} execution.
+#
+# @description Depending on the phase of execution requested, starting
+# from
+# \enumerate{
+#   \item the set of scenario-seed combinations (as specified
+#     in \code{dsc$scenarios}),
+#   \item the set of methods (as specified in
+#     \code{dsc$methods}), and
+#   \item the set of scores (as specified in
+#     \code{dsc$scores}),
+# }
+# compute (1), the Cartesian product of (1) and (2), or the Cartesian
+# product of (1), (2), and (3).
+#
+# @param dsc The \code{dscr} data structure to expand.
+# 
+# @param phase The phase of execution to tabulate, either
+#   'scenarios', 'scenarios_methods', or 'scenarios_methods_scores'.
+#
+# @return Data frame with columns \code{scenarioname}, \code{seed},
+#   \code{methodname} (if one of the latter two phases is requested),
+#   and \code{scorename} (if the last phase is selected).
+#
+#' @importFrom assertthat assert_that
+#' @importFrom plyr ldply
 expand_dsc <- function(dsc, phase) {
     assert_that(phase %in% c('scenarios',
                              'scenarios_methods',
@@ -78,7 +83,8 @@ expand_dsc <- function(dsc, phase) {
 #'     while the values of the list elements correspond to the values
 #'     that the column will be restricted to.
 multiple_filter <- function(df, ...) {
-    ## Basic sanity check
+    
+    # Basic sanity check.
     filter_list <- list(...)
     assert_that(all(names(filter_list) %in% names(df)))
 
@@ -87,8 +93,9 @@ multiple_filter <- function(df, ...) {
     if (length(active_filter_list) == 0) {
         return(df)
     } else {
-        ## We execute the filter call against a custom environment to
-        ## avoid scoping issues.
+        
+        # We execute the filter call against a custom environment to
+        # avoid scoping issues.
         filter_env <- new.env()
         filter_env$df <- df
         filter_env$arg_list <- active_filter_list

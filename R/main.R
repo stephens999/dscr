@@ -1,102 +1,101 @@
 #' @title Dynamic Statistical Comparisons in R
 #'
-#' @description Package containing functions to help build dynamic statistical comparisons in R
-#'
-#' \tabular{ll}{ Package: \tab dscr\cr Type: \tab Package\cr
-#' Version: \tab 0.1\cr License: \tab GPL (>=2)\cr }
+#' @description Package containing functions to help build dynamic
+#'   statistical comparisons in R.
 #'
 #' @name dscr-package
 #' @aliases dscr
 #' @docType package
-#' @author Matthew Stephens <\email{mstephens@@uchicago.edu}>
+#' @author Matthew Stephens \email{mstephens@uchicago.edu}
 #' @keywords dscr
-#' @import plyr reshape2 knitr assertthat ggplot2 shiny
-#' @importFrom magrittr "%>%"
+#'
 NULL
 
-#' @title return the path to a data file, parameter file, output file or results file
-#'
-#' @description return the path to a data file, parameter file, output file or results file
-#' 
-#' @param seed
-#' @param scenario
-#' 
-#' @param datadir/paramdir/outputdir/scoresdir the (relative) path to the directory containing the relevant files
-#' 
-#' @return string containing path to file
-input_file_name = function(dsc,seed,scenario,inputdir="input",inputtype=NULL){
-  if(is.null(inputtype)){inputtype=scenario$inputtype}
-  return(file.path(dsc$file.dir,inputdir,scenario$name,inputtype,paste0("input.",seed,".rds")))
+# @title Return the path to a data file, parameter file, output file
+#   or results file.
+#
+# @return String containing path to file.
+# 
+input_file_name = function(dsc,seed,scenario,inputdir="input",inputtype=NULL) {
+  if (is.null(inputtype))
+    inputtype = scenario$inputtype
+  return(file.path(dsc$file.dir,inputdir,scenario$name,inputtype,
+                   paste0("input.",seed,".rds")))
 }
 
-#' @title return the path to a meta file, parameter file, output file or results file
-#'
-#' @description return the path to a meta file, parameter file, output file or results file
-#' 
-#' @param dsc
-#' @param seed
-#' @param scenario
-#' 
-#' @param inputdir/metadir/outputdir/scoresdir the (relative) path to the directory containing the relevant files
-#' 
-#' @return string containing path to file
+# @title Return the path to a meta file, parameter file, output file
+#   or results file.
+#
+# @return String containing path to file.
+# 
 meta_file_name = function(dsc,seed,scenario,metadir="meta",metatype=NULL){
-  if(is.null(metatype)){metatype=scenario$metatype}
-  return(file.path(dsc$file.dir,metadir,scenario$name,metatype,paste0("meta.",seed,".rds")))
+  if (is.null(metatype))
+    metatype = scenario$metatype
+  return(file.path(dsc$file.dir,metadir,scenario$name,metatype,
+                   paste0("meta.",seed,".rds")))
 }
 
-output_file_name = function(dsc,seed, scenario, method, outputdir="output",outputtype=NULL){
-  if(is.null(outputtype)){outputtype=method$outputtype}
-  return(file.path(dsc$file.dir,outputdir,scenario$name,method$name,outputtype,paste0("output.",seed,".rds")))
+output_file_name = function(dsc,seed, scenario, method, outputdir="output",
+    outputtype=NULL){
+  if (is.null(outputtype))
+    outputtype = method$outputtype
+  return(file.path(dsc$file.dir,outputdir,scenario$name,method$name,
+                   outputtype,paste0("output.",seed,".rds")))
 }
 
-time_file_name = function(dsc,seed, scenario, method, outputdir="output"){
-  outputtype=method$outputtype
-  return(file.path(dsc$file.dir,outputdir,scenario$name,method$name,outputtype,paste0("time.",seed,".rds")))
+time_file_name = function(dsc,seed, scenario, method, outputdir="output") {
+  outputtype = method$outputtype
+  return(file.path(dsc$file.dir,outputdir,scenario$name,method$name,
+                   outputtype,paste0("time.",seed,".rds")))
 }
 
-scores_file_name = function(dsc,seed, scenario, method, score=NULL, scoresdir="scores"){
-  if(is.null(score)){scorename="defaultscore"} else {scorename=score$name}
-  return(file.path(dsc$file.dir,scoresdir,scenario$name,method$name,scorename,paste0("scores.",seed,".rds")))
+scores_file_name = function(dsc,seed, scenario, method, score=NULL,
+                            scoresdir="scores") {
+  if (is.null(score))
+    scorename = "defaultscore"
+  else
+    scorename = score$name
+  return(file.path(dsc$file.dir,scoresdir,scenario$name,method$name,
+                   scorename,paste0("scores.",seed,".rds")))
 }
 
-
-
-#' @title Get the results of a single method for a single trial
-#'
-#' @description Get the results of a single method for a single trial
-#' 
-#' @param seed
-#' @param scenario
-#' @param method
-#' @param score
-#' 
-#' @return results, a data frame of results, the details will depend on the comparison being run
-get_results_singletrial = function(dsc,seed,scenario,method,score){
-  if(file.exists(scores_file_name(dsc,seed,scenario,method,score))){
-    results=readRDS(file=scores_file_name(dsc,seed,scenario,method,score))
+# @title Get the results of a single method for a single trial.
+#
+# @return Results, a data frame of results, the details will depend
+#   on the comparison being run.
+# 
+get_results_singletrial = function(dsc,seed,scenario,method,score) {
+  if (file.exists(scores_file_name(dsc,seed,scenario,method,score))){
+    results = readRDS(file=scores_file_name(dsc,seed,scenario,method,score))
   } else {results = NULL}
-  #convert NULL to NA to stop data.frame crashing
+  
+  # Convert NULL to NA to stop data.frame crashing.
   results <- lapply(results, function(x)ifelse(is.null(x), NA, x))
   temp = c(seed=seed, scenario=scenario$name, method=method$name, results)
   class(temp)='data.frame'
   row.names(temp)=1
-  #system.time({X<-(list(x='SomeText', y=200,z=1:10000)); class(X) <- 'data.frame'; row.names(X)<-1})
   return(temp)
 }
 
-#' @title return the data and output for a single method for a single trial
+#' @title Return the data and output for a single method for a single
+#'   trial.
 #'
-#' @description return a list containing data and output for a single method,trial
-#' @param seed
-#' @param scenarioname
-#' @param methodname
-#' @param homedir the directory from which the dsc was run
+#' @description Return a list containing data and output for a single
+#'   trial.
 #' 
-#' @return results list with components data, output
+#' @param seed
+#' 
+#' @param scenarioname Name of the  selected scenario.
+#' 
+#' @param methodname Name of the selected method.
+#' 
+#' @param homedir The directory from which the dsc was run.
+#' 
+#' @return Results list with components \code{data} and \code{output}.
 #' 
 #' @export
-load_example = function(dsc,seed, scenarioname,methodname,homedir="."){
+#' 
+load_example = function(dsc,seed,scenarioname,methodname,homedir=".") {
   assert_that(is.numeric(seed))
   check_valid_name(dsc,scenarioname)
   check_valid_name(dsc,methodname)
@@ -104,44 +103,58 @@ load_example = function(dsc,seed, scenarioname,methodname,homedir="."){
   assert_that(scenarioname %in% get_scenario_names(dsc))
   scenario=dsc$scenarios[[scenarioname]]
   method=dsc$methods[[methodname]]
-  output= readRDS(file=file.path(homedir,output_file_name(dsc,seed,scenario,method)))
+  output =
+    readRDS(file=file.path(homedir,output_file_name(dsc,seed,scenario,method)))
   input = readRDS(file=file.path(homedir,input_file_name(dsc,seed,scenario)))
   meta = readRDS(file =file.path(homedir,meta_file_name(dsc,seed,scenario)))
   return(list(input=input, meta=meta, output=output))
 }
 
-#' @title Get the results of a single method for a single scenario
-#'
-#' @description  Get the results of a single method for a single scenario
-#' 
-#' @param scenario a scenario
-#' @param method a method
-#' @return a data frame of results, with one row for each trial. The details of the columns will depend on the comparison being run
-get_results_scenario = function(dsc,scenario, method,score){  
-  print(paste0("Getting results for scenario ",scenario$name," , method ",method$name))
-  ldply(scenario$seed, get_results_singletrial, scenario=scenario, method=method,score=score,dsc=dsc)
+# @title Get the results of a single method for a single scenario.
+#
+# @description Get the results of a single method for a single scenario.
+# 
+# @param scenario a scenario.
+# 
+# @param method a method.
+# 
+# @return A data frame of results, with one row for each trial. The
+#   details of the columns will depend on the comparison being run.
+#
+#' @importFrom plyr ldply
+get_results_scenario = function(dsc,scenario,method,score) {  
+  print(paste0("Getting results for scenario ",scenario$name," , method ",
+               method$name))
+  ldply(scenario$seed, get_results_singletrial, scenario=scenario,
+        method=method,score=score,dsc=dsc)
 }
 
-get_results = function(dsc,scenarios,method,score){
+#' @importFrom plyr ldply
+get_results = function(dsc,scenarios,method,score) {
   ldply(scenarios, get_results_scenario, method=method,score=score,dsc=dsc)
 }
 
-#' @title Aggregate the results of multiple methods for multiple scenarios
-#'
-#' @description Aggregate the results of multiple methods for multiple scenarios
-#' 
-#' @param scenarios a list of scenarios. 
-#' @param methods a list of methods
-#' @return a data frame of results, with one row for each trial/method combination. The details of the columns will depend on the comparison being run
+# @title Aggregate the results of multiple methods for multiple scenarios.
+#
+# @param scenarios A list of scenarios.
+# 
+# @param methods A list of methods.
+# 
+# @return A data frame of results, with one row for each trial/method
+# combination. The details of the columns will depend on the
+# comparison being run.
+# 
+#' @importFrom plyr ldply
 aggregate_results = function(dsc,scenarios,methods,score){
   ldply(methods,get_results,scenarios=scenarios,score=score,dsc=dsc)
 }
 
-make_dirs = function(namelist){
-  for(i in 1:length(namelist)){dir.create(namelist[i],recursive=TRUE,showWarnings=FALSE)}
+make_dirs = function(namelist) {
+  for(i in 1:length(namelist))
+    dir.create(namelist[i],recursive=TRUE,showWarnings=FALSE)
 }
 
-make_directories = function(dsc){
+make_directories = function(dsc) {
   scenarionames = names(dsc$scenarios)
   methodnames = names(dsc$methods)
   scorenames = names(dsc$scores)
@@ -149,19 +162,18 @@ make_directories = function(dsc){
   inputtypes = get_input_types(dsc)
   metatypes = get_meta_types(dsc)
   
-  #directories corresponding to scenario-method combinations
+  # Directories corresponding to scenario-method combinations.
   smdirs = as.vector(outer(scenarionames,methodnames,file.path))
   
-  # scenario-method-scoretype combos
+  # Scenario-method-scoretype combos.
   smsdirs = as.vector(outer(smdirs,scorenames,file.path))
   
-  #scenario-method-outputtype combos
+  # Scenario-method-outputtype combos.
   smodirs = as.vector(outer(smdirs,outputtypes,file.path))
   
-  #scenario-metatype combos
+  # Scenario-metatype combos.
   sMdirs = as.vector(outer(scenarionames,metatypes,file.path))
   sIdirs = as.vector(outer(scenarionames,inputtypes,file.path))
-  
   
   make_dirs(outer(file.path(dsc$file.dir,"meta"),sMdirs,file.path))
   make_dirs(outer(file.path(dsc$file.dir,"input"),sIdirs,file.path))
@@ -169,32 +181,36 @@ make_directories = function(dsc){
   make_dirs(outer(file.path(dsc$file.dir,"scores"),smsdirs,file.path))
 }
 
-
-#' @title Sources all R files in a directory
+#' @title Sources all R files in a directory.
 #'
-#' @description Sources all R files in a directory (comes from examples in ??source)
+#' @param path The directory you want to source.
 #' 
-#' @param path the directory you want to source
-#' @param trace whether to print the names of files being sourced
+#' @param trace Whether to print the names of files being sourced.
 #' 
-#' @return none;
-#' @export 
+#' @return No return value.
+#' 
+#' @export
+#' 
 source_dir <- function(path, trace = TRUE, ...) {
   for (nm in list.files(path, pattern = "[.][RrSsQq]$")) {
-    if(trace) cat(nm,":")
+    if(trace)
+      cat(nm,":")
     source(file.path(path, nm), ...)
-    if(trace) cat("\n")
+    if(trace)
+      cat("\n")
   }
 }
 
-#' @title Start a new (empty) dsc
+#' @title Start a new (empty) dsc.
 #'
-#' @description returns an environment that is a dsc
+#' @description Returns an environment that is a dsc.
 #'
-#' @param name a string containing the name for your dsc
+#' @param name A string containing the name for your dsc.
 #' 
-#' @return dsc, an environmnet
+#' @return dsc, an environment.
+#' 
 #' @export
+#' 
 new_dsc = function(name,file.dir){
   dsc=new.env()
   dsc$methods=list()
@@ -207,62 +223,92 @@ new_dsc = function(name,file.dir){
   return(dsc)
 }
 
-#' @title Add a scenario to a dsc
+#' @title Add a scenario to a dsc.
 #'
-#' @description Adds a scenario to a dsc
+#' @description Adds a scenario to a dsc.
 #'
-#' @param dsc the dsc to add the sceanario to
-#' @param name a character string 
-#' @param fn the datamaker, a function that is the datamaker for the scenario
-#' @param args a list of arguments to the datamaker
-#' @param seed a vector of integers showing seeds to use for the scenario
+#' @param dsc The dsc to add the sceanario to.
 #' 
-#' @return nothing, but modifies the dsc environment
+#' @param name A character string.
+#' 
+#' @param fn The datamaker, a function that is the datamaker for the
+#'    scenario.
+#' 
+#' @param args A list of arguments to the datamaker.
+#' 
+#' @param seed A vector of integers showing seeds to use for the scenario.
+#' 
+#' @return Nothing, but modifies the dsc environment.
+#'
+#' @importFrom assertthat assert_that
+#' 
 #' @export
-add_scenario = function(dsc,name, fn, args=NULL, seed,metatype="default_meta",inputtype="default_input"){
+#' 
+add_scenario = function(dsc,name, fn, args=NULL, seed,metatype="default_meta",
+                        inputtype="default_input"){
   check_valid_name(dsc,name) 
   check_unique_name(dsc,name)
   assert_that(is.function(fn), is.list(args) | is.null(args),is.numeric(seed))
-  dsc$scenarios[[name]]=list(name=name,fn=fn,args=args,seed=seed,metatype=metatype,inputtype=inputtype)
+  dsc$scenarios[[name]]=list(name=name,fn=fn,args=args,seed=seed,
+                             metatype=metatype,inputtype=inputtype)
 }
 
-#' @title Add a method to a dsc
+#' @title Add a method to a dsc.
 #'
 #' @description Adds a method to a dsc
 #'
-#' @param dsc the dsc to add the method to
-#' @param name a character string name for the method
-#' @param fn a wrapper function that implements the method
-#' @param args a list of additional arguments to fn
-#' @param outputtype a string to indicate what type of output
-#' @param gold_flag a flag to indicate if the method is a "gold" method (which gets passed meta data as well as input data)
+#' @param dsc The dsc to add the method to.
 #' 
-#' @return nothing, but modifies the dsc environment
+#' @param name a character string name for the method
+#' 
+#' @param fn a wrapper function that implements the method
+#' 
+#' @param args a list of additional arguments to fn
+#' 
+#' @param outputtype a string to indicate what type of output
+#' 
+#' @param gold_flag a flag to indicate if the method is a "gold"
+#'   method (which gets passed meta data as well as input data)
+#' 
+#' @return Nothing, but modifies the dsc environment.
+#'
+#' @importFrom assertthat assert_that
+#' 
 #' @export
-add_method = function(dsc,name, fn, args=NULL,outputtype="default_output",gold_flag=FALSE){
+#' 
+add_method = function(dsc,name, fn, args=NULL,outputtype="default_output",
+                      gold_flag=FALSE) {
   check_valid_name(dsc,name) 
   check_unique_name(dsc,name)
   assert_that(is.function(fn), is.list(args) | is.null(args))
-  dsc$methods[[name]]=list(name=name,fn=fn,args=args,outputtype = outputtype, gold_flag=gold_flag)
+  dsc$methods[[name]]=list(name=name,fn=fn,args=args,outputtype = outputtype,
+                           gold_flag=gold_flag)
 }
 
-#' @title Add a score function to a dsc
+#' @title Add a score function to a dsc.
 #'
-#' @description Adds a score to a dsc
+#' @description Adds a score to a dsc.
 #'
-#' @param dsc the dsc to add the score to
-#' @param fn, a score function
-#' @param name string giving a name by which the score function is to be known by
-
-#' @param outputtype, the type of output the score function takes, as generated by a outputParser 
+#' @param dsc The dsc to add the score to.
 #' 
-#' @return nothing, but modifies the dsc environment
+#' @param fn A score function
+#' 
+#' @param name String giving a name by which the score function is to
+#'   be known by.
+
+#' @param outputtype The type of output the score function takes, as
+#'   generated by a outputParser.
+#' 
+#' @return Nothing, but modifies the dsc environment.
+#'
+#' @importFrom assertthat assert_that
+#' 
 #' @export
-add_score = function(dsc,fn,name="default_score",outputtype="default_output"){
+#' 
+add_score = function(dsc,fn,name="default_score",outputtype="default_output") {
   check_valid_name(dsc,name)
   check_unique_name(dsc,name)
   assert_that(is.function(fn))
- 
   dsc$scores[[name]]=list(name=name,fn=fn,outputtype=outputtype)
 }
 
@@ -297,23 +343,40 @@ get_meta_types=function(dsc){
   lapply(dsc$scenarios,function(x){return(x$metatype)})  
 }
 
-#' @title Add a outputParser to a dsc
+#' @title Add an outputParser to a dsc.
 #'
-#' @description Adds a outputParser to a dsc; a outputParser converts one type of output to another type
+#' @description Adds a outputParser to a dsc; a outputParser converts
+#'   one type of output to another type.
 #'
-#' @param dsc the dsc to add the outputParser
-#' @param name string giving a name by which the outputParser function is to be known by
-#' @param fn, a outputParser function
-#' @param outputtype_from, string naming the type of output the outputParser function takes as input 
-#' @param outputtype_to, string naming the type of output the outputParser function gives as output 
-#' @return nothing, but creates output files in output/outputtype_to subdir
+#' @param dsc The dsc to add the outputParser.
+#' 
+#' @param name String giving a name by which the outputParser function
+#'   is to be known by.
+#' 
+#' @param fn A outputParser function.
+#' 
+#' @param outputtype_from String naming the type of output the
+#'   outputParser function takes as input.
+#' 
+#' @param outputtype_to String naming the type of output the
+#'   outputParser function gives as output.
+#' 
+#' @return Nothing, but creates output files in output/outputtype_to
+#'   subdir.
+#'
+#' @importFrom assertthat assert_that
+#' 
 #' @export
-add_output_parser = function(dsc,name,fn,outputtype_from="default_output",outputtype_to){
+#' 
+add_output_parser = function(dsc,name,fn,outputtype_from="default_output",
+                             outputtype_to) {
   check_valid_name(dsc,name)  
   check_unique_name(dsc,name)
   assert_that(is.function(fn))
   assert_that(outputtype_from %in% get_output_types(dsc))  
-  dsc$outputParsers[[name]]=list(name=name,fn=fn,outputtype_from=outputtype_from,outputtype_to=outputtype_to)
+  dsc$outputParsers[[name]]=
+    list(name=name,fn=fn,outputtype_from=outputtype_from,
+         outputtype_to=outputtype_to)
 }
 
 get_scenario_names = function(dsc){return(names(dsc$scenarios))}
@@ -321,32 +384,45 @@ get_method_names = function(dsc){return(names(dsc$methods))}
 get_output_parser_names = function(dsc){return(names(dsc$outputParsers))}
 get_score_names = function(dsc){return(names(dsc$scores))}
 
-get_all_names = function(dsc){return(c(get_scenario_names(dsc),get_method_names(dsc),
-                                     get_output_parser_names(dsc),get_score_names(dsc),
-                                     get_output_types(dsc),get_input_types(dsc),
-                                     get_meta_types(dsc)))}
+get_all_names = function(dsc){
+  return(c(get_scenario_names(dsc),get_method_names(dsc),
+           get_output_parser_names(dsc),get_score_names(dsc),
+           get_output_types(dsc),get_input_types(dsc),
+           get_meta_types(dsc)))}
 
+#' @importFrom assertthat assert_that
 check_valid_name=function(dsc,name){
   assert_that(is.character(name))
-  assert_that(!grepl("[/\\:*\"?<>|]",name)) #exclude characters not allowed in filename
+  # Exclude characters not allowed in filename.
+  assert_that(!grepl("[/\\:*\"?<>|]",name)) 
 }
 
+# Make all names unique.
+#
+#' @importFrom assertthat assert_that
 check_unique_name=function(dsc,name){
-  assert_that(!(name %in% get_all_names(dsc))) #make all names unique
+  assert_that(!(name %in% get_all_names(dsc))) 
 }
 
-scenario_exists = function(dsc,scenarioname){return(scenarioname %in% names(dsc$scenarios))}
-method_exists = function(dsc,methodname){return(methodname %in% names(dsc$methods))}
-output_parser_exists = function(dsc,outputParsername){return(outputParsername %in% names(dsc$outputParsers))}
-score_exists = function(dsc,scorename){return(scorename %in% names(dsc$scores))}
+scenario_exists = function(dsc,scenarioname){
+  return(scenarioname %in% names(dsc$scenarios))}
+method_exists = function(dsc,methodname){
+  return(methodname %in% names(dsc$methods))}
+output_parser_exists = function(dsc,outputParsername){
+  return(outputParsername %in% names(dsc$outputParsers))}
+score_exists = function(dsc,scorename){
+  return(scorename %in% names(dsc$scores))}
   
-#' @title List scenarios
+#' @title List scenarios.
 #'
-#' @description List scenarios
-#' @param dsc the dsc to have its scenarios listed
+#' @description List scenarios.
 #' 
-#' @return nothing
+#' @param dsc The dsc to have its scenarios listed.
+#' 
+#' @return Nothing.
+#' 
 #' @export
+#' 
 list_scenarios = function(dsc){print(get_scenario_names(dsc))}
 
 #' @title List methods
@@ -438,10 +514,6 @@ run_scenarios=function(dsc,ssub=NULL,seedsubset=NULL){
     multiple_filter(scenarioname = ssub, seed = seedsubset)
   print(paste0("running Scenarios"))
   mapply(run_scenario,seed=df$seed,scenarioname=df$scenarioname,MoreArgs=list(dsc=dsc))
-  #reg1 <- makeRegistry(id="my_reg1", seed=123, file.dir="my_job_dir1")
-  #batchMap(reg1, run_scenario,seed=df$seed,scenarioname=df$scenarioname,more.args=list(dsc=dsc))
-  #ids <- getJobIds(reg1)
-  #submitJobs(reg1, ids)  
 }
 
 #' @title Score a method on a single trial and save results
@@ -531,10 +603,6 @@ run_methods=function(dsc,ssub=NULL,msub=NULL,seedsubset=NULL){
   
   print(paste0("running Methods"))
   mapply(run_method,seed=df$seed,scenarioname=df$scenarioname,methodname=df$methodname,MoreArgs=list(dsc=dsc))
-  #reg2 <- makeRegistry(id="my_reg2", seed=123, file.dir="my_job_dir2")
-  #batchMap(reg2, run_method,seed=df$seed,scenarioname=df$scenarioname,methodname=df$methodname,more.args=list(dsc=dsc))
-  #ids <- getJobIds(reg2)
-  #submitJobs(reg2, ids)  
 }
 
 #' @title Removes all data, output and results for the dsc
@@ -661,15 +729,20 @@ run_dsc=function(dsc,scenariosubset=NULL, methodsubset=NULL,seedsubset=NULL){
   return(dsc$res)
 }
 
-
-#' @title plot results for DSC
+#' @title Plot results for DSC.
 #'
-#' @description interactive plot for results of DSC
+#' @description Interactive plot for results of DSC.
 #'
-#' @param res
-#' @return a shiny plot
+#' @param res Results of a DSC.
+#' 
+#' @return A shiny plot.
+#'
+#' @importFrom dplyr filter
+#' @importFrom rlang UQ
+#' 
 #' @export
-shiny_plot=function(res, s = "scenario", m = "method"){
+#' 
+shiny_plot = function(res, s = "scenario", m = "method"){
   scenario_names = as.character(unique(res[[s]]))
   method_names = as.character(unique(res[[m]]))
   numeric_criteria = names(res)[unlist(lapply(res,is.numeric))]
@@ -698,7 +771,10 @@ shiny_plot=function(res, s = "scenario", m = "method"){
   server = shinyServer(
     function(input, output, session) {
       output$plot1 <- renderPlot({
-        res.filter = dplyr::filter(res,rlang::UQ(as.name(s)) %in% input$scen.subset & rlang::UQ(as.name(m)) %in% input$method.subset)
+        res.filter <-
+          dplyr::filter(res,rlang::UQ(as.name(s)) %in%
+                        input$scen.subset & rlang::UQ(as.name(m)) %in%
+                        input$method.subset)
         print(input)
         res.filter$value = res.filter[[input$criteria]]
         ggplot(res.filter, aes_string(m, quote(value), color=m)) + 

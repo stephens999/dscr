@@ -2,16 +2,16 @@
 % Please edit documentation in R/main.R
 \name{new_dsc}
 \alias{new_dsc}
-\title{Start a new (empty) dsc}
+\title{Start a new (empty) dsc.}
 \usage{
 new_dsc(name, file.dir)
 }
 \arguments{
-\item{name}{a string containing the name for your dsc}
+\item{name}{A string containing the name for your dsc.}
 }
 \value{
-dsc, an environmnet
+dsc, an environment.
 }
 \description{
-returns an environment that is a dsc
+Returns an environment that is a dsc.
 }

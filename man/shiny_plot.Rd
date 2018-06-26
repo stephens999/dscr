@@ -2,13 +2,16 @@
 % Please edit documentation in R/main.R
 \name{shiny_plot}
 \alias{shiny_plot}
-\title{plot results for DSC}
+\title{Plot results for DSC.}
 \usage{
 shiny_plot(res, s = "scenario", m = "method")
 }
+\arguments{
+\item{res}{Results of a DSC.}
+}
 \value{
-a shiny plot
+A shiny plot.
 }
 \description{
-interactive plot for results of DSC
+Interactive plot for results of DSC.
 }

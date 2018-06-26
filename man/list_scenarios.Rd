@@ -2,16 +2,16 @@
 % Please edit documentation in R/main.R
 \name{list_scenarios}
 \alias{list_scenarios}
-\title{List scenarios}
+\title{List scenarios.}
 \usage{
 list_scenarios(dsc)
 }
 \arguments{
-\item{dsc}{the dsc to have its scenarios listed}
+\item{dsc}{The dsc to have its scenarios listed.}
 }
 \value{
-nothing
+Nothing.
 }
 \description{
-List scenarios
+List scenarios.
 }

@@ -6,12 +6,10 @@
 \alias{dscr}
 \title{Dynamic Statistical Comparisons in R}
 \description{
-Package containing functions to help build dynamic statistical comparisons in R
-
-\tabular{ll}{ Package: \tab dscr\cr Type: \tab Package\cr
-Version: \tab 0.1\cr License: \tab GPL (>=2)\cr }
+Package containing functions to help build dynamic
+  statistical comparisons in R.
 }
 \author{
-Matthew Stephens <\email{mstephens@uchicago.edu}>
+Matthew Stephens \email{mstephens@uchicago.edu}
 }
 \keyword{dscr}
