@@ -1,4 +1,3 @@
-get_results: no visible global function definition for ‘ldply’
 get_results_scenario: no visible global function definition for ‘ldply’
 load_example: no visible global function definition for ‘assert_that’
 multiple_filter: no visible global function definition for
