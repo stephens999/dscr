@@ -2,16 +2,16 @@
 % Please edit documentation in R/main.R
 \name{list_methods}
 \alias{list_methods}
-\title{List methods}
+\title{List methods.}
 \usage{
 list_methods(dsc)
 }
 \arguments{
-\item{dsc}{the dsc to have its methods listed}
+\item{dsc}{The dsc to have its methods listed.}
 }
 \value{
-nothing
+Nothing.
 }
 \description{
-List methods
+List methods.
 }

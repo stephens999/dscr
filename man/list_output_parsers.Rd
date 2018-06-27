@@ -2,16 +2,16 @@
 % Please edit documentation in R/main.R
 \name{list_output_parsers}
 \alias{list_output_parsers}
-\title{List outputParsers}
+\title{List outputParsers.}
 \usage{
 list_output_parsers(dsc)
 }
 \arguments{
-\item{dsc}{the dsc to have its outputParsers listed}
+\item{dsc}{The dsc to have its outputParsers listed.}
 }
 \value{
-nothing
+Nothing.
 }
 \description{
-List outputParsers
+List outputParsers.
 }

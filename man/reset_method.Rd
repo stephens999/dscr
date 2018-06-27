@@ -2,18 +2,20 @@
 % Please edit documentation in R/main.R
 \name{reset_method}
 \alias{reset_method}
-\title{Removes all output and scoress for a method}
+\title{Removes all output and scoress for a method.}
 \usage{
 reset_method(dsc, methodname, force = FALSE)
 }
 \arguments{
-\item{force}{boolean, indicates whether to proceed without prompting user (prompt is to be implemented)}
+\item{force}{Boolean, indicates whether to proceed without
+prompting user (prompt is to be implemented).}
 
-\item{method}{string indicating name of methods to remove output}
+\item{method}{String indicating name of methods to remove output.}
 }
 \value{
-nothing; simply deletes files
+Nothing; simply deletes files.
 }
 \description{
-Removes all output and scores for a method; primary intended purpose is to force re-running of that method.
+Removes all output and scores for a method; primary
+  intended purpose is to force re-running of that method.
 }

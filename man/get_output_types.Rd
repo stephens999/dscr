@@ -2,16 +2,16 @@
 % Please edit documentation in R/main.R
 \name{get_output_types}
 \alias{get_output_types}
-\title{return outputtypes of the methods in a dsc}
+\title{Return outputtypes of the methods in a dsc.}
 \usage{
 get_output_types(dsc)
 }
 \arguments{
-\item{dsc}{a dsc}
+\item{dsc}{A dsc.}
 }
 \value{
-list of outputtypes
+List of outputtypes
 }
 \description{
-return outputtypes of the methods in a dsc
+Return outputtypes of the methods in dsc.
 }

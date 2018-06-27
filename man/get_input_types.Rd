@@ -2,16 +2,16 @@
 % Please edit documentation in R/main.R
 \name{get_input_types}
 \alias{get_input_types}
-\title{return inputtypes of the scenarios in a dsc}
+\title{Return inputtypes of the scenarios in a dsc.}
 \usage{
 get_input_types(dsc)
 }
 \arguments{
-\item{dsc}{a dsc}
+\item{dsc}{A dsc.}
 }
 \value{
-list of inputtypes
+List of inputtypes.
 }
 \description{
-return inputtypes of the scenarios in a dsc
+Return inputtypes of the scenarios in a dsc.
 }

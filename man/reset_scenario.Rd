@@ -2,19 +2,21 @@
 % Please edit documentation in R/main.R
 \name{reset_scenario}
 \alias{reset_scenario}
-\title{Removes all output and results for a scenario}
+\title{Removes all output and results for a scenario.}
 \usage{
 reset_scenario(dsc, scenarioname, force = FALSE)
 }
 \arguments{
-\item{scenarioname}{string indicating name of scenario to remove}
+\item{scenarioname}{String indicating name of scenario to remove.}
 
-\item{force}{boolean, indicates whether to proceed without prompting user (prompt is to be implemented)}
+\item{force}{Boolean, indicates whether to proceed without
+prompting user (prompt is to be implemented).}
 }
 \value{
-nothing; simply delets files
+Nothing; simply delets files.
 }
 \description{
-Removes all output and results for a scenario; primary intended purpose is to force re-running of that scenario.
-Works only for unix look-alikes?
+Removes all output and results for a scenario; primary
+  intended purpose is to force re-running of that scenario. (Works
+  only for unix look-alikes?)
 }

@@ -67,21 +67,24 @@ expand_dsc <- function(dsc, phase) {
     return(result)
 }
 
-#' Apply multiple filters to a data frame.
-#'
-#' Build and execute a \code{dplyr::filter} call against a data frame
-#' with an arbitrary number of filtering clauses, some of which can be
-#' inactive by being set to \code{NULL}. For example,
-#' \code{multiple_filter(df, some_col = c(1, 2), other_col = NULL)}
-#' returns the value of \code{dplyr::filter(df, some_col \%in\% c(1,
-#' 2))}. Return the data frame unchanged if there are no active
-#' filters.
-#'
-#' @param df Data frame to filter.
-#' @param ... Set of filters to apply to the data frame. The names of
-#'     the list elements correspond to column names in \code{df},
-#'     while the values of the list elements correspond to the values
-#'     that the column will be restricted to.
+# Apply multiple filters to a data frame.
+#
+# Build and execute a \code{dplyr::filter} call against a data frame
+# with an arbitrary number of filtering clauses, some of which can be
+# inactive by being set to \code{NULL}. For example,
+# \code{multiple_filter(df, some_col = c(1, 2), other_col = NULL)}
+# returns the value of \code{dplyr::filter(df, some_col \%in\% c(1,
+# 2))}. Return the data frame unchanged if there are no active
+# filters.
+#
+# @param df Data frame to filter.
+# 
+# @param ... Set of filters to apply to the data frame. The names of
+#     the list elements correspond to column names in \code{df},
+#     while the values of the list elements correspond to the values
+#     that the column will be restricted to.
+#
+#' @importFrom assertthat assert_that
 multiple_filter <- function(df, ...) {
     
     # Basic sanity check.

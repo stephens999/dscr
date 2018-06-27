@@ -2,16 +2,16 @@
 % Please edit documentation in R/main.R
 \name{list_scores}
 \alias{list_scores}
-\title{List scores}
+\title{List scores.}
 \usage{
 list_scores(dsc)
 }
 \arguments{
-\item{dsc}{a dsc}
+\item{dsc}{A dsc.}
 }
 \value{
-nothing
+Nothing.
 }
 \description{
-List scores
+List scores.
 }

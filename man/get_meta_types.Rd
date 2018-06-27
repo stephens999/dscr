@@ -2,16 +2,16 @@
 % Please edit documentation in R/main.R
 \name{get_meta_types}
 \alias{get_meta_types}
-\title{return metatypes of the scenarios in a dsc}
+\title{Return metatypes of the scenarios in a dsc.}
 \usage{
 get_meta_types(dsc)
 }
 \arguments{
-\item{dsc}{a dsc}
+\item{dsc}{A dsc.}
 }
 \value{
-list of inputtypes
+List of inputtypes.
 }
 \description{
-return metatypes of the scenarios in a dsc
+Return metatypes of the scenarios in a dsc.
 }

@@ -2,27 +2,31 @@
 % Please edit documentation in R/main.R
 \name{run_dsc}
 \alias{run_dsc}
-\title{Run all methods on all scenarios for a DSC}
+\title{Run all methods on all scenarios for a DSC.}
 \usage{
 run_dsc(dsc, scenariosubset = NULL, methodsubset = NULL,
   seedsubset = NULL)
 }
 \arguments{
-\item{scenariosubset}{a vector of the names of the scenarios to actually make and run}
+\item{scenariosubset}{A vector of the names of the scenarios to
+actually make and run.}
 
-\item{methodsubset}{a vector of the names of the methods to run (default is to run all of them)}
+\item{methodsubset}{A vector of the names of the methods to run
+(default is to run all of them).}
 
-\item{seedsubset}{a vector of which seeds to run. Eg 1:2 would do seeds 1 and 2 (for scenarios that use that seed)}
+\item{seedsubset}{A vector of which seeds to run. e.g., \code{1:2}
+would do seeds 1 and 2 (for scenarios that use that seed).}
 
-\item{scenarios}{a list of scenarios used to produce data=list(input,meta)}
+\item{scenarios}{A list of scenarios used to produce
+\code{data = list(input,meta)}.}
 
-\item{methods}{a list of methods to turn data$input into output}
+\item{methods}{A list of methods to turn \code{data$input} into output.}
 
-\item{scorefn}{a function that takes output and scores it against data}
+\item{scorefn}{A function that takes output and scores it against data.}
 }
 \value{
-data frame of results from all methods run on all scenarios
+Data frame of results from all methods run on all scenarios.
 }
 \description{
-Run all methods on all scenarios for a DSC
+Run all methods on all scenarios for a DSC.
 }
