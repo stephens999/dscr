@@ -510,23 +510,31 @@ run_output_parser = function(dsc,outputParsername){
   assert_that(output_parser_exists(dsc,outputParsername))
   print(paste0("running outputParser ",outputParsername))  
   outputParser = dsc$outputParsers[[outputParsername]]
-  from.dir = Sys.glob(file.path(dsc$file.dir,"output","*","*",outputParser$outputtype_from))
-  from.filename = Sys.glob(file.path(dsc$file.dir,"output","*","*",outputParser$outputtype_from,"output*"))
-  to.filename = gsub(outputParser$outputtype_from,outputParser$outputtype_to,from.filename)
-  to.dir = gsub(outputParser$outputtype_from,outputParser$outputtype_to,from.dir)
+  from.dir = Sys.glob(file.path(dsc$file.dir,"output","*","*",
+      outputParser$outputtype_from))
+  from.filename = Sys.glob(file.path(dsc$file.dir,"output","*","*",
+      outputParser$outputtype_from,"output*"))
+  to.filename = gsub(outputParser$outputtype_from,
+      outputParser$outputtype_to,from.filename)
+  to.dir = gsub(outputParser$outputtype_from,
+      outputParser$outputtype_to,from.dir)
   make_dirs(to.dir)
-  mapply(run_output_parser_once,from.filename,to.filename,MoreArgs=list(dsc=dsc,outputParsername=outputParsername))
+  mapply(run_output_parser_once,from.filename,to.filename,
+         MoreArgs=list(dsc=dsc,outputParsername=outputParsername))
 }
 
-#' @title Run all outputParsers in a dsc
-#'
-#' @description Run all outputParsers to convert one type of output to another type. 
-#' Each outputParser is run on all outputs in the appropriate output directory (output/outputtype_from)
-#' where outputtype_from is defined when the outputParser is added to the dsc
-#' 
-#' @param dsc the dsc to use
-#' 
-#' @return nothing, but outputs files to output/ directories
+# @title Run all outputParsers in a dsc
+#
+# @description Run all outputParsers to convert one type of output to
+#   another type. Each outputParser is run on all outputs in the
+#   appropriate output directory (output/outputtype_from) where
+#   outputtype_from is defined when the outputParser is added to the
+#   dsc.
+# 
+# @param dsc The dsc to use.
+# 
+# @return Nothing, but outputs files to output directories.
+# 
 run_output_parsers = function(dsc){
   if(!is.null(dsc$outputParsers)){
       mapply(run_output_parser,names(dsc$outputParsers),MoreArgs=list(dsc=dsc))
@@ -547,7 +555,8 @@ run_scenarios=function(dsc,ssub=NULL,seedsubset=NULL){
   df = expand_dsc(dsc, 'scenarios') %>%
     multiple_filter(scenarioname = ssub, seed = seedsubset)
   print(paste0("running Scenarios"))
-  mapply(run_scenario,seed=df$seed,scenarioname=df$scenarioname,MoreArgs=list(dsc=dsc))
+  mapply(run_scenario,seed=df$seed,scenarioname=df$scenarioname,
+         MoreArgs=list(dsc=dsc))
 }
 
 # @title Score a method on a single trial and save results.
@@ -559,6 +568,7 @@ run_scenarios=function(dsc,ssub=NULL,seedsubset=NULL){
 # @return A vector of names for a score. For elements of score
 #   already named, the name stays the same; for unnamed elements the
 #   name is scorej where j is the index of the element.
+#
 make_nice_score_names = function(s) {
   paste0(ifelse(names(s)=="","score",""),
          ifelse(names(s)=="",1:length(s),names(s)))
@@ -611,7 +621,6 @@ run_score = function(dsc,seed,scenarioname,methodname,scorename){
 
 #' @importFrom magrittr %>%
 run_scores = function(dsc,ssub=NULL,msub=NULL,scoresub=NULL){
-  # TODO: Should there be a seed subset here too?
   df = expand_dsc(dsc, 'scenarios_methods_scores') %>%
     multiple_filter(scenarioname = ssub, methodname = msub,
                     scorename = scoresub)
@@ -622,7 +631,8 @@ run_scores = function(dsc,ssub=NULL,msub=NULL,scoresub=NULL){
 }
 
 run_method = function(dsc,seed,scenarioname,methodname){
-  print(paste0("running method ",methodname,", on scenario ", scenarioname, ", seed ",seed))
+  print(paste0("running method ",methodname,", on scenario ",
+               scenarioname, ", seed ",seed))
   scenario = dsc$scenarios[[scenarioname]]
   method = dsc$methods[[methodname]]
   if(!file.exists(output_file_name(dsc,seed,scenario,method))){
@@ -633,8 +643,9 @@ run_method = function(dsc,seed,scenarioname,methodname){
                                 variable_names = c('input','meta'))
     }
     else{
-      input_frame <- data.frame(file_names = input_file_name(dsc, seed, scenario),
-                              variable_names = 'input')
+      input_frame <-
+        data.frame(file_names = input_file_name(dsc, seed, scenario),
+                   variable_names = 'input')
     }
   
     timedata <- system.time(
@@ -654,7 +665,8 @@ run_methods=function(dsc,ssub=NULL,msub=NULL,seedsubset=NULL){
     multiple_filter(scenarioname = ssub, methodname = msub, seed = seedsubset)
   
   print(paste0("running Methods"))
-  mapply(run_method,seed=df$seed,scenarioname=df$scenarioname,methodname=df$methodname,MoreArgs=list(dsc=dsc))
+  mapply(run_method,seed=df$seed,scenarioname=df$scenarioname,
+         methodname=df$methodname,MoreArgs=list(dsc=dsc))
 }
 
 #' @title Removes all data, output and results for the dsc
@@ -705,13 +717,16 @@ reset_method = function(dsc,methodname,force=FALSE){
     if(interactive()){
       force = (readline("Are you sure? [y to confirm]:")=="y")
     } else {
-      stop("Error: Must specify force = TRUE in reset_method in non-interactive mode.")
+      stop(paste("Error: Must specify force = TRUE in reset_method",
+                 "in non-interactive mode."))
     } 
   }
   
   if(force){
-    file.remove(Sys.glob(file.path(dsc$file.dir,"output","*",methodname,"*","*")))
-    file.remove(Sys.glob(file.path(dsc$file.dir,"scores","*",methodname,"*","*")))    
+    file.remove(Sys.glob(file.path(dsc$file.dir,"output","*",
+                                   methodname,"*","*")))
+    file.remove(Sys.glob(file.path(dsc$file.dir,"scores","*",
+                                   methodname,"*","*")))    
   }
 }
 
@@ -802,7 +817,8 @@ run_dsc=function(dsc,scenariosubset=NULL, methodsubset=NULL,seedsubset=NULL){
     dsc$res=lapply(dsc$scores,aggregate_results,
              dsc=dsc,scenarios=scenarios[ssub],methods=methods[msub])
   } else {
-    dsc$res=aggregate_results(dsc=dsc,scenarios=scenarios[ssub],methods=methods[msub],dsc$scores[[1]])
+    dsc$res=aggregate_results(dsc=dsc,scenarios=scenarios[ssub],
+                              methods=methods[msub],dsc$scores[[1]])
   }
   
   return(dsc$res)
