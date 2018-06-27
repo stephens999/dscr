@@ -6,6 +6,9 @@
 \usage{
 listScenarios(...)
 }
+\arguments{
+\item{...}{Arguments passed to \code{\link{list_scenarios}}.}
+}
 \description{
 Deprecated alias to \code{\link{list_scenarios}}.
 }

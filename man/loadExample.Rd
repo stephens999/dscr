@@ -6,6 +6,9 @@
 \usage{
 loadExample(...)
 }
+\arguments{
+\item{...}{Arguments passed to \code{\link{load_example}}.}
+}
 \description{
 Deprecated alias to \code{\link{load_example}}.
 }

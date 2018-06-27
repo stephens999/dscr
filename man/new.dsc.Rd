@@ -6,6 +6,9 @@
 \usage{
 new.dsc(...)
 }
+\arguments{
+\item{...}{Arguments passed to \code{\link{new_dsc}}.}
+}
 \description{
 Deprecated alias to \code{\link{new_dsc}}.
 }

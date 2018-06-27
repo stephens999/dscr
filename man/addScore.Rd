@@ -6,6 +6,9 @@
 \usage{
 addScore(...)
 }
+\arguments{
+\item{...}{Arguments passed to \code{\link{add_score}}.}
+}
 \description{
 Deprecated alias to \code{\link{add_score}}.
 }

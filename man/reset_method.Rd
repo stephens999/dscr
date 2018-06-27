@@ -7,10 +7,12 @@
 reset_method(dsc, methodname, force = FALSE)
 }
 \arguments{
+\item{dsc}{A dsc object.}
+
+\item{methodname}{String indicating name of methods to remove output.}
+
 \item{force}{Boolean, indicates whether to proceed without
 prompting user (prompt is to be implemented).}
-
-\item{method}{String indicating name of methods to remove output.}
 }
 \value{
 Nothing; simply deletes files.

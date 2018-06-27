@@ -1,6 +1,6 @@
 context("Expand and filter")
 
-## Test fixture
+# Test fixture.
 fake_dsc <- list(
     scenarios = list(
         scen1 = list(
@@ -16,7 +16,6 @@ fake_dsc <- list(
         score1 = NULL,
         score2 = NULL))
 
-## Tests
 test_that("expand_scenario creates a data frame with the right structure", {
     output <- expand_scenario(fake_dsc$scenarios$scen1)
 
@@ -28,7 +27,6 @@ test_that("expand_scenario creates a data frame with the right structure", {
 })
 
 test_that("expand_dsc checks the value of phase", {
-    ## sic
     expect_error(expand_dsc(fake_dsc, 'scnearios'))
 })
 
@@ -73,7 +71,7 @@ test_that("multiple_filter returns the data frame given no active filters", {
     sdf <- expand_dsc(fake_dsc, 'scenarios')
 
     expect_identical(multiple_filter(sdf), sdf)
-    expect_identical(multiple_filter(sdf, seed = NULL, scenarioname = NULL), sdf)
+    expect_identical(multiple_filter(sdf,seed = NULL,scenarioname = NULL),sdf)
 })
 
 test_that("multiple_filter filters according to non-null arguments", {

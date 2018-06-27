@@ -82,8 +82,8 @@ get_results_singletrial = function(dsc,seed,scenario,method,score) {
 #'
 #' @description Return a list containing data and output for a single
 #'   trial.
-#' 
-#' @param seed
+#'
+#' @param dsc A dsc object.
 #' 
 #' @param scenarioname Name of the  selected scenario.
 #' 
@@ -188,6 +188,8 @@ make_directories = function(dsc) {
 #' @param path The directory you want to source.
 #' 
 #' @param trace Whether to print the names of files being sourced.
+#'
+#' @param ... Additional arguments passed to \code{\link{source}}.
 #' 
 #' @return No return value.
 #' 
@@ -657,14 +659,18 @@ run_methods=function(dsc,ssub=NULL,msub=NULL,seedsubset=NULL){
 
 #' @title Removes all data, output and results for the dsc
 #'
-#' @description Removes all files in scores/ meta/, input/ and output/ subdirectories. Mostly useful for testing purposes.
-#'
-#' @param scenarios a list of scenarios in the dsc
-#' @param methods a list of methods in the dsc
-#' @param force boolean, indicates whether to proceed without prompting user
+#' @description Removes all files in scores, meta, input and output
+#'   subdirectories. Mostly useful for testing purposes.
 #' 
-#' @return nothing; simply deletes files
+#' @param dsc A dsc object.
+#' 
+#' @param force Boolean, indicates whether to proceed without
+#'   prompting user.
+#' 
+#' @return Nothing; simply deletes files.
+#' 
 #' @export
+#' 
 reset_dsc = function(dsc,force=FALSE){
   for(i in 1:length(dsc$scenarios)){
     reset_scenario(dsc,dsc$scenarios[[i]]$name,force)
@@ -679,7 +685,9 @@ reset_dsc = function(dsc,force=FALSE){
 #' @description Removes all output and scores for a method; primary
 #'   intended purpose is to force re-running of that method.
 #'
-#' @param method String indicating name of methods to remove output.
+#' @param dsc A dsc object.
+#' 
+#' @param methodname String indicating name of methods to remove output.
 #' 
 #' @param force Boolean, indicates whether to proceed without
 #'   prompting user (prompt is to be implemented).
@@ -713,6 +721,8 @@ reset_method = function(dsc,methodname,force=FALSE){
 #'   intended purpose is to force re-running of that scenario. (Works
 #'   only for unix look-alikes?)
 #'
+#' @param dsc A dsc object.
+#' 
 #' @param scenarioname String indicating name of scenario to remove.
 #' 
 #' @param force Boolean, indicates whether to proceed without
@@ -752,11 +762,7 @@ reset_scenario = function(dsc,scenarioname,force=FALSE){
 #'
 #' @description Run all methods on all scenarios for a DSC.
 #'
-#' @param scenarios A list of scenarios used to produce
-#'   \code{data = list(input,meta)}.
-#' 
-#' @param methods A list of methods to turn \code{data$input} into output.
-#' @param scorefn A function that takes output and scores it against data.
+#' @param dsc A dsc object.
 #' 
 #' @param scenariosubset A vector of the names of the scenarios to
 #'   actually make and run.

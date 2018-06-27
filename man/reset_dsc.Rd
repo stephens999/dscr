@@ -7,15 +7,15 @@
 reset_dsc(dsc, force = FALSE)
 }
 \arguments{
-\item{force}{boolean, indicates whether to proceed without prompting user}
+\item{dsc}{A dsc object.}
 
-\item{scenarios}{a list of scenarios in the dsc}
-
-\item{methods}{a list of methods in the dsc}
+\item{force}{Boolean, indicates whether to proceed without
+prompting user.}
 }
 \value{
-nothing; simply deletes files
+Nothing; simply deletes files.
 }
 \description{
-Removes all files in scores/ meta/, input/ and output/ subdirectories. Mostly useful for testing purposes.
+Removes all files in scores, meta, input and output
+  subdirectories. Mostly useful for testing purposes.
 }

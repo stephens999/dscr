@@ -6,6 +6,9 @@
 \usage{
 sourceDir(...)
 }
+\arguments{
+\item{...}{Arguments passed to \code{\link{source_dir}}.}
+}
 \description{
 Deprecated alias to \code{\link{source_dir}}.
 }

@@ -7,6 +7,8 @@
 reset_scenario(dsc, scenarioname, force = FALSE)
 }
 \arguments{
+\item{dsc}{A dsc object.}
+
 \item{scenarioname}{String indicating name of scenario to remove.}
 
 \item{force}{Boolean, indicates whether to proceed without

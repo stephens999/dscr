@@ -16,13 +16,6 @@ actually make and run.}
 
 \item{seedsubset}{A vector of which seeds to run. e.g., \code{1:2}
 would do seeds 1 and 2 (for scenarios that use that seed).}
-
-\item{scenarios}{A list of scenarios used to produce
-\code{data = list(input,meta)}.}
-
-\item{methods}{A list of methods to turn \code{data$input} into output.}
-
-\item{scorefn}{A function that takes output and scores it against data.}
 }
 \value{
 Data frame of results from all methods run on all scenarios.

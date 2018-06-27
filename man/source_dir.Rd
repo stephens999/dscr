@@ -10,6 +10,8 @@ source_dir(path, trace = TRUE, ...)
 \item{path}{The directory you want to source.}
 
 \item{trace}{Whether to print the names of files being sourced.}
+
+\item{...}{Additional arguments passed to \code{\link{source}}.}
 }
 \value{
 No return value.

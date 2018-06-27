@@ -6,6 +6,9 @@
 \usage{
 addOutputParser(...)
 }
+\arguments{
+\item{...}{Arguments passed to \code{\link{add_output_parser}}.}
+}
 \description{
 Deprecated alias to \code{\link{add_output_parser}}.
 }

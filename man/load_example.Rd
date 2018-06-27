@@ -8,7 +8,7 @@
 load_example(dsc, seed, scenarioname, methodname, homedir = ".")
 }
 \arguments{
-\item{seed}{}
+\item{dsc}{A dsc object.}
 
 \item{scenarioname}{Name of the  selected scenario.}
 
