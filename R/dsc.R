@@ -550,7 +550,7 @@ run_scenario=function(dsc,seed,scenarioname){
   }   
 }
 
-#' @importFrom magrittr %>%
+#' @importFrom magrittr "%>%"
 run_scenarios=function(dsc,ssub=NULL,seedsubset=NULL){
   df = expand_dsc(dsc, 'scenarios') %>%
     multiple_filter(scenarioname = ssub, seed = seedsubset)
@@ -619,7 +619,7 @@ run_score = function(dsc,seed,scenarioname,methodname,scorename){
   }
 }
 
-#' @importFrom magrittr %>%
+#' @importFrom magrittr "%>%"
 run_scores = function(dsc,ssub=NULL,msub=NULL,scoresub=NULL){
   df = expand_dsc(dsc, 'scenarios_methods_scores') %>%
     multiple_filter(scenarioname = ssub, methodname = msub,
@@ -659,7 +659,7 @@ run_method = function(dsc,seed,scenarioname,methodname){
   }
 }
 
-#' @importFrom magrittr %>%
+#' @importFrom magrittr "%>%"
 run_methods=function(dsc,ssub=NULL,msub=NULL,seedsubset=NULL){
   df = expand_dsc(dsc, 'scenarios_methods') %>%
     multiple_filter(scenarioname = ssub, methodname = msub, seed = seedsubset)

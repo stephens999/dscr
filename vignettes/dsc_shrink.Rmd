@@ -1,0 +1,228 @@
+<!--
+%\VignetteEngine{knitr::knitr}
+%\VignetteIndexEntry{More Advanced: Using Parsers to Test Adaptive Shrinkage}
+-->
+
+One original idea in introducing the DSC was to be very prescriptive
+about input formats and output formats: all methods had to use the
+same input and output formats.  In using the package in practice we
+found that, particularly in more "exploratory" situations, where we
+are in "research mode", it would be helpful to be less restrictive
+about this.  Specifically, we wanted to be able to run a method on all
+scenarios and store *all* of the output of each method, so that we
+could later score the methods in multiple different ways.
+
+To improve flexibility we implemented the idea of a parser to
+post-process output. The idea is that the method wrappers can each
+save in its preferred output format (e.g. the entire object produced
+by whatever R function you are wrapping), and then you supply a
+parser, or parsers, to convert this to another output format
+(e.g. just one part of the entire object). Different output formats
+are identified by different names (attribute `output_type`).  In
+addition we implemented the possibility to have multiple scores, each
+being used to score a specific `output_type`.
+
+To illustrate we consider the problem of shrinkage, which is tackled
+by the [`ashr` package](http://www.github.com/stephens999/ashr). The
+input to this DSC is a set of estimates $\hat\beta$, with associated
+standard errors $\s$. These values are estimates of actual (true)
+values for $\beta$, so the meta-data in this case are the true values
+of beta. Methods must take $\hat\beta$ and $s$ as input, and provide
+as output ``shrunk" estimates for $\beta$ (so output is a list with
+one element, called beta_est, which is a vector of estimates for
+beta). The score function then scores methods on their RMSE comparing
+beta_est with beta.
+
+First define a datamaker which simulates true values of $\beta$ from a
+user-specified normal mixture, where one of the components is a point
+mass at 0 of mass $\pi_0$, which is a user-specified parameter. It
+then simulates $\hat\beta \sim N(\beta_j,s_j)$ (where $s_j$ is again
+user-specified). It returns the true $\beta$ values and true $\pi_0$
+value as meta-data, and the estimates $\hat\beta$ and $s$ as
+input-data.
+
+```{r}
+library(dscr)
+library(ashr)
+
+#' @title datamaker for shrink DSC
+#'
+#' @description Simulates data for a DSC for methods to shrink
+#'   estimates values.
+#'
+#' @details None
+#' 
+#' @param seed The seed for the pseudo-rng set before generating the
+#'   parameters.
+#' 
+#' @param args A list of the remaining arguments, which in this case is:
+#' 
+#'   \item{nsamp}{The number of samples to create}
+#' 
+#'   \item{g}{An object of class normalmix specifying the mixture
+#'     distribution from which non-null beta values are to be simulated.}
+#' 
+#'   \item{min_pi0}{The minimum value of pi0, the proportion of true nulls}
+#' 
+#'   \item{max_pi0}{The maximum value of pi0, the proportion of true null}
+#' 
+#'   \item{betahatsd}{The standard deviation of betahat to use}
+#'
+#' @return a list with the following elements:
+#' 
+#' \item{meta}{A list containing the meta data. In this case beta}
+#' 
+#' \item{input}{A list containing the input data; in this case the set
+#'   of betahat values and their standard errors}
+#' 
+rnormmix_datamaker = function(args){
+  
+  # Here is the meat of the function that needs to be defined for each
+  # dsc to be done.
+  # 
+  # Generate the proportion of true nulls randomly.
+  pi0 = runif(1,args$min_pi0,args$max_pi0) 
+
+  # Randomly draw a component.
+  k = ncomp(args$g)
+  comp = sample(1:k,args$nsamp,mixprop(args$g),replace=TRUE) 
+  isnull = (runif(args$nsamp,0,1) < pi0)
+  beta = ifelse(isnull, 0,rnorm(args$nsamp,comp_mean(args$g)[comp],
+                comp_sd(args$g)[comp]))
+  sebetahat = args$betahatsd
+  betahat = beta + rnorm(args$nsamp,0,sebetahat)
+  meta=list(beta=beta,pi0=pi0)
+  input=list(betahat=betahat,sebetahat=sebetahat)
+  
+  # End of meat of function.
+  data = list(meta=meta,input=input)
+  
+  return(data)
+}
+```
+
+Now initialize the dsc using `new_dsc`, and add three scenarios using
+this datamaker:
+
+```{r}
+# Initialize.
+dsc_shrink=new_dsc("shrinkage","dsc-shrink-files")
+
+# Add Scenarios.
+add_scenario(dsc_shrink,name="An",
+            fn=rnormmix_datamaker,
+            args=list(
+              g=normalmix(c(2/3,1/3),c(0,0),c(1,2)),
+              min_pi0=0,
+              max_pi0=1,
+              nsamp=1000,
+              betahatsd=1
+            ),
+            seed=1:2)
+
+add_scenario(dsc_shrink,name="Bn",
+            fn=rnormmix_datamaker,
+            args=list(
+              g=normalmix(rep(1/7,7),c(-1.5,-1,-0.5,0,0.5,1,1.5),rep(0.5,7)),
+              min_pi0=0,
+              max_pi0=1,
+              nsamp=1000,
+              betahatsd=1
+            ),
+            seed=1:2)
+
+add_scenario(dsc_shrink,name="Cn",
+            fn=rnormmix_datamaker,
+            args=list(
+              g=normalmix(c(1/4,1/4,1/3,1/6),c(-2,-1,0,1),c(2,1.5,1,1)),
+              min_pi0=0,
+              max_pi0=1,
+              nsamp=1000,
+              betahatsd=1
+            ),
+            seed=1:2)
+```
+
+Now define a method wrapper for the ash function from the `ashr`
+package. Notice that this wrapper does not return output in the
+required format - it simply returns the entire ash output.
+
+```{r}
+ash.wrapper=function(input,args=NULL){
+  if(is.null(args)){
+    args=list(mixcompdist="halfuniform",method="fdr")
+  }
+  res = do.call(ash, args=c(list(betahat = input$betahat,
+                                 sebetahat = input$sebetahat),args))
+  return(res)
+}
+```
+
+When we add methods using the wrapper, we specify its outputtype:
+
+```{r}
+add_method(dsc_shrink,"ash.n",ash.wrapper,outputtype="ash_output",
+           args=list(mixcompdist="normal"))
+add_method(dsc_shrink,"ash.hu",ash.wrapper,outputtype="ash_output",
+           args=list(mixcompdist="halfuniform"))
+```
+
+Now we can define a parser to convert the ash output to a simple list
+with single element `beta_est`. Note that when we add this parser
+function, we specify what the output type it is designed to convert
+from (`ash_output`) and to (`est_output`):
+
+```{r}
+ash2beta_est =function(output){
+  return (list(beta_est=output$PosteriorMean))
+} 
+add_output_parser(dsc_shrink,"ash2beta",ash2beta_est,
+                  "ash_output","est_output")
+```
+
+When we add the score function we specify what outputtype it is
+designed to use:
+
+```{r}
+
+# Define Score and Add it
+score = function(data, output){
+  return(list(RMSE=sqrt(mean((output$beta_est-data$meta$beta)^2))))
+}
+add_score(dsc_shrink,score,name="basicscore",outputtype="est_output")
+```
+
+Now we can run the DSC: it runs every method on every scenario, and
+then every parser on all relevant output before running the scores:
+
+```{r}
+res1=run_dsc(dsc_shrink)
+head(res1)
+```
+
+A nice feature is that we can now easily add an assessment of the
+methods in another dimension. For example, we can look at accuracy of
+estimates of the parameter $\pi_0$ by adding a parser and a
+score. Effectively we have made 2 similar DSCs with the same methods
+and input, but different output/scores/goals.  Note that the methods
+have already been run, so they are not run again - only the parser and
+scores are run this time. This feature could be particularly
+convenient if the methods are computationally intensive.
+
+Note: when a DSC has multiple scores the output is a list, with a
+dataframe of results for each score.
+
+```{r}
+# This parser extracts the estimate of pi0.
+ash2pi0 =function(output){
+  return (list(pi0_est=get_pi0(output)))
+} 
+add_output_parser(dsc_shrink,"ash2pi0",ash2pi0,"ash_output","pi0_output")
+score2 = function(data, output){
+  return(list(pi0_est=output$pi0_est,pi0=data$meta$pi0))
+}
+add_score(dsc_shrink,score2,"pi0score",outputtype="pi0_output")
+res2=run_dsc(dsc_shrink)
+head(res2$pi0score)
+head(res2$basicscore)
+```

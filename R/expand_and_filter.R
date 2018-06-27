@@ -49,9 +49,7 @@ expand_dsc <- function(dsc, phase) {
                              'scenarios_methods_scores'))
 
     # Scenarios stage.
-    result <- plyr::ldply(dsc$scenarios,
-                          expand_scenario,
-                          .id = 'scenarioname')
+    result <- ldply(dsc$scenarios,expand_scenario,.id = 'scenarioname')
 
     # Methods stage.
     if (grepl('methods', phase)) {
