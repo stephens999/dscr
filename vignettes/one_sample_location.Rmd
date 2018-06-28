@@ -12,8 +12,6 @@ vignette: >
 knitr::opts_chunk$set(collapse = TRUE,comment = "#")
 ```
 
-# One sample location estimation; DSCR example
-
 First we load the dscr package, as well as the psych package used in
 the example below.
 

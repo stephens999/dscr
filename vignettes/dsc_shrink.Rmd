@@ -12,8 +12,6 @@ vignette: >
 knitr::opts_chunk$set(collapse = TRUE,comment = "#")
 ```
 
-# More Advanced: Using Parsers to Test Adaptive Shrinkage
-
 First we load the dscr package, as well as the ashr package used in
 the example below.
 
