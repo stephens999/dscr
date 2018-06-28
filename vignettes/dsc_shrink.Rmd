@@ -1,7 +1,26 @@
-<!--
-%\VignetteEngine{knitr::knitr}
-%\VignetteIndexEntry{More Advanced: Using Parsers to Test Adaptive Shrinkage}
--->
+---
+title: "More Advanced: Using Parsers to Test Adaptive Shrinkage"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{More advanced demonstration of dscr}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, echo = FALSE, message = FALSE}
+knitr::opts_chunk$set(collapse = TRUE,comment = "#")
+```
+
+# More Advanced: Using Parsers to Test Adaptive Shrinkage
+
+First we load the dscr package, as well as the ashr package used in
+the example below.
+
+```{r}
+library(dscr)
+library(ashr)
+```
 
 One original idea in introducing the DSC was to be very prescriptive
 about input formats and output formats: all methods had to use the
@@ -28,7 +47,7 @@ input to this DSC is a set of estimates $\hat\beta$, with associated
 standard errors $\s$. These values are estimates of actual (true)
 values for $\beta$, so the meta-data in this case are the true values
 of beta. Methods must take $\hat\beta$ and $s$ as input, and provide
-as output ``shrunk" estimates for $\beta$ (so output is a list with
+as output "shrunk" estimates for $\beta$ (so output is a list with
 one element, called beta_est, which is a vector of estimates for
 beta). The score function then scores methods on their RMSE comparing
 beta_est with beta.
@@ -42,8 +61,6 @@ value as meta-data, and the estimates $\hat\beta$ and $s$ as
 input-data.
 
 ```{r}
-library(dscr)
-library(ashr)
 
 #' @title datamaker for shrink DSC
 #'
@@ -106,7 +123,7 @@ this datamaker:
 
 ```{r}
 # Initialize.
-dsc_shrink=new_dsc("shrinkage","dsc-shrink-files")
+dsc_shrink = new_dsc("shrinkage","dsc-shrink-files")
 
 # Add Scenarios.
 add_scenario(dsc_shrink,name="An",

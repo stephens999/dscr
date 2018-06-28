@@ -2,8 +2,8 @@ Encoding: UTF-8
 Type: Package
 Package: dscr
 Title: Dynamic Statistical Comparisons in R
-Version: 0.1-6
-Date: 2018-06-27
+Version: 0.1-7
+Date: 2018-06-28
 Authors@R: c(person("Matthew","Stephens",role=c("aut","cre"),
                     email="mstephens@uchicago.edu"),
              person("Peter","Carbonetto",role="ctb"))
@@ -23,7 +23,9 @@ Imports:
     shiny
 Suggests:
     testthat,
-    knitr
+    knitr,
+    psych,
+    ashr
 NeedsCompilation: no
 VignetteBuilder: knitr
 RoxygenNote: 6.0.1.9000

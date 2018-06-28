@@ -1,9 +1,26 @@
-<!--
-%\VignetteEngine{knitr::knitr}
-%\VignetteIndexEntry{A Simple Example: Evaluating Mean-Estimation Methods}
--->
+---
+title: "A Simple Example: Evaluating Mean-Estimation Methods"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{simple demonstration of dscr}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, echo = FALSE, message = FALSE}
+knitr::opts_chunk$set(collapse = TRUE,comment = "#")
+```
 
 # One sample location estimation; DSCR example
+
+First we load the dscr package, as well as the psych package used in
+the example below.
+
+```{r}
+library(dscr)
+library(psych)
+```
 
 This vignette is designed to illustrate the (in development) dscr
 package for Dynamic Statistical Comparisons in R.
@@ -51,7 +68,6 @@ datamaker = function(args){
     input = list(x=rt(nsamp,df=1))
     meta = list(truemean=0)
   }
-  #end of meat of function
   
   data = list(meta=meta,input=input)
   
@@ -208,7 +224,7 @@ add_method(dsc_osl,"truth",truth.wrapper,gold_flag=TRUE)
 Then we can re-run the dsc:
 
 ```{r, results='hide'}
-res=run_dsc(dsc_osl)
+res = run_dsc(dsc_osl)
 ```
 
 ```{r}
