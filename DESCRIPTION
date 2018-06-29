@@ -2,8 +2,8 @@ Encoding: UTF-8
 Type: Package
 Package: dscr
 Title: Dynamic Statistical Comparisons in R
-Version: 0.1-7
-Date: 2018-06-28
+Version: 0.1-8
+Date: 2018-06-29
 Authors@R: c(person("Matthew","Stephens",role=c("aut","cre"),
                     email="mstephens@uchicago.edu"),
              person("Peter","Carbonetto",role="ctb"))
