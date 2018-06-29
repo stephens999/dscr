@@ -3,7 +3,7 @@ title: "A Simple Example: Evaluating Mean-Estimation Methods"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{simple demonstration of dscr}
+  %\VignetteIndexEntry{Simple demonstration of dscr}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
