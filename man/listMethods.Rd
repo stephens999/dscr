@@ -6,6 +6,9 @@
 \usage{
 listMethods(...)
 }
+\arguments{
+\item{...}{Arguments passed to \code{\link{list_methods}}.}
+}
 \description{
 Deprecated alias to \code{\link{list_methods}}.
 }

@@ -6,6 +6,9 @@
 \usage{
 getOutputtypes(...)
 }
+\arguments{
+\item{...}{Arguments passed to \code{\link{get_output_types}}.}
+}
 \description{
 Deprecated alias to \code{\link{get_output_types}}.
 }

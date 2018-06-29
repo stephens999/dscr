@@ -1,37 +1,37 @@
-dscr
-====
+# dscr: dynamic statistical comparisons in R
 
 [![Build Status](https://travis-ci.org/stephens999/dscr.png?branch=master)](https://travis-ci.org/stephens999/dscr)
 
-This repo contains work on an R package for performing dynamic statistical comparisons (DSCs) in R.
+This repository contains work on an R package for performing dynamic
+statistical comparisons (DSCs) in R. For a brief introduction to DSCs,
+see [here](intro.md).
 
-For a simple vignette see [here] (https://github.com/stephens999/dscr/blob/master/vignettes/one_sample_location.rmd)
+# Quick Start
 
-For a brief introduction to DSCs see [here](https://github.com/stephens999/dscr/blob/master/intro.md).
+1. In R, install the latest version of smashr (with the vignettes
+   enabled) using [devtools][devtools]:
 
-# Installation
+   ```R
+   install.packages("devtools")
+   library(devtools)
+   install_github("stephens999/dscr",build_vignettes = TRUE)
+   ```
 
-One vignette depends on the `ashr` package, so to get that to work you will have to install both `ashr` and `dscr`.
-You can do this using:
+   This will build the smashr package with the vignettes. Note that it
+   may take a few minutes to create the vignettes.
 
-`devtools::install_github("stephens999/ashr")` 
+2. Once the vignettes are generated, you should be able to view them
+   in R (or RStudio) by running
 
-`devtools::install_github("stephens999/dscr",build_vignettes=TRUE)` 
+   ```R
+   browseVignettes("dscr")
+   ```
 
-in R.
+   Note that running the code in the vignettes requires the
+   [psych][psych] and [ashr][ashr] packages. Typically these are
+   installed by the `install_github` command above, but if not you may
+   need to install these packages separately.
 
-Or in terminal use:
-
-    make deps
-    make docs
-    make build
-    make vignettes
-    make run-methods
-
-The result of `make vignettes` will appear under `vignettes`, and the result of `make run-methods` will appear in `inst/examples/one_sample_location/`. To clean up the generated files, just use `make vignettes-clean` and `make run-methods-clean`.
-
-
-Once the vignette is generated you should be able to see it in R by executing:
-
-    browseVignettes("dscr")
-
+[devtools]: https://github.com/r-lib/devtools
+[ashr]: https://github.com/stephens999/ashr
+[psych]: https://cran.r-project.org/package=psych

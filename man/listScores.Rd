@@ -6,6 +6,9 @@
 \usage{
 listScores(...)
 }
+\arguments{
+\item{...}{Arguments passed to \code{\link{list_scores}}.}
+}
 \description{
 Deprecated alias to \code{\link{list_scores}}.
 }

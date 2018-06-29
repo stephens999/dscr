@@ -6,6 +6,9 @@
 \usage{
 addScenario(...)
 }
+\arguments{
+\item{...}{Arguments passed to \code{\link{add_scenario}}.}
+}
 \description{
 Deprecated alias to \code{\link{add_scenario}}.
 }

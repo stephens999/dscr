@@ -1,24 +1,31 @@
-Package: dscr
+Encoding: UTF-8
 Type: Package
+Package: dscr
 Title: Dynamic Statistical Comparisons in R
-Version: 0.1.2
-Date: 2014-11-13
-Author: Matthew Stephens
-Maintainer: Matthew Stephens <mstephens@uchicago.edu>
+Version: 0.1-8
+Date: 2018-06-29
+Authors@R: c(person("Matthew","Stephens",role=c("aut","cre"),
+                    email="mstephens@uchicago.edu"),
+             person("Peter","Carbonetto",role="ctb"))
 Description: Package containing functions to help build dynamic statistical
-    comparisons in R
-VignetteBuilder: knitr
-License: GPL (>=2)
+    comparisons in R.
+URL: https://github.com/stephens999/dscr
+BugReports: https://github.com/stephens999/dscr/issues
+License: GPL (>= 2)
+Depends: R (>= 3.1.2)
 Imports: 
     assertthat,
-    psych,
     plyr,
     magrittr,
     dplyr,
-    reshape2,
-    knitr,
-    BatchJobs,
+    rlang,
     ggplot2,
     shiny
-Suggests: testthat
+Suggests:
+    testthat,
+    knitr,
+    psych,
+    ashr
+NeedsCompilation: no
+VignetteBuilder: knitr
 RoxygenNote: 6.0.1.9000
