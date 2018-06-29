@@ -600,7 +600,8 @@ run_score = function(dsc,seed,scenarioname,methodname,scorename){
   score = dsc$scores[[scorename]]
   scenario=dsc$scenarios[[scenarioname]]
   method = dsc$methods[[methodname]]
-  
+  cat(sprintf("score = %s, scenario = %s, method = %s\n",
+              score$name,scenario$name,method$name))
   if(file.exists(output_file_name(dsc,seed,scenario,method,
                                   outputtype = score$outputtype))) {
     if(!file.exists(scores_file_name(dsc,seed,scenario,method,score))){
